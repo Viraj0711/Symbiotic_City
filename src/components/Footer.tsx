@@ -3,7 +3,7 @@ import { Leaf, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-black text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
           {/* Brand */}
@@ -89,7 +89,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+        <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
           <p>&copy; 2025 Symbiotic City. All rights reserved.</p>
         </div>
       </div>
