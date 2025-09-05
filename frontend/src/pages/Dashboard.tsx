@@ -68,7 +68,7 @@ const Dashboard: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.user_metadata?.name || user?.email || 'User'}!
+            Welcome back, {user?.name || user?.email?.split('@')[0] || 'User'}!
           </h1>
           <p className="text-gray-600">
             Track your sustainability journey and community impact

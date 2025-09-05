@@ -9,6 +9,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<void>;
   uploadAvatar: (file: File) => Promise<string>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -143,6 +144,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const refreshUser = async () => {
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        const response = await api.getProfile();
+        setUser(response.user);
+      }
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -151,6 +164,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signOut,
     updateProfile,
     uploadAvatar,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
