@@ -66,12 +66,14 @@ Symbiotic_City/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Viraj0711/Symbiotic_City.git
    cd Symbiotic_City
    ```
 
 2. **Install dependencies**
+
    ```bash
    # Install root dependencies
    npm install
@@ -84,8 +86,9 @@ Symbiotic_City/
    ```
 
 3. **Environment Setup**
-   
+
    **Backend (.env)**
+
    ```env
    NODE_ENV=development
    PORT=3001
@@ -96,17 +99,20 @@ Symbiotic_City/
    ```
 
    **Frontend (.env)**
+
    ```env
    VITE_API_URL=http://localhost:3001/api
    ```
 
 4. **Start Development Servers**
+
    ```bash
    # From root directory - runs both frontend and backend
    npm run dev
    ```
 
    Or start them separately:
+
    ```bash
    # Backend (from backend directory)
    npm run dev
@@ -116,23 +122,26 @@ Symbiotic_City/
    ```
 
 5. **Access the Application**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:3001
+   - Frontend: <http://localhost:5173>
+   - Backend API: <http://localhost:3001>
 
 ## 🔧 Available Scripts
 
 ### Root Level
+
 - `npm run dev` - Start both frontend and backend in development mode
 - `npm run build` - Build both frontend and backend for production
 - `npm start` - Start production servers
 
-### Frontend
+### Frontend Scripts
+
 - `npm run dev` - Start Vite development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 
-### Backend
+### Backend Scripts
+
 - `npm run dev` - Start development server with hot reload
 - `npm run build` - Compile TypeScript to JavaScript
 - `npm start` - Start production server
@@ -142,6 +151,7 @@ Symbiotic_City/
 ## 🗄️ Database Schema
 
 ### User Model
+
 ```typescript
 {
   name: string;
@@ -160,6 +170,7 @@ Symbiotic_City/
 ```
 
 ### Project Model
+
 ```typescript
 {
   title: string;
@@ -180,12 +191,14 @@ Symbiotic_City/
 ## 🔐 API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
 - `GET /api/auth/me` - Get current user profile
 - `PUT /api/auth/profile` - Update user profile
 
 ### Projects
+
 - `GET /api/projects` - Get all projects
 - `POST /api/projects` - Create new project
 - `GET /api/projects/:id` - Get project by ID
@@ -193,11 +206,13 @@ Symbiotic_City/
 - `DELETE /api/projects/:id` - Delete project
 
 ### Events
+
 - `GET /api/events` - Get all events
 - `POST /api/events` - Create new event
 - `GET /api/events/:id` - Get event by ID
 
 ### Marketplace
+
 - `GET /api/marketplace` - Get all marketplace items
 - `POST /api/marketplace` - Create new listing
 
@@ -215,7 +230,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Viraj Jadav**
+### Viraj Jadav
+
 - GitHub: [@Viraj0711](https://github.com/Viraj0711)
 
 ## 🙏 Acknowledgments
