@@ -7,7 +7,6 @@ export { default as Community } from './Community';
 export { default as Dashboard } from './Dashboard';
 export { default as About } from './About';
 export { default as Contact } from './Contact';
-export { default as Profile } from './Profile';
 export { default as Settings } from './Settings';
 export { default as HelpCenter } from './HelpCenter';
 export { default as PrivacyPolicy } from './PrivacyPolicy';

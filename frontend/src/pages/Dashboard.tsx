@@ -63,61 +63,118 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.name || user?.email?.split('@')[0] || 'User'}!
-          </h1>
-          <p className="text-gray-600">
-            Track your sustainability journey and community impact
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Enhanced Header */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              {/* User Avatar */}
+              <div className="relative">
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-16 h-16 rounded-full object-cover border-3 border-green-500"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                )}
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
+              </div>
+              
+              {/* Welcome Message */}
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Welcome back, {user?.name || user?.email?.split('@')[0] || 'User'}!
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  Track your sustainability journey and community impact
+                </p>
+              </div>
+            </div>
+            
+            {/* Quick Stats */}
+            <div className="hidden md:flex items-center space-x-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">{userStats.projectsJoined}</div>
+                <div className="text-xs text-gray-500 uppercase tracking-wide">Projects</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{userStats.eventsAttended}</div>
+                <div className="text-xs text-gray-500 uppercase tracking-wide">Events</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">{userStats.itemsListed}</div>
+                <div className="text-xs text-gray-500 uppercase tracking-wide">Listings</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-yellow-600">{userStats.co2Saved}</div>
+                <div className="text-xs text-gray-500 uppercase tracking-wide">Impact</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="bg-white rounded-lg shadow-md mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8 px-6">
+        {/* Enhanced Navigation Tabs */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
+          <div className="border-b border-gray-100">
+            <nav className="-mb-px flex space-x-6 px-6">
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-4 px-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
                   activeTab === 'overview'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                Overview
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span>Overview</span>
               </button>
               <button
                 onClick={() => setActiveTab('projects')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-4 px-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
                   activeTab === 'projects'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                My Projects
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span>My Projects</span>
               </button>
               <button
                 onClick={() => setActiveTab('events')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-4 px-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
                   activeTab === 'events'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                My Events
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v6m6-6v6M6 15h12" />
+                </svg>
+                <span>My Events</span>
               </button>
               <button
                 onClick={() => setActiveTab('marketplace')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-4 px-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
                   activeTab === 'marketplace'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                My Listings
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <span>My Listings</span>
               </button>
             </nav>
           </div>

@@ -63,13 +63,13 @@ const Header = () => {
             {user ? (
               <div className="flex items-center space-x-2">
                 <Link 
-                  to="/dashboard"
+                  to="/"
                   className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium"
                 >
-                  Dashboard
+                  Home
                 </Link>
                 <Link 
-                  to="/profile"
+                  to="/dashboard"
                   className="flex items-center space-x-2 p-1 text-gray-400 hover:text-green-600 transition-colors duration-200"
                 >
                   {user.avatar ? (
@@ -162,9 +162,9 @@ const Header = () => {
                     </div>
                   </div>
                   <Link to="/dashboard" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
-                    Dashboard
+                    Profile
                   </Link>
-                  <Link to="/profile" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+                  <Link to="/dashboard" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
                     Profile
                   </Link>
                   <button 

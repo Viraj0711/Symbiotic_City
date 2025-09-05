@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { SearchProvider } from './contexts/SearchContext';
 import Header from './components/Header';
@@ -16,7 +16,6 @@ import {
   Dashboard,
   About,
   Contact,
-  Profile,
   Settings,
   HelpCenter,
   PrivacyPolicy,
@@ -45,7 +44,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/help" element={<HelpCenter />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
