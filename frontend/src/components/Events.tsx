@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Calendar, MapPin, Users, Clock, X } from 'lucide-react';
 import { useEvents } from '../hooks/useEvents';
 import { useAuth } from '../contexts/AuthContext';
-import AuthModal from './auth/AuthModal';
 
 interface EventsProps {
   limit?: number;
@@ -11,16 +10,17 @@ interface EventsProps {
 const Events: React.FC<EventsProps> = ({ limit }) => {
   const { events, loading, error } = useEvents();
   const { user } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [showEventDetails, setShowEventDetails] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<{ [key: string]: 'registering' | 'registered' | 'error' }>({});
 
   // Handle event registration
   const handleRegisterNow = async (event: any) => {
     if (!user) {
-      setSelectedEvent(event);
-      setShowAuthModal(true);
+      // Store the intended action and redirect to login
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
+      localStorage.setItem('pendingAction', JSON.stringify({ type: 'registerEvent', eventId: event.id, eventTitle: event.title }));
+      window.location.href = '/login';
       return;
     }
 
@@ -46,12 +46,6 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
   const handleLearnMore = (event: any) => {
     setSelectedEvent(event);
     setShowEventDetails(true);
-  };
-
-  // Handle auth modal close
-  const handleAuthModalClose = () => {
-    setShowAuthModal(false);
-    setSelectedEvent(null);
   };
 
   // Handle view all events
@@ -211,7 +205,7 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
               </div>
             </div>
           ))}
-        </div>
+          </div>
         )}
 
         <div className="text-center">
@@ -223,15 +217,6 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
           </button>
         </div>
       </div>
-
-      {/* Auth Modal */}
-      {showAuthModal && (
-        <AuthModal 
-          isOpen={showAuthModal}
-          onClose={handleAuthModalClose}
-          initialMode="signin"
-        />
-      )}
 
       {/* Event Details Modal */}
       {showEventDetails && selectedEvent && (

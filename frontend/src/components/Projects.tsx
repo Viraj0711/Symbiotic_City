@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Users, Clock, TrendingUp, X } from 'lucide-react';
 import { useProjects } from '../hooks/useProjects';
 import { useAuth } from '../contexts/AuthContext';
-import AuthModal from './auth/AuthModal';
 import { AnimatedSection, StaggeredContainer } from './AnimatedSection';
 
 interface ProjectsProps {
@@ -12,8 +11,7 @@ interface ProjectsProps {
 const Projects: React.FC<ProjectsProps> = ({ limit }) => {
   const { projects, loading, error } = useProjects();
   const { user } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [joinStatus, setJoinStatus] = useState<{ [key: string]: 'joining' | 'joined' | 'error' }>({});
@@ -21,8 +19,10 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
   // Handle project joining
   const handleJoinProject = async (project: any) => {
     if (!user) {
-      setSelectedProject(project);
-      setShowAuthModal(true);
+      // Store the intended action and redirect to login
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
+      localStorage.setItem('pendingAction', JSON.stringify({ type: 'joinProject', projectId: project.id, projectTitle: project.title }));
+      window.location.href = '/login';
       return;
     }
 
@@ -58,18 +58,16 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
   // Handle start new project
   const handleStartNewProject = () => {
     if (!user) {
-      setShowAuthModal(true);
+      // Store the intended action and redirect to login
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
+      localStorage.setItem('pendingAction', JSON.stringify({ type: 'startNewProject' }));
+      window.location.href = '/login';
       return;
     }
     setShowNewProjectModal(true);
   };
 
   // Handle modal closures
-  const handleAuthModalClose = () => {
-    setShowAuthModal(false);
-    setSelectedProject(null);
-  };
-
   const handleProjectDetailsClose = () => {
     setShowProjectDetails(false);
     setSelectedProject(null);
@@ -215,7 +213,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
               </div>
             </div>
           ))}
-        </StaggeredContainer>
+          </StaggeredContainer>
         )}
 
         <AnimatedSection animation="fadeUp" delay={0.4} className="text-center">
@@ -232,20 +230,10 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
             Start New Project
           </button>
         </AnimatedSection>
-      </div>
 
-      {/* Auth Modal */}
-      {showAuthModal && (
-        <AuthModal 
-          isOpen={showAuthModal}
-          onClose={handleAuthModalClose}
-          initialMode="signin"
-        />
-      )}
-
-      {/* Project Details Modal */}
-      {showProjectDetails && selectedProject && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        {/* Project Details Modal */}
+        {showProjectDetails && selectedProject && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="relative">
               <img
@@ -432,6 +420,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
           </div>
         </div>
       )}
+      </div>
     </section>
   );
 };
