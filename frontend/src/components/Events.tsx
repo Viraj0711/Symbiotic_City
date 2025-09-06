@@ -1,6 +1,8 @@
-import React from 'react';
-import { Calendar, MapPin, Users, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { Calendar, MapPin, Users, Clock, X } from 'lucide-react';
 import { useEvents } from '../hooks/useEvents';
+import { useAuth } from '../contexts/AuthContext';
+import AuthModal from './auth/AuthModal';
 
 interface EventsProps {
   limit?: number;
@@ -8,6 +10,61 @@ interface EventsProps {
 
 const Events: React.FC<EventsProps> = ({ limit }) => {
   const { events, loading, error } = useEvents();
+  const { user } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [showEventDetails, setShowEventDetails] = useState(false);
+  const [registrationStatus, setRegistrationStatus] = useState<{ [key: string]: 'registering' | 'registered' | 'error' }>({});
+
+  // Handle event registration
+  const handleRegisterNow = async (event: any) => {
+    if (!user) {
+      setSelectedEvent(event);
+      setShowAuthModal(true);
+      return;
+    }
+
+    try {
+      setRegistrationStatus(prev => ({ ...prev, [event.id]: 'registering' }));
+      
+      // Simulate API call for event registration
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setRegistrationStatus(prev => ({ ...prev, [event.id]: 'registered' }));
+      
+      // Show success message
+      alert(`Successfully registered for "${event.title}"! Check your email for confirmation details.`);
+      
+    } catch (error) {
+      console.error('Registration failed:', error);
+      setRegistrationStatus(prev => ({ ...prev, [event.id]: 'error' }));
+      alert('Registration failed. Please try again.');
+    }
+  };
+
+  // Handle learn more button
+  const handleLearnMore = (event: any) => {
+    setSelectedEvent(event);
+    setShowEventDetails(true);
+  };
+
+  // Handle auth modal close
+  const handleAuthModalClose = () => {
+    setShowAuthModal(false);
+    setSelectedEvent(null);
+  };
+
+  // Handle view all events
+  const handleViewAllEvents = () => {
+    // Navigate to events page or show all events
+    window.location.href = '/events';
+  };
+
+  // Handle event details modal close
+  const handleEventDetailsClose = () => {
+    setShowEventDetails(false);
+    setSelectedEvent(null);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -125,10 +182,28 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
                   </div>
                   
                   <div className="flex space-x-4">
-                    <button className="bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors duration-200">
-                      Register Now
+                    <button 
+                      onClick={() => handleRegisterNow(event)}
+                      disabled={registrationStatus[event.id] === 'registering'}
+                      className={`px-6 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                        registrationStatus[event.id] === 'registered'
+                          ? 'bg-green-600 text-white cursor-default'
+                          : registrationStatus[event.id] === 'registering'
+                          ? 'bg-emerald-400 text-white cursor-not-allowed'
+                          : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                      }`}
+                    >
+                      {registrationStatus[event.id] === 'registered' 
+                        ? 'Registered ✓' 
+                        : registrationStatus[event.id] === 'registering'
+                        ? 'Registering...'
+                        : 'Register Now'
+                      }
                     </button>
-                    <button className="border border-gray-600 text-gray-300 px-6 py-2 rounded-lg font-medium hover:bg-gray-600 transition-colors duration-200">
+                    <button 
+                      onClick={() => handleLearnMore(event)}
+                      className="border border-gray-600 text-gray-300 px-6 py-2 rounded-lg font-medium hover:bg-gray-600 transition-colors duration-200"
+                    >
                       Learn More
                     </button>
                   </div>
@@ -140,11 +215,123 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
         )}
 
         <div className="text-center">
-          <button className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors duration-200">
+          <button 
+            onClick={handleViewAllEvents}
+            className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors duration-200"
+          >
             View All Events
           </button>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal 
+          isOpen={showAuthModal}
+          onClose={handleAuthModalClose}
+          initialMode="signin"
+        />
+      )}
+
+      {/* Event Details Modal */}
+      {showEventDetails && selectedEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative">
+              <img
+                src={selectedEvent.image}
+                alt={selectedEvent.title}
+                className="w-full h-48 object-cover rounded-t-lg"
+              />
+              <button
+                onClick={handleEventDetailsClose}
+                className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {selectedEvent.category}
+                </span>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedEvent.status)}`}>
+                  {getStatusText(selectedEvent.status)}
+                </span>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">{selectedEvent.title}</h2>
+              
+              <div className="grid sm:grid-cols-2 gap-4 mb-6 text-gray-600">
+                <div className="flex items-center space-x-2">
+                  <Calendar className="h-5 w-5 text-emerald-600" />
+                  <span>{selectedEvent.date}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Clock className="h-5 w-5 text-emerald-600" />
+                  <span>{selectedEvent.time}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <MapPin className="h-5 w-5 text-emerald-600" />
+                  <span>{selectedEvent.location}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Users className="h-5 w-5 text-emerald-600" />
+                  <span>{selectedEvent.attendees} attendees</span>
+                </div>
+              </div>
+              
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Event Description</h3>
+                <p className="text-gray-700 leading-relaxed">
+                  {selectedEvent.description || 'Join us for this exciting community event focused on sustainability and environmental impact. This event brings together like-minded individuals passionate about creating positive change in our community.'}
+                </p>
+              </div>
+              
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">What to Expect</h3>
+                <ul className="text-gray-700 space-y-1">
+                  <li>• Interactive workshops and activities</li>
+                  <li>• Networking opportunities with community members</li>
+                  <li>• Expert speakers and presentations</li>
+                  <li>• Refreshments and light meals provided</li>
+                </ul>
+              </div>
+              
+              <div className="flex space-x-4">
+                <button 
+                  onClick={() => {
+                    handleEventDetailsClose();
+                    handleRegisterNow(selectedEvent);
+                  }}
+                  disabled={registrationStatus[selectedEvent.id] === 'registering'}
+                  className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                    registrationStatus[selectedEvent.id] === 'registered'
+                      ? 'bg-green-600 text-white cursor-default'
+                      : registrationStatus[selectedEvent.id] === 'registering'
+                      ? 'bg-emerald-400 text-white cursor-not-allowed'
+                      : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  }`}
+                >
+                  {registrationStatus[selectedEvent.id] === 'registered' 
+                    ? 'Registered ✓' 
+                    : registrationStatus[selectedEvent.id] === 'registering'
+                    ? 'Registering...'
+                    : 'Register Now'
+                  }
+                </button>
+                <button
+                  onClick={handleEventDetailsClose}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
