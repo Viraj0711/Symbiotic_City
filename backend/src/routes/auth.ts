@@ -26,7 +26,11 @@ const validateRegistration = [
   body('name')
     .trim()
     .isLength({ min: 2, max: 50 })
-    .withMessage('Name must be between 2 and 50 characters')
+    .withMessage('Name must be between 2 and 50 characters'),
+  body('role')
+    .optional()
+    .isIn(['USER', 'SITE_OWNER', 'ADMIN', 'MODERATOR'])
+    .withMessage('Invalid role specified')
 ];
 
 const validateLogin = [
@@ -51,7 +55,7 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
       });
     }
 
-    const { email, password, name } = req.body;
+    const { email, password, name, role } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -66,6 +70,7 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
       email,
       password,
       name,
+      role: role || 'USER', // Default to USER role if not specified
       bio: `Hello! I'm ${name} and I'm excited to be part of the Symbiotic City community.`,
       location: 'Community Member'
     });

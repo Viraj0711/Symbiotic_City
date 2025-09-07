@@ -10,7 +10,7 @@ export interface User {
   avatar?: string;
   bio?: string;
   location?: string;
-  role: 'USER' | 'ADMIN' | 'MODERATOR';
+  role: 'USER' | 'SITE_OWNER' | 'ADMIN' | 'MODERATOR';
   isActive: boolean;
   emailVerified: boolean;
   lastLogin?: string;
@@ -87,10 +87,10 @@ class ApiClient {
   }
 
   // Authentication endpoints
-  async register(email: string, password: string, name: string): Promise<AuthResponse> {
+  async register(email: string, password: string, name: string, role?: 'USER' | 'SITE_OWNER'): Promise<AuthResponse> {
     const response = await this.request<AuthResponse>('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ email, password, name }),
+      body: JSON.stringify({ email, password, name, role: role || 'USER' }),
     });
     
     this.setToken(response.token);

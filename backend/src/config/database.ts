@@ -50,7 +50,36 @@ export interface IUser {
   avatar?: string;
   bio?: string;
   location?: string;
-  role: 'USER' | 'ADMIN' | 'MODERATOR';
+  role: 'USER' | 'SITE_OWNER' | 'ADMIN' | 'MODERATOR';
+  siteOwnerData?: {
+    companyName?: string;
+    certifications?: string[];
+    verified?: boolean;
+    sites?: string[];
+    businessLicense?: string;
+    greenCertifications?: string[];
+  };
+  preferences?: {
+    energyTypes?: string[];
+    priceRange?: {
+      min?: number;
+      max?: number;
+    };
+    deliveryRadius?: number;
+    sustainabilityGoals?: string[];
+  };
+  wallet?: {
+    balance?: number;
+    greenCredits?: number;
+    carbonOffset?: number;
+  };
+  purchases?: Array<{
+    orderId?: string;
+    productId?: string;
+    amount?: number;
+    date?: Date;
+    status?: 'completed' | 'pending' | 'cancelled';
+  }>;
   isActive: boolean;
   emailVerified: boolean;
   lastLogin?: Date;

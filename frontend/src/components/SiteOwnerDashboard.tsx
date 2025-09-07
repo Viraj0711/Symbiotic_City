@@ -45,7 +45,7 @@ const SiteOwnerDashboard: React.FC = () => {
   const [showAddProduct, setShowAddProduct] = useState(false);
 
   useEffect(() => {
-    if (user?.role !== 'USER') { // Temporarily using USER role until backend is updated
+    if (user?.role !== 'SITE_OWNER') {
       return;
     }
     loadDashboardData();
@@ -148,7 +148,7 @@ const SiteOwnerDashboard: React.FC = () => {
     return `${sign}${value.toFixed(1)}%`;
   };
 
-  if (!user || user.role !== 'USER') { // Temporarily using USER role
+  if (!user || user.role !== 'SITE_OWNER') {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">

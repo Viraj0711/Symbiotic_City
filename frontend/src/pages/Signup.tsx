@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Loader2, ArrowLeft, Eye, EyeOff, Check, X, Building, Users, Shield } from 'lucide-react';
+import { Mail, Lock, User, Loader2, ArrowLeft, Eye, EyeOff, Check, X, Building, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface PasswordRequirement {
@@ -137,6 +137,57 @@ const Signup = () => {
                   placeholder="Enter your email"
                   required
                 />
+              </div>
+            </div>
+
+            {/* Role Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Choose Your Role
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setRole('USER')}
+                  className={`p-4 border-2 rounded-lg text-left transition-all hover:border-emerald-300 ${
+                    role === 'USER'
+                      ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200'
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className={`p-2 rounded-full ${
+                      role === 'USER' ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      <Users className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">Regular User</h3>
+                      <p className="text-sm text-gray-600">Browse and purchase green energy</p>
+                    </div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('SITE_OWNER')}
+                  className={`p-4 border-2 rounded-lg text-left transition-all hover:border-emerald-300 ${
+                    role === 'SITE_OWNER'
+                      ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200'
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className={`p-2 rounded-full ${
+                      role === 'SITE_OWNER' ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      <Building className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">Site Owner</h3>
+                      <p className="text-sm text-gray-600">Sell green energy products</p>
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
 

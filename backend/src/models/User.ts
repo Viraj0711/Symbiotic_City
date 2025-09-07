@@ -96,8 +96,8 @@ const UserSchema = new Schema<IUserDocument>({
   toJSON: { 
     virtuals: true,
     transform: function(doc, ret) {
-      delete ret.password;
-      delete ret.__v;
+      delete (ret as any).password;
+      delete (ret as any).__v;
       return ret;
     }
   },
@@ -111,7 +111,7 @@ UserSchema.index({ isActive: 1 });
 
 // Hash password before saving
 UserSchema.pre('save', async function(next) {
-  const user = this as IUserDocument;
+  const user = this as unknown as IUserDocument;
   
   // Only hash the password if it has been modified (or is new)
   if (!user.isModified('password')) return next();

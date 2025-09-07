@@ -15,7 +15,12 @@ const Login = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      // Role-based redirect
+      if (user.role === 'SITE_OWNER') {
+        navigate('/site-owner-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     }
   }, [user, navigate]);
 
@@ -26,7 +31,7 @@ const Login = () => {
 
     try {
       await signIn(email, password);
-      navigate('/dashboard');
+      // The redirect will be handled by the useEffect hook based on user role
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
