@@ -11,6 +11,7 @@ import connectDB from './config/database';
 
 // Import routes
 import authRoutes from './routes/auth';
+import marketplaceRoutes from './routes/marketplace';
 
 // Load environment variables
 import dotenv from 'dotenv';
@@ -69,6 +70,7 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/marketplace', marketplaceRoutes);
 
 // 404 handler - must come after all routes
 app.use((req, res) => {

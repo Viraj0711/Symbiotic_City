@@ -47,9 +47,38 @@ const UserSchema = new Schema<IUserDocument>({
   },
   role: {
     type: String,
-    enum: ['USER', 'ADMIN', 'MODERATOR'],
+    enum: ['USER', 'SITE_OWNER', 'ADMIN', 'MODERATOR'],
     default: 'USER'
   },
+  siteOwnerData: {
+    companyName: String,
+    certifications: [String],
+    verified: { type: Boolean, default: false },
+    sites: [{ type: Schema.Types.ObjectId, ref: 'HydrogenSite' }],
+    businessLicense: String,
+    greenCertifications: [String]
+  },
+  preferences: {
+    energyTypes: { type: [String], default: ['hydrogen', 'solar', 'wind'] },
+    priceRange: {
+      min: { type: Number, default: 0 },
+      max: { type: Number, default: 1000 }
+    },
+    deliveryRadius: { type: Number, default: 50 },
+    sustainabilityGoals: [String]
+  },
+  wallet: {
+    balance: { type: Number, default: 0 },
+    greenCredits: { type: Number, default: 100 },
+    carbonOffset: { type: Number, default: 0 }
+  },
+  purchases: [{
+    orderId: { type: Schema.Types.ObjectId, ref: 'Order' },
+    productId: { type: Schema.Types.ObjectId, ref: 'EnergyProduct' },
+    amount: Number,
+    date: { type: Date, default: Date.now },
+    status: { type: String, enum: ['completed', 'pending', 'cancelled'], default: 'pending' }
+  }],
   isActive: {
     type: Boolean,
     default: true

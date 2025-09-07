@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Loader2, ArrowLeft, Eye, EyeOff, Check, X } from 'lucide-react';
+import { Mail, Lock, User, Loader2, ArrowLeft, Eye, EyeOff, Check, X, Building, Users, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface PasswordRequirement {
@@ -13,6 +13,7 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState<'USER' | 'SITE_OWNER'>('USER');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -59,8 +60,13 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      await signUp(email, password, name);
-      navigate('/dashboard');
+      await signUp(email, password, name, role);
+      // Role-based redirect
+      if (role === 'SITE_OWNER') {
+        navigate('/site-owner-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
