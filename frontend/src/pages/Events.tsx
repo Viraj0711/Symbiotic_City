@@ -176,7 +176,7 @@ const Events: React.FC = () => {
                   <div className="flex gap-2">
                     {isUpcoming(event.date) ? (
                       <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">
-                        RSVP
+                        Join
                       </button>
                     ) : (
                       <button className="flex-1 bg-gray-400 text-white py-2 px-4 rounded-lg cursor-not-allowed text-sm" disabled>

@@ -22,7 +22,7 @@ const mockEvents: Event[] = [
     id: '1',
     title: 'Community Clean-Up Day',
     description: 'Join your neighbors for a city-wide clean-up event. We\'ll provide supplies and refreshments. Let\'s make our neighborhoods shine!',
-    date: 'March 15, 2024',
+    date: 'March 15, 2026',
     time: '9:00 AM - 1:00 PM',
     location: 'Central Park Pavilion',
     attendees: 45,
@@ -30,14 +30,14 @@ const mockEvents: Event[] = [
     image: 'https://images.pexels.com/photos/1181396/pexels-photo-1181396.jpeg?auto=compress&cs=tinysrgb&w=600',
     status: 'open',
     author_id: 'admin1',
-    created_at: '2024-02-01T10:00:00Z',
+    created_at: '2026-02-01T10:00:00Z',
     type: 'volunteer'
   },
   {
     id: '2',
     title: 'Digital Skills Workshop',
     description: 'Learn essential digital skills including online safety, digital communication, and basic computer literacy. All ages welcome!',
-    date: 'March 20, 2024',
+    date: 'March 20, 2026',
     time: '2:00 PM - 5:00 PM',
     location: 'Community Library',
     attendees: 28,
@@ -45,14 +45,14 @@ const mockEvents: Event[] = [
     image: 'https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=600',
     status: 'open',
     author_id: 'admin2',
-    created_at: '2024-02-05T14:30:00Z',
+    created_at: '2026-02-05T14:30:00Z',
     type: 'workshop'
   },
   {
     id: '3',
     title: 'Urban Gardening Masterclass',
     description: 'Learn how to grow your own food in small spaces. We\'ll cover container gardening, composting, and seasonal planting tips.',
-    date: 'March 25, 2024',
+    date: 'March 25, 2026',
     time: '10:00 AM - 3:00 PM',
     location: 'Green Spaces Community Garden',
     attendees: 67,
@@ -60,7 +60,7 @@ const mockEvents: Event[] = [
     image: 'https://images.pexels.com/photos/1301856/pexels-photo-1301856.jpeg?auto=compress&cs=tinysrgb&w=600',
     status: 'open',
     author_id: 'expert1',
-    created_at: '2024-02-08T09:15:00Z',
+    created_at: '2026-02-08T09:15:00Z',
     type: 'masterclass'
   }
 ];
