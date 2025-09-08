@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import EmergencyServices from '../components/EmergencyServices';
 
 interface CommunityMember {
   id: string;
@@ -24,7 +25,7 @@ interface Post {
 }
 
 const Community: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'feed' | 'members' | 'groups'>('feed');
+  const [activeTab, setActiveTab] = useState<'feed' | 'members' | 'groups' | 'emergency'>('feed');
 
   // Mock data - replace with actual API calls
   const posts: Post[] = [
@@ -121,6 +122,16 @@ const Community: React.FC = () => {
                 }`}
               >
                 Groups
+              </button>
+              <button
+                onClick={() => setActiveTab('emergency')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'emergency'
+                    ? 'border-red-500 text-red-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Emergency Services
               </button>
             </nav>
           </div>
@@ -319,6 +330,10 @@ const Community: React.FC = () => {
             <h3 className="text-lg font-medium text-gray-900 mb-2">Groups Coming Soon</h3>
             <p className="text-gray-600">We're working on building special interest groups for the community</p>
           </div>
+        )}
+
+        {activeTab === 'emergency' && (
+          <EmergencyServices />
         )}
       </div>
     </div>
