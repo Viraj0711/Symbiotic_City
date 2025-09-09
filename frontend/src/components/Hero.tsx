@@ -6,7 +6,7 @@ const Hero = () => {
   const { user } = useAuth();
   
   return (
-    <section className="bg-gradient-to-br from-gray-900 to-gray-800 py-16 lg:py-24 relative overflow-hidden">
+    <section className="py-16 lg:py-24 relative overflow-hidden" style={{backgroundColor: '#E2EAD6'}}>
       {/* Parallax Background Elements */}
       <ParallaxSection speed={0.3} className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-10 w-32 h-32 bg-emerald-500 rounded-full blur-xl"></div>
@@ -27,8 +27,8 @@ const Hero = () => {
                   />
                 )}
                 <div>
-                  <h2 className="text-2xl font-bold text-white">Welcome back, {user.name}!</h2>
-                  <p className="text-green-300">Ready to make a difference in your community today?</p>
+                  <h2 className="text-2xl font-bold" style={{color: '#059669'}}>Welcome back, {user.name}!</h2>
+                  <p className="text-green-600">Ready to make a difference in your community today?</p>
                 </div>
               </div>
             </div>
@@ -39,14 +39,14 @@ const Hero = () => {
           {/* Content */}
           <div className="space-y-8">
             <AnimatedSection animation="fadeUp" delay={0.2}>
-              <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
+              <h1 className="text-4xl lg:text-6xl font-bold leading-tight" style={{color: '#059669'}}>
                 Co-create a
                 <span className="text-emerald-600"> Sustainable</span> Future
               </h1>
             </AnimatedSection>
             
             <AnimatedSection animation="fadeUp" delay={0.4}>
-              <p className="text-xl text-gray-300 leading-relaxed">
+              <p className="text-xl leading-relaxed" style={{color: 'black'}}>
                 Connect with residents, businesses, and local authorities to build stronger, 
                 smarter communities. Discover eco-friendly initiatives, share resources, 
                 and collaborate on projects that make a real impact.
@@ -57,15 +57,15 @@ const Hero = () => {
             <StaggeredContainer staggerDelay={0.1} className="flex flex-wrap gap-8">
               <div className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-emerald-600" />
-                <span className="text-sm font-medium text-gray-300">10k+ Members</span>
+                <span className="text-sm font-medium" style={{color: 'black'}}>10k+ Members</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Building2 className="h-5 w-5 text-emerald-600" />
-                <span className="text-sm font-medium text-gray-300">500+ Businesses</span>
+                <span className="text-sm font-medium" style={{color: 'black'}}>500+ Businesses</span>
               </div>
               <div className="flex items-center space-x-2">
                 <TreePine className="h-5 w-5 text-emerald-600" />
-                <span className="text-sm font-medium text-gray-300">200+ Projects</span>
+                <span className="text-sm font-medium" style={{color: 'black'}}>200+ Projects</span>
               </div>
             </StaggeredContainer>
 

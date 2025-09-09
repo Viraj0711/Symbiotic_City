@@ -34,7 +34,7 @@ function App() {
       <SearchProvider>
         <Router>
           <ScrollToTop />
-          <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          <div className="min-h-screen" style={{backgroundColor: '#E2EAD6'}}>
             <Header />
             <main>
               <Routes>
