@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Leaf, Bell, User, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import SearchBar from './SearchBar';
@@ -8,6 +8,15 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Function to check if a path is active
+  const isActivePath = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
 
   const getUserInitials = (name: string) => {
     return name
@@ -47,7 +56,10 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             <div className="relative group">
-              <Link to="/marketplace" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+              <Link 
+                to="/marketplace" 
+                className={`${isActivePath('/marketplace') || isActivePath('/green-energy-marketplace') || isActivePath('/site-owner-dashboard') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+              >
                 Marketplace
               </Link>
               <div className="absolute top-full left-0 w-56 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
@@ -64,16 +76,28 @@ const Header = () => {
                 </div>
               </div>
             </div>
-            <Link to="/community" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+            <Link 
+              to="/community" 
+              className={`${isActivePath('/community') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+            >
               Community
             </Link>
-            <Link to="/events" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+            <Link 
+              to="/events" 
+              className={`${isActivePath('/events') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+            >
               Events
             </Link>
-            <Link to="/projects" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+            <Link 
+              to="/projects" 
+              className={`${isActivePath('/projects') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+            >
               Projects
             </Link>
-            <Link to="/about" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+            <Link 
+              to="/about" 
+              className={`${isActivePath('/about') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+            >
               About
             </Link>
           </nav>
@@ -88,19 +112,19 @@ const Header = () => {
               <div className="flex items-center space-x-2">
                 <Link 
                   to="/"
-                  className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium"
+                  className={`${isActivePath('/') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
                 >
                   Home
                 </Link>
                 <Link 
                   to="/dashboard"
-                  className="flex items-center space-x-2 p-1 text-gray-400 hover:text-green-600 transition-colors duration-200"
+                  className={`flex items-center space-x-2 p-1 ${isActivePath('/dashboard') ? 'text-green-600' : 'text-gray-400 hover:text-green-600'} transition-colors duration-200`}
                 >
                   {user.avatar ? (
                     <img 
                       src={user.avatar} 
                       alt={user.name}
-                      className="w-8 h-8 rounded-full object-cover border-2 border-gray-300 hover:border-green-500 transition-colors"
+                      className={`w-8 h-8 rounded-full object-cover border-2 ${isActivePath('/dashboard') ? 'border-green-500' : 'border-gray-300 hover:border-green-500'} transition-colors`}
                     />
                   ) : (
                     <User className="h-5 w-5" />
@@ -144,19 +168,34 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-4">
             <div className="flex flex-col space-y-3">
-              <Link to="/marketplace" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+              <Link 
+                to="/marketplace" 
+                className={`${isActivePath('/marketplace') || isActivePath('/green-energy-marketplace') || isActivePath('/site-owner-dashboard') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+              >
                 Marketplace
               </Link>
-              <Link to="/community" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+              <Link 
+                to="/community" 
+                className={`${isActivePath('/community') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+              >
                 Community
               </Link>
-              <Link to="/events" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+              <Link 
+                to="/events" 
+                className={`${isActivePath('/events') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+              >
                 Events
               </Link>
-              <Link to="/projects" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+              <Link 
+                to="/projects" 
+                className={`${isActivePath('/projects') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+              >
                 Projects
               </Link>
-              <Link to="/about" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
+              <Link 
+                to="/about" 
+                className={`${isActivePath('/about') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+              >
                 About
               </Link>
               <div className="pt-3 border-t border-gray-200">
@@ -185,11 +224,11 @@ const Header = () => {
                       <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                   </div>
-                  <Link to="/dashboard" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
-                    Profile
-                  </Link>
-                  <Link to="/dashboard" className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium">
-                    Profile
+                  <Link 
+                    to="/dashboard" 
+                    className={`${isActivePath('/dashboard') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+                  >
+                    Dashboard
                   </Link>
                   <button 
                     onClick={handleSignOut}

@@ -86,23 +86,23 @@ const Hero = () => {
           {/* Visual */}
           <AnimatedSection animation="slideRight" delay={0.6}>
             <div className="relative">
-              <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-8">
+              <div className="border border-gray-300 rounded-2xl shadow-xl p-8" style={{backgroundColor: '#B3C893'}}>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
                       <Leaf className="h-6 w-6 text-emerald-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">Green Initiative</h3>
-                      <p className="text-sm text-gray-400">Community garden project</p>
+                      <h3 className="font-semibold text-gray-800">Green Initiative</h3>
+                      <p className="text-sm text-gray-600">Community garden project</p>
                     </div>
                   </div>
-                  <div className="bg-gray-700 rounded-lg p-4">
+                  <div className="bg-gray-200 rounded-lg p-4">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-300">Progress</span>
+                      <span className="text-sm font-medium text-gray-700">Progress</span>
                       <span className="text-sm text-emerald-600">75%</span>
                     </div>
-                    <div className="w-full bg-gray-600 rounded-full h-2">
+                    <div className="w-full bg-gray-300 rounded-full h-2">
                       <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '75%' }}></div>
                     </div>
                   </div>
@@ -110,7 +110,7 @@ const Hero = () => {
                     <div className="w-8 h-8 bg-blue-100 rounded-full"></div>
                     <div className="w-8 h-8 bg-green-100 rounded-full"></div>
                     <div className="w-8 h-8 bg-yellow-100 rounded-full"></div>
-                    <div className="flex items-center justify-center w-8 h-8 bg-gray-600 rounded-full text-xs text-gray-300">
+                    <div className="flex items-center justify-center w-8 h-8 bg-gray-400 rounded-full text-xs text-white">
                       +12
                     </div>
                   </div>
