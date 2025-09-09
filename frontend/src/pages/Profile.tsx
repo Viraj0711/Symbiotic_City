@@ -254,7 +254,8 @@ const Profile: React.FC = () => {
               <button
                 onClick={handleAvatarClick}
                 disabled={uploading}
-                className="absolute -bottom-2 -right-2 bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors disabled:opacity-50"
+                className="absolute -bottom-2 -right-2 text-white p-2 rounded-full hover:bg-green-600 transition-colors disabled:opacity-50"
+                style={{backgroundColor: '#059669'}}
                 title="Change profile picture"
               >
                 {uploading ? (
@@ -270,7 +271,7 @@ const Profile: React.FC = () => {
                 onChange={handleAvatarChange}
                 className="hidden"
               />
-              <div className="absolute -bottom-2 -left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+              <div className="absolute -bottom-2 -left-2 text-white text-xs font-bold px-2 py-1 rounded-full" style={{backgroundColor: '#059669'}}>
                 {additionalData.sustainabilityScore}
               </div>
             </div>
@@ -414,7 +415,7 @@ const Profile: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#059669'}}></div>
                   <span className="text-gray-700">Joined "Community Solar Garden" project</span>
                   <span className="text-gray-500 text-sm">2 days ago</span>
                 </div>

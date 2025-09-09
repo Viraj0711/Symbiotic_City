@@ -9,6 +9,15 @@ const Header = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
+  const getUserInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   const handleAuthNavigation = (path: '/login' | '/signup') => {
     navigate(path);
   };
@@ -29,7 +38,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-green-500 p-2 rounded-lg">
+            <div className="p-2 rounded-lg" style={{backgroundColor: '#059669'}}>
               <Leaf className="h-6 w-6 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900">Symbiotic City</span>
@@ -167,8 +176,8 @@ const Header = () => {
                         className="w-10 h-10 rounded-full object-cover border-2 border-green-500"
                       />
                     ) : (
-                      <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-white" />
+                                            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{backgroundColor: '#059669'}}>
+                        {getUserInitials(user.name)}
                       </div>
                     )}
                     <div>

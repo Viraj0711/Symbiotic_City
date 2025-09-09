@@ -250,7 +250,7 @@ const EmergencyServices: React.FC = () => {
                   )}
                   
                   <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${service.isOpen ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <div className={`w-2 h-2 rounded-full ${service.isOpen ? '' : 'bg-red-500'}`} style={service.isOpen ? {backgroundColor: '#059669'} : {}}></div>
                     <span className={`text-sm ${service.isOpen ? 'text-green-600' : 'text-red-600'}`}>
                       {service.isOpen ? 'Open 24/7' : 'Closed'}
                     </span>
