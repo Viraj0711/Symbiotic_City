@@ -79,7 +79,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
 
   if (loading) {
     return (
-      <section id="projects" className="py-16 lg:py-24 bg-gray-900">
+      <section id="projects" className="py-16 lg:py-24 rounded-3xl shadow-2xl" style={{backgroundColor: '#B3C893'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
@@ -92,7 +92,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
 
   if (error) {
     return (
-      <section id="projects" className="py-16 lg:py-24 bg-gray-900">
+      <section id="projects" className="py-16 lg:py-24 rounded-3xl shadow-2xl" style={{backgroundColor: '#B3C893'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-red-400">Error loading projects: {error}</p>
@@ -103,13 +103,13 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
   }
 
   return (
-    <section id="projects" className="py-16 lg:py-24 bg-gray-900">
+    <section id="projects" className="py-16 lg:py-24 rounded-3xl shadow-2xl" style={{backgroundColor: '#B3C893'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection animation="fadeUp" className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold mb-4" style={{color: '#1F2937'}}>
             Active Community Projects
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl max-w-2xl mx-auto" style={{color: '#4B5563'}}>
             Join ongoing projects that are making a real difference in our community. 
             Collaborate with neighbors, businesses, and local authorities.
           </p>
@@ -225,7 +225,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
           </button>
           <button 
             onClick={handleStartNewProject}
-            className="border border-emerald-600 text-emerald-400 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-900 transition-colors duration-200"
+            className="border border-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-900 hover:text-emerald-400 transition-colors duration-200 text-gray-600"
           >
             Start New Project
           </button>

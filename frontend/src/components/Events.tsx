@@ -88,7 +88,7 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
 
   if (loading) {
     return (
-      <section id="events" className="py-16 lg:py-24 bg-gray-800">
+      <section id="events" className="py-16 lg:py-24 rounded-3xl shadow-2xl" style={{backgroundColor: '#B3C893'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
@@ -101,7 +101,7 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
 
   if (error) {
     return (
-      <section id="events" className="py-16 lg:py-24 bg-gray-800">
+      <section id="events" className="py-16 lg:py-24 rounded-3xl shadow-2xl" style={{backgroundColor: '#B3C893'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-red-400">Error loading events: {error}</p>
@@ -112,13 +112,13 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
   }
 
   return (
-    <section id="events" className="py-16 lg:py-24 bg-gray-800">
+    <section id="events" className="py-16 lg:py-24 rounded-3xl shadow-2xl" style={{backgroundColor: '#B3C893'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold mb-4" style={{color: '#1F2937'}}>
             Upcoming Events
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl max-w-2xl mx-auto" style={{color: '#4B5563'}}>
             Join local events that bring our community together around sustainability and innovation.
           </p>
         </div>
