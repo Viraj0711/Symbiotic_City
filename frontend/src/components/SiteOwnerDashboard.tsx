@@ -136,9 +136,9 @@ const SiteOwnerDashboard: React.FC = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       minimumFractionDigits: 0
     }).format(amount);
   };
@@ -181,7 +181,7 @@ const SiteOwnerDashboard: React.FC = () => {
                 Site Owner Dashboard
               </h1>
               <p className="text-emerald-100">
-                Manage your green energy products and track performance
+                Manage your sustainable products and track performance
               </p>
             </div>
             <button

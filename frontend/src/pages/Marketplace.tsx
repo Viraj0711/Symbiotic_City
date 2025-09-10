@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMarketplace, MarketplaceListing } from '../hooks/useMarketplace';
 
 const Marketplace: React.FC = () => {
   const { listings, loading, error } = useMarketplace();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const categories = ['all', 'solar-panels', 'compost', 'tools', 'books', 'electronics', 'clothing', 'furniture'];
+  const categories = ['all', 'Green Energy', 'Food & Produce', 'Crafts & Art', 'Services', 'Garden & Outdoor', 'Furniture', 'Electronics', 'Clothing', 'Books'];
+
+  // Handle different button actions
+  const handleItemAction = (item: MarketplaceListing) => {
+    // Navigate to product detail page for comprehensive interaction
+    navigate(`/marketplace/product/${item.id}`);
+  };
 
   const filteredItems = listings.filter((item: MarketplaceListing) => {
     const matchesCategory = filter === 'all' || item.category === filter;
@@ -42,10 +50,11 @@ const Marketplace: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Sustainable Marketplace
+            Sustainable Community Marketplace
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Buy, sell, and trade sustainable goods with your community. Reduce waste through circular economy.
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Buy, sell, and trade sustainable goods with your community. From green energy solutions to organic produce, 
+            find everything you need for an eco-friendly lifestyle through our circular economy platform.
           </p>
         </div>
 
@@ -109,7 +118,7 @@ const Marketplace: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredItems.map((item) => (
-              <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
                 {item.image && (
                   <img
                     src={item.image}
@@ -118,7 +127,7 @@ const Marketplace: React.FC = () => {
                   />
                 )}
                 
-                <div className="p-4">
+                <div className="p-4 flex flex-col flex-grow">
                   <div className="flex items-center justify-between mb-2">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       item.type === 'sell' ? 'bg-blue-100 text-blue-800' :
@@ -131,12 +140,12 @@ const Marketplace: React.FC = () => {
                   </div>
                   
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">{item.description}</p>
+                  <p className="text-gray-600 text-sm mb-3 line-clamp-2 flex-grow">{item.description}</p>
                   
                   {/* Price */}
                   <div className="mb-3">
                     {item.type === 'sell' && (
-                      <div className="text-xl font-bold text-green-600">${item.price}</div>
+                      <div className="text-xl font-bold text-green-600">{item.price}</div>
                     )}
                     {item.type === 'trade' && (
                       <div className="text-sm text-gray-600">Trade for: {item.tradeFor || 'Open to offers'}</div>
@@ -178,11 +187,14 @@ const Marketplace: React.FC = () => {
                   )}
                   
                   {/* Action Button */}
-                  <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">
-                    {item.type === 'sell' ? 'Buy Now' :
-                     item.type === 'trade' ? 'Propose Trade' :
-                     'Claim Item'}
-                  </button>
+                  <div className="mt-auto">
+                    <button 
+                      onClick={() => handleItemAction(item)}
+                      className="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg hover:bg-emerald-700 transition-colors duration-200 font-medium text-sm flex items-center justify-center space-x-2"
+                    >
+                      <span>View Details</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

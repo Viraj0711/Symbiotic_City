@@ -93,7 +93,7 @@ const EnergyProductSchema = new Schema<IEnergyProduct>({
   pricing: {
     amount: { type: Number, required: true, min: 0 },
     unit: { type: String, required: true },
-    currency: { type: String, default: 'USD' },
+    currency: { type: String, default: 'INR' },
     discounts: {
       bulk: { type: Number, default: 0 },
       longTerm: { type: Number, default: 0 }

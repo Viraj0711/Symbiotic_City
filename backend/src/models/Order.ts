@@ -94,7 +94,7 @@ const OrderSchema = new Schema<IOrder>({
     unit: { type: String, required: true },
     unitPrice: { type: Number, required: true, min: 0 },
     totalPrice: { type: Number, required: true, min: 0 },
-    currency: { type: String, default: 'USD' },
+    currency: { type: String, default: 'INR' },
     discountApplied: Number
   },
   delivery: {

@@ -225,7 +225,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
           </button>
           <button 
             onClick={handleStartNewProject}
-            className="border border-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-900 hover:text-emerald-400 transition-colors duration-200 text-gray-600"
+            className="border border-emerald-600 text-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-600 hover:text-white transition-colors duration-200"
           >
             Start New Project
           </button>

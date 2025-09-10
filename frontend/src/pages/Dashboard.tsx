@@ -66,7 +66,7 @@ const Dashboard: React.FC = () => {
       id: '1',
       title: 'Solar Panel Installation Kit',
       type: 'sell',
-      price: 150,
+      price: '₹12,450',
       status: 'active'
     },
     {
@@ -524,7 +524,7 @@ const Dashboard: React.FC = () => {
                       {listing.type.toUpperCase()}
                     </span>
                     {listing.price && (
-                      <span className="ml-2 text-lg font-bold text-green-600">${listing.price}</span>
+                      <span className="ml-2 text-lg font-bold text-green-600">{listing.price}</span>
                     )}
                   </div>
                   <div className="flex space-x-2">

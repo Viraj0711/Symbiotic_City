@@ -72,8 +72,8 @@ const Settings: React.FC = () => {
   const [preferences, setPreferences] = useState({
     theme: 'light',
     language: 'en',
-    timezone: 'UTC-8',
-    currency: 'USD',
+    timezone: 'Asia/Kolkata',
+    currency: 'INR',
     measurementUnit: 'metric'
   });
 
@@ -442,11 +442,12 @@ const Settings: React.FC = () => {
                         onChange={(e) => handlePreferenceChange('currency', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       >
+                        <option value="INR">INR - Indian Rupee</option>
                         <option value="USD">USD - US Dollar</option>
                         <option value="EUR">EUR - Euro</option>
                         <option value="GBP">GBP - British Pound</option>
-                        <option value="CAD">CAD - Canadian Dollar</option>
-                        <option value="AUD">AUD - Australian Dollar</option>
+                        <option value="SGD">SGD - Singapore Dollar</option>
+                        <option value="AED">AED - UAE Dirham</option>
                       </select>
                     </div>
 

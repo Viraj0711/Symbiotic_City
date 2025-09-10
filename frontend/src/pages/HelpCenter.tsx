@@ -39,7 +39,7 @@ const HelpCenter = () => {
     },
     {
       question: "What payment methods are accepted in the marketplace?",
-      answer: "We accept major credit cards, PayPal, and bank transfers. All transactions are secured and encrypted."
+      answer: "We accept UPI, credit/debit cards, net banking, wallets (Paytm, PhonePe, Google Pay), and NEFT/RTGS transfers. All transactions are secured and encrypted with Indian banking standards."
     },
     {
       question: "How can I report inappropriate content?",

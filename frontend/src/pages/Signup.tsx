@@ -163,7 +163,7 @@ const Signup = () => {
                     </div>
                     <div>
                       <h3 className="font-medium text-gray-900">Regular User</h3>
-                      <p className="text-sm text-gray-600">Browse and purchase green energy</p>
+                      <p className="text-sm text-gray-600">Browse and purchase sustainable products</p>
                     </div>
                   </div>
                 </button>
@@ -184,7 +184,7 @@ const Signup = () => {
                     </div>
                     <div>
                       <h3 className="font-medium text-gray-900">Site Owner</h3>
-                      <p className="text-sm text-gray-600">Sell green energy products</p>
+                      <p className="text-sm text-gray-600">Sell sustainable products and services</p>
                     </div>
                   </div>
                 </button>

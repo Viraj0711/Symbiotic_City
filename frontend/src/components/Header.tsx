@@ -55,27 +55,12 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <div className="relative group">
-              <Link 
-                to="/marketplace" 
-                className={`${isActivePath('/marketplace') || isActivePath('/green-energy-marketplace') || isActivePath('/site-owner-dashboard') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
-              >
-                Marketplace
-              </Link>
-              <div className="absolute top-full left-0 w-56 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div className="py-2">
-                  <Link to="/marketplace" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    General Marketplace
-                  </Link>
-                  <Link to="/green-energy-marketplace" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    🌱 Green Energy Market
-                  </Link>
-                  <Link to="/site-owner-dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    ⚡ Site Owner Dashboard
-                  </Link>
-                </div>
-              </div>
-            </div>
+            <Link 
+              to="/marketplace" 
+              className={`${isActivePath('/marketplace') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+            >
+              Marketplace
+            </Link>
             <Link 
               to="/community" 
               className={`${isActivePath('/community') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
@@ -170,7 +155,7 @@ const Header = () => {
             <div className="flex flex-col space-y-3">
               <Link 
                 to="/marketplace" 
-                className={`${isActivePath('/marketplace') || isActivePath('/green-energy-marketplace') || isActivePath('/site-owner-dashboard') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+                className={`${isActivePath('/marketplace') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
               >
                 Marketplace
               </Link>

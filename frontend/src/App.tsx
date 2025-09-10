@@ -5,7 +5,6 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import SearchResults from './pages/SearchResults';
-import GreenEnergyMarketplace from './components/GreenEnergyMarketplace';
 import SiteOwnerDashboard from './components/SiteOwnerDashboard';
 
 // Import all pages
@@ -27,6 +26,7 @@ import {
   Signup,
   ForgotPassword
 } from './pages';
+import ProductDetail from './pages/ProductDetail';
 
 function App() {
   return (
@@ -42,7 +42,7 @@ function App() {
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/events" element={<Events />} />
                 <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/green-energy-marketplace" element={<GreenEnergyMarketplace />} />
+                <Route path="/marketplace/product/:id" element={<ProductDetail />} />
                 <Route path="/site-owner-dashboard" element={<SiteOwnerDashboard />} />
                 <Route path="/community" element={<Community />} />
                 <Route path="/dashboard" element={<Dashboard />} />
