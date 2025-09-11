@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Services Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .emergency-btn {
+            background: #dc3545;
+        }
+        .emergency-btn:hover {
+            background: #c82333;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .info {
+            color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🚨 Emergency Services Functionality Test</h1>
+        <p>This page tests the emergency services functionality running on <strong>http://localhost:5174/emergency</strong></p>
+        
+        <div class="test-section">
+            <h3>📍 1. Show Map Button Test</h3>
+            <p>The Show Map button should:</p>
+            <ul>
+                <li>Toggle between "Show Map" and "Hide Map" text</li>
+                <li>Display a Leaflet map with emergency service markers</li>
+                <li>Show user location with a pulsing blue marker</li>
+                <li>Display service markers with different colors (Police: Blue, Hospital: Red, Fire: Orange)</li>
+            </ul>
+            <button class="test-button" onclick="testShowMap()">🗺️ Test Show Map Functionality</button>
+            <div id="map-test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🚗 2. Directions Button Test</h3>
+            <p>The Directions button should:</p>
+            <ul>
+                <li>Open Google Maps in a new tab</li>
+                <li>Show route from user location to the emergency service</li>
+                <li>Use proper Indian address formatting</li>
+            </ul>
+            <button class="test-button" onclick="testDirections()">🧭 Test Directions Functionality</button>
+            <div id="directions-test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🚨 3. Emergency Call Buttons Test</h3>
+            <p>Emergency call buttons should:</p>
+            <ul>
+                <li><strong>Call 100 (Police):</strong> Open tel:100 link</li>
+                <li><strong>Call 101 (Fire):</strong> Open tel:101 link</li>
+                <li><strong>Call 102 (Ambulance):</strong> Open tel:102 link</li>
+                <li><strong>Service Emergency Buttons:</strong> Call specific emergency numbers</li>
+            </ul>
+            <button class="test-button emergency-btn" onclick="testEmergencyCall('100')">📞 Test Call 100 (Police)</button>
+            <button class="test-button emergency-btn" onclick="testEmergencyCall('101')">🔥 Test Call 101 (Fire)</button>
+            <button class="test-button emergency-btn" onclick="testEmergencyCall('102')">🚑 Test Call 102 (Ambulance)</button>
+            <div id="emergency-test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📱 4. Service Call Buttons Test</h3>
+            <p>Service call buttons should:</p>
+            <ul>
+                <li>Open phone dialer with the service's phone number</li>
+                <li>Handle Indian phone number formats (+91-xx-xxxx-xxxx)</li>
+            </ul>
+            <button class="test-button" onclick="testServiceCall()">📞 Test Service Call Functionality</button>
+            <div id="service-call-test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 5. Manual Testing Checklist</h3>
+            <p>Please manually verify the following on <a href="http://localhost:5174/emergency" target="_blank">http://localhost:5174/emergency</a>:</p>
+            <ol>
+                <li>✓ Page loads without white/black screen</li>
+                <li>✓ Location permission is requested</li>
+                <li>✓ Emergency services are displayed (Police, Hospital, Fire)</li>
+                <li>✓ Filter tabs work (All Services, Police, Hospitals, Fire Stations)</li>
+                <li>✓ "Show Map" button toggles map visibility</li>
+                <li>✓ Map displays with markers when shown</li>
+                <li>✓ "Call" buttons on service cards work</li>
+                <li>✓ "Directions" buttons open Google Maps</li>
+                <li>✓ "Emergency" buttons on service cards work</li>
+                <li>✓ Top emergency buttons (100, 101, 102) work</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Test Results Summary</h3>
+            <div id="test-summary">
+                <p class="info">Run the tests above to see results...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {
+            mapTest: false,
+            directionsTest: false,
+            emergencyCallTest: false,
+            serviceCallTest: false
+        };
+
+        function updateTestSummary() {
+            const summary = document.getElementById('test-summary');
+            const passedTests = Object.values(testResults).filter(result => result).length;
+            const totalTests = Object.keys(testResults).length;
+            
+            summary.innerHTML = `
+                <p><strong>Test Results: ${passedTests}/${totalTests} passed</strong></p>
+                <ul>
+                    <li class="${testResults.mapTest ? 'success' : 'error'}">
+                        Map Functionality: ${testResults.mapTest ? '✓ PASSED' : '✗ NOT TESTED'}
+                    </li>
+                    <li class="${testResults.directionsTest ? 'success' : 'error'}">
+                        Directions Functionality: ${testResults.directionsTest ? '✓ PASSED' : '✗ NOT TESTED'}
+                    </li>
+                    <li class="${testResults.emergencyCallTest ? 'success' : 'error'}">
+                        Emergency Calls: ${testResults.emergencyCallTest ? '✓ PASSED' : '✗ NOT TESTED'}
+                    </li>
+                    <li class="${testResults.serviceCallTest ? 'success' : 'error'}">
+                        Service Calls: ${testResults.serviceCallTest ? '✓ PASSED' : '✗ NOT TESTED'}
+                    </li>
+                </ul>
+            `;
+        }
+
+        function testShowMap() {
+            const resultDiv = document.getElementById('map-test-result');
+            resultDiv.innerHTML = '<p class="info">🔄 Testing map functionality...</p>';
+            
+            // Simulate clicking the show map button
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <p class="success">✓ Map test instructions:</p>
+                    <ol>
+                        <li>Go to <a href="http://localhost:5174/emergency" target="_blank">Emergency Services Page</a></li>
+                        <li>Click the "Show Map" button (green button in location section)</li>
+                        <li>Verify map appears with loading indicator</li>
+                        <li>Check for service markers (different colors)</li>
+                        <li>Verify user location marker (blue pulsing dot)</li>
+                        <li>Click "Hide Map" to toggle off</li>
+                    </ol>
+                    <button class="test-button" onclick="markMapTestPassed()">✓ Mark as Passed</button>
+                `;
+            }, 1000);
+        }
+
+        function markMapTestPassed() {
+            testResults.mapTest = true;
+            document.getElementById('map-test-result').innerHTML = 
+                '<p class="success">✓ Map functionality test marked as PASSED</p>';
+            updateTestSummary();
+        }
+
+        function testDirections() {
+            const resultDiv = document.getElementById('directions-test-result');
+            resultDiv.innerHTML = '<p class="info">🔄 Testing directions functionality...</p>';
+            
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <p class="success">✓ Directions test instructions:</p>
+                    <ol>
+                        <li>Go to <a href="http://localhost:5174/emergency" target="_blank">Emergency Services Page</a></li>
+                        <li>Find any emergency service card</li>
+                        <li>Click the "Directions" button (gray button)</li>
+                        <li>Verify Google Maps opens in new tab</li>
+                        <li>Check that route is shown from your location to the service</li>
+                        <li>Verify address is properly formatted</li>
+                    </ol>
+                    <button class="test-button" onclick="markDirectionsTestPassed()">✓ Mark as Passed</button>
+                `;
+            }, 1000);
+        }
+
+        function markDirectionsTestPassed() {
+            testResults.directionsTest = true;
+            document.getElementById('directions-test-result').innerHTML = 
+                '<p class="success">✓ Directions functionality test marked as PASSED</p>';
+            updateTestSummary();
+        }
+
+        function testEmergencyCall(number) {
+            const resultDiv = document.getElementById('emergency-test-result');
+            resultDiv.innerHTML = `<p class="info">🔄 Testing emergency call ${number}...</p>`;
+            
+            // Test the tel: protocol
+            const testLink = document.createElement('a');
+            testLink.href = `tel:${number}`;
+            testLink.style.display = 'none';
+            document.body.appendChild(testLink);
+            
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <p class="success">✓ Emergency call test for ${number}:</p>
+                    <ol>
+                        <li>Go to <a href="http://localhost:5174/emergency" target="_blank">Emergency Services Page</a></li>
+                        <li>Click the "Call ${number}" button in the red header section</li>
+                        <li>Verify your phone app opens (or asks for permission)</li>
+                        <li>Check that ${number} is dialed</li>
+                        <li>Test other emergency service "Emergency" buttons on service cards</li>
+                    </ol>
+                    <p><strong>Test Link:</strong> <a href="tel:${number}">tel:${number}</a> (Click to test)</p>
+                    <button class="test-button emergency-btn" onclick="markEmergencyTestPassed()">✓ Mark as Passed</button>
+                `;
+                document.body.removeChild(testLink);
+            }, 1000);
+        }
+
+        function markEmergencyTestPassed() {
+            testResults.emergencyCallTest = true;
+            document.getElementById('emergency-test-result').innerHTML = 
+                '<p class="success">✓ Emergency call functionality test marked as PASSED</p>';
+            updateTestSummary();
+        }
+
+        function testServiceCall() {
+            const resultDiv = document.getElementById('service-call-test-result');
+            resultDiv.innerHTML = '<p class="info">🔄 Testing service call functionality...</p>';
+            
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <p class="success">✓ Service call test instructions:</p>
+                    <ol>
+                        <li>Go to <a href="http://localhost:5174/emergency" target="_blank">Emergency Services Page</a></li>
+                        <li>Find any emergency service card</li>
+                        <li>Click the "Call" button (blue button) on a service card</li>
+                        <li>Verify phone app opens with the service's number</li>
+                        <li>Test multiple service cards to verify different numbers</li>
+                        <li>Check Indian phone number format (+91-xx-xxxx-xxxx)</li>
+                    </ol>
+                    <p><strong>Example:</strong> <a href="tel:+91-22-2202-0502">tel:+91-22-2202-0502</a> (Click to test)</p>
+                    <button class="test-button" onclick="markServiceCallTestPassed()">✓ Mark as Passed</button>
+                `;
+            }, 1000);
+        }
+
+        function markServiceCallTestPassed() {
+            testResults.serviceCallTest = true;
+            document.getElementById('service-call-test-result').innerHTML = 
+                '<p class="success">✓ Service call functionality test marked as PASSED</p>';
+            updateTestSummary();
+        }
+
+        // Initialize test summary
+        updateTestSummary();
+    </script>
+</body>
+</html>

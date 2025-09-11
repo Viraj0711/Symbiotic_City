@@ -2,6 +2,21 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+// Indian Emergency Service Numbers
+export const EMERGENCY_NUMBERS = {
+  police: '100',        // Police Emergency
+  ambulance: '102',     // Ambulance Services  
+  fire: '101',         // Fire Services
+  general: '112',      // Universal Emergency Number
+  childHelpline: '1098', // Child Helpline
+  womenHelpline: '1091', // Women Helpline
+  disasterResponse: '108', // Emergency Medical Response
+  trafficHelpline: '1073', // Traffic Helpline
+  touristHelpline: '1363'  // Tourist Helpline
+};
+
+export const DEFAULT_RADIUS = 25; // km - Updated for Indian cities coverage
+
 export interface EmergencyService {
   id: string;
   name: string;
@@ -57,7 +72,7 @@ class EmergencyServicesService {
   async getNearbyServices(
     lat: number,
     lng: number,
-    radius: number = 5,
+    radius: number = 25, // Updated default radius to 25km for better coverage in Indian cities
     type: 'all' | 'police' | 'hospital' | 'fire' = 'all'
   ): Promise<EmergencyServicesResponse> {
     try {
@@ -144,7 +159,7 @@ class EmergencyServicesService {
    * Calculate distance between two points using Haversine formula
    */
   calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
-    const R = 3959; // Earth's radius in miles
+    const R = 6371; // Earth's radius in kilometers (updated for Indian metric system)
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLng = (lng2 - lng1) * Math.PI / 180;
     const a = 
@@ -177,6 +192,18 @@ class EmergencyServicesService {
    */
   makeCall(phoneNumber: string): void {
     window.location.href = `tel:${phoneNumber}`;
+  }
+
+  /**
+   * Make emergency call to Indian services
+   */
+  makeEmergencyCall(type: keyof typeof EMERGENCY_NUMBERS): void {
+    const number = EMERGENCY_NUMBERS[type];
+    if (number) {
+      this.makeCall(number);
+    } else {
+      console.error('Invalid emergency service type');
+    }
   }
 
   /**

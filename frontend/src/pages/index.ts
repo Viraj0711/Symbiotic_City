@@ -13,6 +13,7 @@ export { default as PrivacyPolicy } from './PrivacyPolicy';
 export { default as TermsOfService } from './TermsOfService';
 export { default as Guidelines } from './Guidelines';
 export { default as SearchResults } from './SearchResults';
+export { default as EmergencyServices } from './EmergencyServices';
 export { default as Login } from './Login';
 export { default as Signup } from './Signup';
 export { default as ForgotPassword } from './ForgotPassword';

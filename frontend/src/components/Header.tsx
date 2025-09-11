@@ -80,6 +80,12 @@ const Header = () => {
               Projects
             </Link>
             <Link 
+              to="/emergency" 
+              className={`${isActivePath('/emergency') ? 'text-red-600' : 'text-gray-600 hover:text-red-600'} transition-colors duration-200 font-medium`}
+            >
+              Emergency
+            </Link>
+            <Link 
               to="/about" 
               className={`${isActivePath('/about') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
             >
@@ -176,6 +182,12 @@ const Header = () => {
                 className={`${isActivePath('/projects') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
               >
                 Projects
+              </Link>
+              <Link 
+                to="/emergency" 
+                className={`${isActivePath('/emergency') ? 'text-red-600' : 'text-gray-600 hover:text-red-600'} transition-colors duration-200 font-medium`}
+              >
+                Emergency
               </Link>
               <Link 
                 to="/about" 

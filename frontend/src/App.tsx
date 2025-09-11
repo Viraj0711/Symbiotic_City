@@ -22,6 +22,7 @@ import {
   PrivacyPolicy,
   TermsOfService,
   Guidelines,
+  EmergencyServices,
   Login,
   Signup,
   ForgotPassword
@@ -43,6 +44,7 @@ function App() {
                 <Route path="/events" element={<Events />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/marketplace/product/:id" element={<ProductDetail />} />
+                <Route path="/emergency" element={<EmergencyServices />} />
                 <Route path="/site-owner-dashboard" element={<SiteOwnerDashboard />} />
                 <Route path="/community" element={<Community />} />
                 <Route path="/dashboard" element={<Dashboard />} />
