@@ -4,6 +4,51 @@ import emergencyServicesService from '../services/emergencyServices';
 // Lazy load the map component to avoid SSR issues
 const LazyMap = React.lazy(() => import('./EmergencyMap'));
 
+// Error Boundary for Map
+class MapErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): { hasError: boolean } {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    console.error('Map Error:', error, errorInfo);
+  }
+
+  render(): React.ReactNode {
+    if (this.state.hasError) {
+      return (
+        <div className="h-full flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg">
+          <div className="text-center p-6">
+            <div className="text-gray-400 mb-4">
+              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.863-.833-2.633 0L4.181 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Map Loading Error</h3>
+            <p className="text-gray-600 mb-4">Unable to load emergency services map. All emergency services are still accessible below.</p>
+            <button 
+              onClick={() => this.setState({ hasError: false })}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 interface EmergencyService {
   id: string;
   name: string;
@@ -262,7 +307,17 @@ const EmergencyServicesFixed: React.FC = () => {
       {showMap && userLocation && (
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="p-4 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-900">Emergency Services Map</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900">Emergency Services Map</h3>
+              <button
+                onClick={() => setShowMap(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
           <div className="h-96 w-full relative">
             <React.Suspense 
@@ -275,11 +330,13 @@ const EmergencyServicesFixed: React.FC = () => {
                 </div>
               }
             >
-              <LazyMap 
-                center={[userLocation.lat, userLocation.lng]} 
-                services={filteredServices}
-                userLocation={userLocation}
-              />
+              <MapErrorBoundary>
+                <LazyMap 
+                  center={[userLocation.lat, userLocation.lng]} 
+                  services={filteredServices}
+                  userLocation={userLocation}
+                />
+              </MapErrorBoundary>
             </React.Suspense>
           </div>
         </div>
