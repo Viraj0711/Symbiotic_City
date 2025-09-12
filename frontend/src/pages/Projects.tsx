@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { useProjects } from '../hooks/useProjects';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Projects: React.FC = () => {
   const { projects, loading, error } = useProjects();
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const categories = ['all', 'renewable-energy', 'waste-management', 'green-transport', 'community-garden', 'education'];
+  const categories = [
+    { key: 'all', label: t('projectsPage.filters.allCategories') },
+    { key: 'renewable-energy', label: t('projectsPage.filters.renewableEnergy') },
+    { key: 'waste-management', label: t('projectsPage.filters.wasteManagement') },
+    { key: 'green-transport', label: t('projectsPage.filters.greenTransport') },
+    { key: 'community-garden', label: t('projectsPage.filters.communityGarden') },
+    { key: 'education', label: t('projectsPage.filters.education') }
+  ];
 
   const filteredProjects = projects.filter(project => {
     const matchesCategory = filter === 'all' || project.category === filter;
@@ -51,10 +60,10 @@ const Projects: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Community Projects
+            {t('projectsPage.title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover and participate in sustainability projects that are making a difference in our community
+            {t('projectsPage.description')}
           </p>
         </div>
 
@@ -65,7 +74,7 @@ const Projects: React.FC = () => {
             <div className="flex-1">
               <input
                 type="text"
-                placeholder="Search projects..."
+                placeholder={t('projectsPage.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -80,8 +89,8 @@ const Projects: React.FC = () => {
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
                 {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category === 'all' ? 'All Categories' : category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  <option key={category.key} value={category.key}>
+                    {category.label}
                   </option>
                 ))}
               </select>
@@ -89,7 +98,7 @@ const Projects: React.FC = () => {
 
             {/* Create Project Button */}
             <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
-              Create Project
+              {t('projectsPage.createProject')}
             </button>
           </div>
         </div>
@@ -102,7 +111,7 @@ const Projects: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Error loading projects</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('projectsPage.error.title')}</h3>
             <p className="text-gray-600">{error}</p>
           </div>
         ) : filteredProjects.length === 0 ? (
@@ -112,8 +121,8 @@ const Projects: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('projectsPage.empty.title')}</h3>
+            <p className="text-gray-600">{t('projectsPage.empty.description')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -130,7 +139,7 @@ const Projects: React.FC = () => {
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
-                      {project.status}
+                      {t(`projectsPage.status.${project.status}`)}
                     </span>
                     <span className="text-sm text-gray-500">{project.category.replace('-', ' ')}</span>
                   </div>
@@ -141,7 +150,7 @@ const Projects: React.FC = () => {
                   {/* Progress Bar */}
                   <div className="mb-4">
                     <div className="flex justify-between text-sm text-gray-600 mb-1">
-                      <span>Progress</span>
+                      <span>{t('projectsPage.projectInfo.progress')}</span>
                       <span>{project.progress}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -158,7 +167,7 @@ const Projects: React.FC = () => {
                       <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
-                      {project.participants} participants
+                      {project.participants} {t('projectsPage.projectInfo.participants')}
                     </div>
                     <div className="flex items-center">
                       <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -178,7 +187,7 @@ const Projects: React.FC = () => {
                     ))}
                     {project.tags.length > 3 && (
                       <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">
-                        +{project.tags.length - 3} more
+                        +{project.tags.length - 3} {t('projectsPage.projectInfo.moreTag')}
                       </span>
                     )}
                   </div>
@@ -186,10 +195,10 @@ const Projects: React.FC = () => {
                   {/* Action Buttons */}
                   <div className="flex gap-2">
                     <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">
-                      Join Project
+                      {t('projectsPage.actions.join')}
                     </button>
                     <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                      Learn More
+                      {t('projectsPage.actions.learnMore')}
                     </button>
                   </div>
                 </div>

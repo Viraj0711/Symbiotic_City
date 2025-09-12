@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Users, Clock, TrendingUp, X } from 'lucide-react';
 import { useProjects } from '../hooks/useProjects';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { AnimatedSection, StaggeredContainer } from './AnimatedSection';
 
 interface ProjectsProps {
@@ -11,6 +12,7 @@ interface ProjectsProps {
 const Projects: React.FC<ProjectsProps> = ({ limit }) => {
   const { projects, loading, error } = useProjects();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
@@ -83,7 +85,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
-            <p className="text-gray-400 mt-4">Loading projects...</p>
+            <p className="text-gray-400 mt-4">{t('projects.loading')}</p>
           </div>
         </div>
       </section>
@@ -95,7 +97,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
       <section id="projects" className="py-16 lg:py-24 rounded-3xl shadow-2xl" style={{backgroundColor: '#B3C893'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-red-400">Error loading projects: {error}</p>
+            <p className="text-red-400">{t('projects.error')} {error}</p>
           </div>
         </div>
       </section>
@@ -107,18 +109,17 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection animation="fadeUp" className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4" style={{color: '#1F2937'}}>
-            Active Community Projects
+            {t('projects.title')}
           </h2>
           <p className="text-xl max-w-2xl mx-auto" style={{color: '#4B5563'}}>
-            Join ongoing projects that are making a real difference in our community. 
-            Collaborate with neighbors, businesses, and local authorities.
+            {t('projects.subtitle')}
           </p>
         </AnimatedSection>
 
         {projects.length === 0 ? (
           <AnimatedSection animation="fadeUp" delay={0.2} className="text-center py-12">
-            <p className="text-gray-400 text-lg">No active projects yet.</p>
-            <p className="text-gray-500 mt-2">Start a new project to make a difference in your community!</p>
+            <p className="text-gray-400 text-lg">{t('projects.noProjects')}</p>
+            <p className="text-gray-500 mt-2">{t('projects.noProjectsSubtext')}</p>
           </AnimatedSection>
         ) : (
           <StaggeredContainer className="grid lg:grid-cols-3 gap-8 mb-12">
@@ -147,7 +148,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                 {/* Progress */}
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-300">Progress</span>
+                    <span className="text-sm font-medium text-gray-300">{t('projects.progress')}</span>
                     <span className="text-sm text-emerald-600 font-medium">{project.progress}%</span>
                   </div>
                   <div className="w-full bg-gray-600 rounded-full h-2">
@@ -165,21 +166,21 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                       <Users className="h-4 w-4 text-emerald-600" />
                     </div>
                     <div className="text-lg font-semibold text-white">{project.participants}</div>
-                    <div className="text-xs text-gray-400">Participants</div>
+                    <div className="text-xs text-gray-400">{t('projects.participants')}</div>
                   </div>
                   <div className="text-center">
                     <div className="flex items-center justify-center mb-1">
                       <Clock className="h-4 w-4 text-emerald-600" />
                     </div>
                     <div className="text-lg font-semibold text-white">{project.timeLeft}</div>
-                    <div className="text-xs text-gray-400">Remaining</div>
+                    <div className="text-xs text-gray-400">{t('projects.remaining')}</div>
                   </div>
                   <div className="text-center">
                     <div className="flex items-center justify-center mb-1">
                       <TrendingUp className="h-4 w-4 text-emerald-600" />
                     </div>
                     <div className="text-lg font-semibold text-white">{project.impact}</div>
-                    <div className="text-xs text-gray-400">Impact</div>
+                    <div className="text-xs text-gray-400">{t('projects.impact')}</div>
                   </div>
                 </div>
 
@@ -197,17 +198,17 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                     }`}
                   >
                     {joinStatus[project.id] === 'joined' 
-                      ? 'Joined ✓' 
+                      ? t('projects.joined')
                       : joinStatus[project.id] === 'joining'
-                      ? 'Joining...'
-                      : 'Join Project'
+                      ? t('projects.joining')
+                      : t('projects.joinProject')
                     }
                   </button>
                   <button 
                     onClick={() => handleLearnMore(project)}
                     className="px-4 border border-gray-600 text-gray-300 py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors duration-200"
                   >
-                    Learn More
+                    {t('projects.learnMore')}
                   </button>
                 </div>
               </div>
@@ -221,13 +222,13 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
             onClick={handleViewAllProjects}
             className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors duration-200 mr-4"
           >
-            View All Projects
+            {t('projects.viewAllProjects')}
           </button>
           <button 
             onClick={handleStartNewProject}
             className="border border-emerald-600 text-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-600 hover:text-white transition-colors duration-200"
           >
-            Start New Project
+            {t('projects.startNewProject')}
           </button>
         </AnimatedSection>
 
@@ -267,27 +268,27 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                 <div className="text-center bg-gray-50 p-4 rounded-lg">
                   <Users className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
                   <div className="text-lg font-semibold text-gray-900">{selectedProject.participants}</div>
-                  <div className="text-sm text-gray-500">Participants</div>
+                  <div className="text-sm text-gray-500">{t('projects.participants')}</div>
                 </div>
                 <div className="text-center bg-gray-50 p-4 rounded-lg">
                   <Clock className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
                   <div className="text-lg font-semibold text-gray-900">{selectedProject.timeLeft}</div>
-                  <div className="text-sm text-gray-500">Remaining</div>
+                  <div className="text-sm text-gray-500">{t('projects.remaining')}</div>
                 </div>
                 <div className="text-center bg-gray-50 p-4 rounded-lg">
                   <TrendingUp className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
                   <div className="text-lg font-semibold text-gray-900">{selectedProject.impact}</div>
-                  <div className="text-sm text-gray-500">Impact</div>
+                  <div className="text-sm text-gray-500">{t('projects.impact')}</div>
                 </div>
               </div>
 
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Project Goals</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('projects.projectGoals')}</h3>
                 <p className="text-gray-700 leading-relaxed mb-4">
                   This project aims to create lasting positive impact in our community through collaborative effort and sustainable practices.
                 </p>
                 
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">How You Can Help</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('projects.howYouCanHelp')}</h3>
                 <ul className="text-gray-700 space-y-1">
                   <li>• Volunteer your time and skills</li>
                   <li>• Share resources and knowledge</li>
@@ -312,17 +313,17 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                   }`}
                 >
                   {joinStatus[selectedProject.id] === 'joined' 
-                    ? 'Joined ✓' 
+                    ? t('projects.joined')
                     : joinStatus[selectedProject.id] === 'joining'
-                    ? 'Joining...'
-                    : 'Join Project'
+                    ? t('projects.joining')
+                    : t('projects.joinProject')
                   }
                 </button>
                 <button
                   onClick={handleProjectDetailsClose}
                   className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200"
                 >
-                  Close
+                  {t('projects.close')}
                 </button>
               </div>
             </div>
@@ -335,7 +336,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900">Start New Project</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('projects.startNewProject')}</h2>
               <button
                 onClick={handleNewProjectModalClose}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -347,7 +348,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
             <div className="p-6">
               <form className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Project Title</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('projects.projectTitle')}</label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
@@ -356,7 +357,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('projects.category')}</label>
                   <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                     <option>Environment</option>
                     <option>Community</option>
@@ -367,7 +368,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('projects.description')}</label>
                   <textarea
                     rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
@@ -377,7 +378,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('projects.duration')}</label>
                     <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                       <option>1 month</option>
                       <option>3 months</option>
@@ -387,7 +388,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Target Participants</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('projects.targetParticipants')}</label>
                     <input
                       type="number"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
@@ -405,14 +406,14 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                     }}
                     className="flex-1 bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors duration-200"
                   >
-                    Submit Proposal
+                    {t('projects.submitProposal')}
                   </button>
                   <button
                     type="button"
                     onClick={handleNewProjectModalClose}
                     className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200"
                   >
-                    Cancel
+                    {t('projects.cancel')}
                   </button>
                 </div>
               </form>

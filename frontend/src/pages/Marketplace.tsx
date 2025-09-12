@@ -1,14 +1,51 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMarketplace, MarketplaceListing } from '../hooks/useMarketplace';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Marketplace: React.FC = () => {
   const { listings, loading, error } = useMarketplace();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const categories = ['all', 'Green Energy', 'Food & Produce', 'Crafts & Art', 'Services', 'Garden & Outdoor', 'Furniture', 'Electronics', 'Clothing', 'Books'];
+
+  const getCategoryName = (category: string) => {
+    if (category === 'all') return t('marketplacePage.allCategories');
+    const categoryMap: { [key: string]: string } = {
+      'Green Energy': t('marketplacePage.categories.greenEnergy'),
+      'Food & Produce': t('marketplacePage.categories.foodProduce'),
+      'Crafts & Art': t('marketplacePage.categories.craftsArt'),
+      'Services': t('marketplacePage.categories.services'),
+      'Garden & Outdoor': t('marketplacePage.categories.gardenOutdoor'),
+      'Furniture': t('marketplacePage.categories.furniture'),
+      'Electronics': t('marketplacePage.categories.electronics'),
+      'Clothing': t('marketplacePage.categories.clothing'),
+      'Books': t('marketplacePage.categories.books')
+    };
+    return categoryMap[category] || category;
+  };
+
+  const getTypeText = (type: string) => {
+    switch (type) {
+      case 'sell': return t('marketplacePage.sell');
+      case 'trade': return t('marketplacePage.trade');
+      case 'free': return t('marketplacePage.free');
+      default: return type.toUpperCase();
+    }
+  };
+
+  const getConditionText = (condition: string) => {
+    switch (condition) {
+      case 'new': return t('marketplacePage.new');
+      case 'like-new': return t('marketplacePage.likeNew');
+      case 'good': return t('marketplacePage.good');
+      case 'fair': return t('marketplacePage.fair');
+      default: return condition.replace('-', ' ').toUpperCase();
+    }
+  };
 
   // Handle different button actions
   const handleItemAction = (item: MarketplaceListing) => {
@@ -50,11 +87,10 @@ const Marketplace: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Sustainable Community Marketplace
+            {t('marketplacePage.title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Buy, sell, and trade sustainable goods with your community. From green energy solutions to organic produce, 
-            find everything you need for an eco-friendly lifestyle through our circular economy platform.
+            {t('marketplacePage.description')}
           </p>
         </div>
 
@@ -65,7 +101,7 @@ const Marketplace: React.FC = () => {
             <div className="flex-1">
               <input
                 type="text"
-                placeholder="Search marketplace..."
+                placeholder={t('marketplacePage.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -81,7 +117,7 @@ const Marketplace: React.FC = () => {
               >
                 {categories.map(category => (
                   <option key={category} value={category}>
-                    {category === 'all' ? 'All Categories' : category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    {getCategoryName(category)}
                   </option>
                 ))}
               </select>
@@ -89,7 +125,7 @@ const Marketplace: React.FC = () => {
 
             {/* List Item Button */}
             <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
-              List Item
+              {t('marketplacePage.listItem')}
             </button>
           </div>
         </div>
@@ -102,7 +138,7 @@ const Marketplace: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Error loading marketplace</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('marketplacePage.errorTitle')}</h3>
             <p className="text-gray-600">{error}</p>
           </div>
         ) : filteredItems.length === 0 ? (
@@ -112,8 +148,8 @@ const Marketplace: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No items found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('marketplacePage.noItemsTitle')}</h3>
+            <p className="text-gray-600">{t('marketplacePage.noItemsDescription')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -134,9 +170,9 @@ const Marketplace: React.FC = () => {
                       item.type === 'trade' ? 'bg-purple-100 text-purple-800' :
                       'bg-green-100 text-green-800'
                     }`}>
-                      {item.type.toUpperCase()}
+                      {getTypeText(item.type)}
                     </span>
-                    <span className="text-sm text-gray-500">{item.category.replace('-', ' ')}</span>
+                    <span className="text-sm text-gray-500">{getCategoryName(item.category)}</span>
                   </div>
                   
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
@@ -148,10 +184,10 @@ const Marketplace: React.FC = () => {
                       <div className="text-xl font-bold text-green-600">{item.price}</div>
                     )}
                     {item.type === 'trade' && (
-                      <div className="text-sm text-gray-600">Trade for: {item.tradeFor || 'Open to offers'}</div>
+                      <div className="text-sm text-gray-600">{t('marketplacePage.tradeFor')} {item.tradeFor || t('marketplacePage.openToOffers')}</div>
                     )}
                     {item.type === 'free' && (
-                      <div className="text-lg font-bold text-green-600">FREE</div>
+                      <div className="text-lg font-bold text-green-600">{t('marketplacePage.free')}</div>
                     )}
                   </div>
                   
@@ -181,7 +217,7 @@ const Marketplace: React.FC = () => {
                         item.condition === 'good' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {item.condition.replace('-', ' ').toUpperCase()}
+                        {getConditionText(item.condition)}
                       </span>
                     </div>
                   )}
@@ -192,7 +228,7 @@ const Marketplace: React.FC = () => {
                       onClick={() => handleItemAction(item)}
                       className="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg hover:bg-emerald-700 transition-colors duration-200 font-medium text-sm flex items-center justify-center space-x-2"
                     >
-                      <span>View Details</span>
+                      <span>{t('marketplacePage.viewDetails')}</span>
                     </button>
                   </div>
                 </div>

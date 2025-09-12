@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import emergencyServicesService from '../services/emergencyServices';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // Lazy load the map component to avoid SSR issues
 const LazyMap = React.lazy(() => import('./EmergencyMap'));
@@ -25,6 +26,7 @@ interface UserLocation {
 }
 
 const EmergencyServicesFixed: React.FC = () => {
+  const { t } = useLanguage();
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -103,7 +105,7 @@ const EmergencyServicesFixed: React.FC = () => {
       }
     } catch (error) {
       console.error('Error loading emergency services:', error);
-      setError('Unable to load emergency services.');
+      setError(t('emergencyPage.error.loadingServices'));
     } finally {
       setLoading(false);
     }
@@ -163,7 +165,7 @@ const EmergencyServicesFixed: React.FC = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-        <span className="ml-3 text-gray-600">Loading emergency services...</span>
+        <span className="ml-3 text-gray-600">{t('emergencyPage.loading')}</span>
       </div>
     );
   }
@@ -179,27 +181,27 @@ const EmergencyServicesFixed: React.FC = () => {
             </svg>
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-red-800">Emergency Services</h3>
-            <p className="text-red-700">For immediate emergencies, dial 100 (Police), 101 (Fire), 102 (Ambulance)</p>
+            <h3 className="text-lg font-semibold text-red-800">{t('emergencyPage.emergencyHeader.title')}</h3>
+            <p className="text-red-700">{t('emergencyPage.emergencyHeader.description')}</p>
           </div>
           <div className="ml-auto flex space-x-2">
             <button
               onClick={() => callService('100')}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm"
             >
-              Call 100
+              {t('emergencyPage.emergencyHeader.call100')}
             </button>
             <button
               onClick={() => callService('101')}
               className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm"
             >
-              Call 101
+              {t('emergencyPage.emergencyHeader.call101')}
             </button>
             <button
-              onClick={() => callService('102')}
+              onClick={() => callService('108')}
               className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm"
             >
-              Call 102
+              {t('emergencyPage.emergencyHeader.call102')}
             </button>
           </div>
         </div>
@@ -220,13 +222,13 @@ const EmergencyServicesFixed: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <span className="text-green-800">Location detected - showing nearest emergency services within 25km</span>
+              <span className="text-green-800">{t('emergencyPage.location.detected')}</span>
             </div>
             <button
               onClick={() => setShowMap(!showMap)}
               className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium"
             >
-              {showMap ? 'Hide Map' : 'Show Map'}
+              {showMap ? t('emergencyPage.location.hideMap') : t('emergencyPage.location.showMap')}
             </button>
           </div>
         </div>
@@ -237,10 +239,10 @@ const EmergencyServicesFixed: React.FC = () => {
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8 px-6">
             {[
-              { key: 'all', label: 'All Services', count: services.length },
-              { key: 'police', label: 'Police', count: services.filter(s => s.type === 'police').length },
-              { key: 'hospital', label: 'Hospitals', count: services.filter(s => s.type === 'hospital').length },
-              { key: 'fire', label: 'Fire Stations', count: services.filter(s => s.type === 'fire').length }
+              { key: 'all', label: t('emergencyPage.filters.allServices'), count: services.length },
+              { key: 'police', label: t('emergencyPage.filters.police'), count: services.filter(s => s.type === 'police').length },
+              { key: 'hospital', label: t('emergencyPage.filters.hospitals'), count: services.filter(s => s.type === 'hospital').length },
+              { key: 'fire', label: t('emergencyPage.filters.fireStations'), count: services.filter(s => s.type === 'fire').length }
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -262,7 +264,7 @@ const EmergencyServicesFixed: React.FC = () => {
       {showMap && userLocation && (
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="p-4 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-900">Emergency Services Map</h3>
+            <h3 className="font-semibold text-gray-900">{t('emergencyPage.map.title')}</h3>
           </div>
           <div className="h-96 w-full relative">
             <React.Suspense 
@@ -270,7 +272,7 @@ const EmergencyServicesFixed: React.FC = () => {
                 <div className="h-full flex items-center justify-center bg-gray-100">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                    <p className="text-gray-600">Loading map...</p>
+                    <p className="text-gray-600">{t('emergencyPage.map.loadingMap')}</p>
                   </div>
                 </div>
               }
@@ -315,14 +317,14 @@ const EmergencyServicesFixed: React.FC = () => {
                       <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.863-.833-2.633 0L4.181 16.5c-.77.833.192 2.5 1.732 2.5z" />
                       </svg>
-                      <span className="text-red-600 font-medium">Emergency: {service.emergencyPhone}</span>
+                      <span className="text-red-600 font-medium">{t('emergencyPage.serviceCard.emergency')}: {service.emergencyPhone}</span>
                     </div>
                   )}
                   
                   <div className="flex items-center space-x-2">
                     <div className={`w-2 h-2 rounded-full ${service.isOpen ? 'bg-green-500' : 'bg-red-500'}`}></div>
                     <span className={`text-sm ${service.isOpen ? 'text-green-600' : 'text-red-600'}`}>
-                      {service.isOpen ? 'Open 24/7' : 'Closed'}
+                      {service.isOpen ? t('emergencyPage.serviceCard.open24') : t('emergencyPage.serviceCard.closed')}
                     </span>
                   </div>
                 </div>
@@ -332,20 +334,20 @@ const EmergencyServicesFixed: React.FC = () => {
                     onClick={() => callService(service.phone)}
                     className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium"
                   >
-                    Call
+                    {t('emergencyPage.serviceCard.call')}
                   </button>
                   <button
                     onClick={() => openDirections(service)}
                     className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium"
                   >
-                    Directions
+                    {t('emergencyPage.serviceCard.directions')}
                   </button>
                   {service.emergencyPhone && (
                     <button
                       onClick={() => callService(service.emergencyPhone!)}
                       className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium"
                     >
-                      Emergency
+                      {t('emergencyPage.serviceCard.emergencyBtn')}
                     </button>
                   )}
                 </div>
@@ -362,8 +364,8 @@ const EmergencyServicesFixed: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.5.9-6.127 2.386l-.134.065A5.978 5.978 0 006 20v2a1 1 0 001 1h10a1 1 0 001-1v-2a5.978 5.978 0 00.262-2.549l-.134-.065A7.962 7.962 0 0112 15.001z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No services found</h3>
-          <p className="text-gray-600">Try selecting a different service type</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('emergencyPage.empty.title')}</h3>
+          <p className="text-gray-600">{t('emergencyPage.empty.description')}</p>
         </div>
       )}
     </div>

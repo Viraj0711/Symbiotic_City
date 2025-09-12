@@ -2,6 +2,7 @@ import React from 'react';
 import { Star, MapPin, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useMarketplace, MarketplaceListing } from '../hooks/useMarketplace';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface MarketplaceProps {
   limit?: number;
@@ -9,6 +10,7 @@ interface MarketplaceProps {
 
 const Marketplace: React.FC<MarketplaceProps> = ({ limit }) => {
   const { listings, loading, error } = useMarketplace();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   // Handle view details action
@@ -27,7 +29,7 @@ const Marketplace: React.FC<MarketplaceProps> = ({ limit }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
-            <p className="text-gray-600 mt-4">Loading marketplace...</p>
+            <p className="text-gray-600 mt-4">{t('marketplace.loading')}</p>
           </div>
         </div>
       </section>
@@ -39,7 +41,7 @@ const Marketplace: React.FC<MarketplaceProps> = ({ limit }) => {
       <section id="marketplace" className="py-16 lg:py-24 rounded-3xl shadow-2xl" style={{backgroundColor: '#B3C893'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-red-600">Error loading marketplace: {error}</p>
+            <p className="text-red-600">{t('marketplace.error')}: {error}</p>
           </div>
         </div>
       </section>
@@ -51,18 +53,17 @@ const Marketplace: React.FC<MarketplaceProps> = ({ limit }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4" style={{color: '#1F2937'}}>
-            Sustainable Community Marketplace
+            {t('marketplace.title')}
           </h2>
           <p className="text-xl max-w-3xl mx-auto" style={{color: '#4B5563'}}>
-            Discover eco-friendly products, green energy solutions, and sustainable services from local businesses 
-            committed to building a better future for our community.
+            {t('marketplace.description')}
           </p>
         </div>
 
         {listings.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">No marketplace listings available yet.</p>
-            <p className="text-gray-700 mt-2">Be the first to add a sustainable product or service!</p>
+            <p className="text-gray-600 text-lg">{t('marketplace.noListings')}</p>
+            <p className="text-gray-700 mt-2">{t('marketplace.beFirst')}</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -115,7 +116,7 @@ const Marketplace: React.FC<MarketplaceProps> = ({ limit }) => {
                     onClick={() => handleViewDetails(listing)}
                     className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors duration-200 flex items-center space-x-1"
                   >
-                    <span>View Details</span>
+                    <span>{t('marketplace.viewDetails')}</span>
                   </button>
                 </div>
               </div>
@@ -129,7 +130,7 @@ const Marketplace: React.FC<MarketplaceProps> = ({ limit }) => {
             onClick={handleViewAllListings}
             className="inline-flex items-center space-x-2 bg-emerald-600 border border-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200"
           >
-            <span>View All Listings</span>
+            <span>{t('marketplace.viewAllListings')}</span>
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>

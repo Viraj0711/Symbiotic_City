@@ -1,15 +1,17 @@
 import React from 'react';
 import EmergencyServicesFixed from '../components/EmergencyServicesFixed';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const EmergencyServicesPage: React.FC = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Emergency Services</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('emergencyPage.title')}</h1>
           <p className="text-gray-600">
-            Find nearby emergency services including police stations, hospitals, and fire stations.
-            Your safety is our priority.
+            {t('emergencyPage.description')}
           </p>
         </div>
         <EmergencyServicesFixed />

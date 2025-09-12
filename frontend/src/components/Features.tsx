@@ -1,42 +1,45 @@
 import { ShoppingCart, Users, Calendar, Lightbulb, Shield, Smartphone } from 'lucide-react';
 import { AnimatedSection, StaggeredContainer } from './AnimatedSection';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Features = () => {
+  const { t } = useLanguage();
+  
   const features = [
     {
       icon: ShoppingCart,
-      title: 'Interactive Marketplace',
-      description: 'Discover and trade sustainable products and services within your community.',
+      title: t('features.items.marketplace.title'),
+      description: t('features.items.marketplace.description'),
       color: 'bg-emerald-100 text-emerald-600'
     },
     {
       icon: Users,
-      title: 'Community Resources',
-      description: 'Share tools, skills, and knowledge to build a stronger circular economy.',
+      title: t('features.items.community.title'),
+      description: t('features.items.community.description'),
       color: 'bg-teal-100 text-teal-600'
     },
     {
       icon: Calendar,
-      title: 'Event Hubs',
-      description: 'Find and organize local events focused on sustainability and collaboration.',
+      title: t('features.items.events.title'),
+      description: t('features.items.events.description'),
       color: 'bg-lime-100 text-lime-600'
     },
     {
       icon: Lightbulb,
-      title: 'Project Collaboration',
-      description: 'Co-create innovative solutions for urban challenges with diverse stakeholders.',
+      title: t('features.items.projects.title'),
+      description: t('features.items.projects.description'),
       color: 'bg-yellow-100 text-yellow-600'
     },
     {
       icon: Shield,
-      title: 'Secure Platform',
-      description: 'Your data and interactions are protected with enterprise-grade security.',
+      title: t('features.items.security.title'),
+      description: t('features.items.security.description'),
       color: 'bg-blue-100 text-blue-600'
     },
     {
       icon: Smartphone,
-      title: 'Cross-Device Access',
-      description: 'Seamless experience across all devices with responsive design.',
+      title: t('features.items.mobile.title'),
+      description: t('features.items.mobile.description'),
       color: 'bg-purple-100 text-purple-600'
     }
   ];
@@ -46,11 +49,10 @@ const Features = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection animation="fadeUp" className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4" style={{color: '#059669'}}>
-            Everything You Need for Sustainable Living
+            {t('features.title')}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Our platform brings together all the tools and connections you need to create 
-            positive environmental and social impact in your community.
+            {t('features.subtitle')}
           </p>
         </AnimatedSection>
 

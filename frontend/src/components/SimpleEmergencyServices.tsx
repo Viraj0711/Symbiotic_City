@@ -159,7 +159,7 @@ const SimpleEmergencyServices: React.FC = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-red-800">Emergency Services</h3>
-            <p className="text-red-700">For immediate emergencies, dial 100 (Police), 101 (Fire), 102 (Ambulance)</p>
+            <p className="text-red-700">For immediate emergencies, dial 100 (Police), 101 (Fire), 108 (Ambulance)</p>
           </div>
           <div className="ml-auto flex space-x-2">
             <button
