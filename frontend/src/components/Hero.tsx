@@ -1,5 +1,5 @@
 import { ArrowRight, Users, Building2, TreePine, Leaf } from 'lucide-react';
-import { AnimatedSection, StaggeredContainer, ParallaxSection } from './AnimatedSection';
+import { AnimatedSection, StaggeredContainer } from './AnimatedSection';
 import { useAuth } from '../contexts/AuthContext';
 
 const Hero = () => {
@@ -7,12 +7,6 @@ const Hero = () => {
   
   return (
     <section className="py-16 lg:py-24 relative overflow-hidden" style={{backgroundColor: '#E2EAD6'}}>
-      {/* Parallax Background Elements */}
-      <ParallaxSection speed={0.3} className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-emerald-500 rounded-full blur-xl"></div>
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-blue-500 rounded-full blur-xl"></div>
-      </ParallaxSection>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* User Welcome Section */}
         {user && (
