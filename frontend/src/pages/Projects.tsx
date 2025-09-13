@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
+import { Users, Clock, TrendingUp, X } from 'lucide-react';
 import { useProjects } from '../hooks/useProjects';
+import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 
 const Projects: React.FC = () => {
   const { projects, loading, error } = useProjects();
+  const { user } = useAuth();
+  const { showNotification } = useNotification();
   const [filter, setFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedProject, setSelectedProject] = useState<any | null>(null);
+  const [showProjectDetails, setShowProjectDetails] = useState(false);
+  const [joinStatus, setJoinStatus] = useState<{ [key: string]: 'joining' | 'joined' | 'error' }>({});
 
   const categories = ['all', 'renewable-energy', 'waste-management', 'green-transport', 'community-garden', 'education'];
 
@@ -22,6 +30,58 @@ const Projects: React.FC = () => {
       case 'PLANNED': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  // Handle project joining
+  const handleJoinProject = async (project: any) => {
+    if (!user) {
+      // Store the intended action and redirect to login
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
+      localStorage.setItem('pendingAction', JSON.stringify({ type: 'joinProject', projectId: project.id, projectTitle: project.title }));
+      window.location.href = '/login';
+      return;
+    }
+
+    try {
+      setJoinStatus(prev => ({ ...prev, [project.id]: 'joining' }));
+      
+      // Simulate API call for project joining
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setJoinStatus(prev => ({ ...prev, [project.id]: 'joined' }));
+      
+      // Show success notification with website theme
+      showNotification({
+        type: 'success',
+        title: 'Successfully joined project!',
+        message: `You've joined "${project.title}". Check your email for next steps and project details.`,
+        duration: 6000
+      });
+      
+    } catch (error) {
+      console.error('Join project failed:', error);
+      setJoinStatus(prev => ({ ...prev, [project.id]: 'error' }));
+      
+      // Show error notification
+      showNotification({
+        type: 'error',
+        title: 'Failed to join project',
+        message: 'Something went wrong. Please try again later.',
+        duration: 5000
+      });
+    }
+  };
+
+  // Handle learn more about project
+  const handleLearnMore = (project: any) => {
+    setSelectedProject(project);
+    setShowProjectDetails(true);
+  };
+
+  // Handle modal closures
+  const handleProjectDetailsClose = () => {
+    setShowProjectDetails(false);
+    setSelectedProject(null);
   };
 
   if (loading) {
@@ -185,10 +245,28 @@ const Projects: React.FC = () => {
                   
                   {/* Action Buttons */}
                   <div className="flex gap-2">
-                    <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">
-                      Join Project
+                    <button 
+                      onClick={() => handleJoinProject(project)}
+                      disabled={joinStatus[project.id] === 'joining'}
+                      className={`flex-1 py-2 px-4 rounded-lg transition-colors text-sm font-medium ${
+                        joinStatus[project.id] === 'joined'
+                          ? 'bg-green-100 text-green-800 cursor-default'
+                          : joinStatus[project.id] === 'joining'
+                          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                          : 'bg-green-600 text-white hover:bg-green-700'
+                      }`}
+                    >
+                      {joinStatus[project.id] === 'joined'
+                        ? '✓ Joined'
+                        : joinStatus[project.id] === 'joining'
+                        ? 'Joining...'
+                        : 'Join Project'
+                      }
                     </button>
-                    <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                    <button 
+                      onClick={() => handleLearnMore(project)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                    >
                       Learn More
                     </button>
                   </div>
@@ -198,6 +276,102 @@ const Projects: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Project Details Modal */}
+      {showProjectDetails && selectedProject && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative">
+              <img
+                src={selectedProject.image}
+                alt={selectedProject.title}
+                className="w-full h-48 object-cover rounded-t-lg"
+              />
+              <button
+                onClick={handleProjectDetailsClose}
+                className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {selectedProject.category}
+                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium text-gray-600">Progress:</span>
+                  <span className="text-emerald-600 font-bold">{selectedProject.progress}%</span>
+                </div>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">{selectedProject.title}</h2>
+              <p className="text-gray-700 mb-6">{selectedProject.description}</p>
+              
+              <div className="grid sm:grid-cols-3 gap-4 mb-6 text-gray-600">
+                <div className="text-center bg-gray-50 p-4 rounded-lg">
+                  <Users className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
+                  <div className="text-lg font-semibold text-gray-900">{selectedProject.participants || '12'}</div>
+                  <div className="text-sm text-gray-500">Participants</div>
+                </div>
+                <div className="text-center bg-gray-50 p-4 rounded-lg">
+                  <Clock className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
+                  <div className="text-lg font-semibold text-gray-900">{selectedProject.timeLeft || '30 days'}</div>
+                  <div className="text-sm text-gray-500">Remaining</div>
+                </div>
+                <div className="text-center bg-gray-50 p-4 rounded-lg">
+                  <TrendingUp className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
+                  <div className="text-lg font-semibold text-gray-900">{selectedProject.impact || 'High'}</div>
+                  <div className="text-sm text-gray-500">Impact</div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Project Goals</h3>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  This project aims to create lasting positive impact in our community through collaborative effort and sustainable practices.
+                </p>
+                
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">How You Can Help</h3>
+                <ul className="text-gray-700 space-y-1">
+                  <li>• Volunteer your time and skills</li>
+                  <li>• Share resources and knowledge</li>
+                  <li>• Help spread the word in your network</li>
+                  <li>• Participate in community events and meetings</li>
+                </ul>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => handleJoinProject(selectedProject)}
+                  disabled={joinStatus[selectedProject.id] === 'joining'}
+                  className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
+                    joinStatus[selectedProject.id] === 'joined'
+                      ? 'bg-green-100 text-green-800 cursor-default'
+                      : joinStatus[selectedProject.id] === 'joining'
+                      ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                      : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  }`}
+                >
+                  {joinStatus[selectedProject.id] === 'joined'
+                    ? '✓ Joined'
+                    : joinStatus[selectedProject.id] === 'joining'
+                    ? 'Joining...'
+                    : 'Join Project'
+                  }
+                </button>
+                <button
+                  onClick={handleProjectDetailsClose}
+                  className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

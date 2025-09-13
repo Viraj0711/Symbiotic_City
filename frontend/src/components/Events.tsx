@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Calendar, MapPin, Users, Clock, X } from 'lucide-react';
 import { useEvents } from '../hooks/useEvents';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 
 interface EventsProps {
   limit?: number;
@@ -10,6 +11,7 @@ interface EventsProps {
 const Events: React.FC<EventsProps> = ({ limit }) => {
   const { events, loading, error } = useEvents();
   const { user } = useAuth();
+  const { showNotification } = useNotification();
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [showEventDetails, setShowEventDetails] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<{ [key: string]: 'registering' | 'registered' | 'error' }>({});
@@ -32,13 +34,25 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
       
       setRegistrationStatus(prev => ({ ...prev, [event.id]: 'registered' }));
       
-      // Show success message
-      alert(`Successfully registered for "${event.title}"! Check your email for confirmation details.`);
+      // Show success notification with website theme
+      showNotification({
+        type: 'success',
+        title: 'Successfully registered!',
+        message: `You're registered for "${event.title}". Check your email for confirmation details.`,
+        duration: 6000
+      });
       
     } catch (error) {
       console.error('Registration failed:', error);
       setRegistrationStatus(prev => ({ ...prev, [event.id]: 'error' }));
-      alert('Registration failed. Please try again.');
+      
+      // Show error notification
+      showNotification({
+        type: 'error',
+        title: 'Registration failed',
+        message: 'Something went wrong. Please try again later.',
+        duration: 5000
+      });
     }
   };
 

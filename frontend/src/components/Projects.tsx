@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Users, Clock, TrendingUp, X } from 'lucide-react';
 import { useProjects } from '../hooks/useProjects';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { AnimatedSection, StaggeredContainer } from './AnimatedSection';
 
 interface ProjectsProps {
@@ -11,6 +12,7 @@ interface ProjectsProps {
 const Projects: React.FC<ProjectsProps> = ({ limit }) => {
   const { projects, loading, error } = useProjects();
   const { user } = useAuth();
+  const { showNotification } = useNotification();
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
@@ -34,13 +36,25 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
       
       setJoinStatus(prev => ({ ...prev, [project.id]: 'joined' }));
       
-      // Show success message
-      alert(`Successfully joined "${project.title}"! Check your email for next steps and project details.`);
+      // Show success notification with website theme
+      showNotification({
+        type: 'success',
+        title: 'Successfully joined project!',
+        message: `You've joined "${project.title}". Check your email for next steps and project details.`,
+        duration: 6000
+      });
       
     } catch (error) {
       console.error('Join project failed:', error);
       setJoinStatus(prev => ({ ...prev, [project.id]: 'error' }));
-      alert('Failed to join project. Please try again.');
+      
+      // Show error notification
+      showNotification({
+        type: 'error',
+        title: 'Failed to join project',
+        message: 'Something went wrong. Please try again later.',
+        duration: 5000
+      });
     }
   };
 
@@ -400,7 +414,12 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
                   <button
                     type="button"
                     onClick={() => {
-                      alert('Project proposal submitted! Our team will review and get back to you within 48 hours.');
+                      showNotification({
+                        type: 'success',
+                        title: 'Project proposal submitted!',
+                        message: 'Our team will review and get back to you within 48 hours.',
+                        duration: 6000
+                      });
                       handleNewProjectModalClose();
                     }}
                     className="flex-1 bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors duration-200"
