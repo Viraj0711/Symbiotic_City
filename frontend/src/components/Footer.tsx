@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Leaf, Mail, Phone, MapPin, ExternalLink, Send, ArrowUp, MessageSquare, Headphones } from 'lucide-react';
+import { useNotification } from '../contexts/NotificationContext';
 import QuickContactModal from './QuickContactModal';
 
 const Footer = () => {
@@ -8,6 +9,7 @@ const Footer = () => {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscriptionMessage, setSubscriptionMessage] = useState('');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const { showNotification } = useNotification();
 
   const handleNewsletterSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +32,12 @@ const Footer = () => {
   };
 
   const startLiveChat = () => {
-    // Simulate starting live chat
-    alert('Live chat feature would open here! Our support team is available 24/7.');
+    showNotification({
+      type: 'info',
+      title: 'Live Chat',
+      message: 'Live chat feature would open here! Our support team is available 24/7.',
+      duration: 4000
+    });
   };
   return (
     <footer className="bg-black text-white">

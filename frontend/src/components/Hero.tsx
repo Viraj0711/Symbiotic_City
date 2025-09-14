@@ -1,9 +1,59 @@
 import { ArrowRight, Users, Building2, TreePine, Leaf } from 'lucide-react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AnimatedSection, StaggeredContainer } from './AnimatedSection';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 
 const Hero = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { showNotification } = useNotification();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  // Handle Join Community button click
+  const handleJoinCommunity = async () => {
+    setIsNavigating(true);
+    
+    if (user) {
+      // User is already logged in, navigate to community page
+      navigate('/community');
+      showNotification({
+        type: 'success',
+        title: 'Welcome to the Community!',
+        message: 'Explore discussions, connect with neighbors, and participate in community activities.',
+        duration: 5000
+      });
+    } else {
+      // User not logged in, navigate to signup
+      navigate('/signup');
+      showNotification({
+        type: 'info',
+        title: 'Join Our Community',
+        message: 'Create an account to connect with your neighbors and make a positive impact!',
+        duration: 5000
+      });
+    }
+    
+    // Reset loading state after navigation
+    setTimeout(() => setIsNavigating(false), 1000);
+  };
+
+  // Handle Explore Projects button click
+  const handleExploreProjects = async () => {
+    setIsNavigating(true);
+    
+    navigate('/projects');
+    showNotification({
+      type: 'info',
+      title: 'Discover Amazing Projects',
+      message: 'Browse sustainable community projects and find ways to contribute to your neighborhood.',
+      duration: 4000
+    });
+    
+    // Reset loading state after navigation
+    setTimeout(() => setIsNavigating(false), 1000);
+  };
   
   return (
     <section className="py-16 lg:py-24 relative overflow-hidden" style={{backgroundColor: '#E2EAD6'}}>
@@ -66,11 +116,27 @@ const Hero = () => {
             {/* CTA Buttons */}
             <AnimatedSection animation="fadeUp" delay={0.8}>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2">
-                  <span>Join Community</span>
+                <button 
+                  onClick={handleJoinCommunity}
+                  disabled={isNavigating}
+                  className={`px-8 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2 ${
+                    isNavigating 
+                      ? 'bg-emerald-400 text-white cursor-not-allowed' 
+                      : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  }`}
+                >
+                  <span>{user ? 'Visit Community' : 'Join Community'}</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
-                <button className="border border-emerald-600 text-emerald-400 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-900 transition-all duration-200">
+                <button 
+                  onClick={handleExploreProjects}
+                  disabled={isNavigating}
+                  className={`px-8 py-3 rounded-lg font-semibold transition-all duration-200 border border-emerald-600 ${
+                    isNavigating
+                      ? 'text-emerald-300 cursor-not-allowed'
+                      : 'text-emerald-400 hover:bg-emerald-900'
+                  }`}
+                >
                   Explore Projects
                 </button>
               </div>

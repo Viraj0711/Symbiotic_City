@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 
 // StickFigure component for default avatar
 const StickFigure: React.FC<{ className?: string }> = ({ className = '' }) => (
@@ -14,6 +15,7 @@ const StickFigure: React.FC<{ className?: string }> = ({ className = '' }) => (
 
 const Dashboard: React.FC = () => {
   const { user, updateProfile } = useAuth();
+  const { showNotification } = useNotification();
   const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'events' | 'marketplace' | 'profile'>('overview');
   const [isEditing, setIsEditing] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -137,12 +139,22 @@ const Dashboard: React.FC = () => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file.');
+      showNotification({
+        type: 'error',
+        title: 'Invalid file type',
+        message: 'Please select an image file (JPG, PNG, GIF, etc.).',
+        duration: 5000
+      });
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('File size must be less than 5MB.');
+      showNotification({
+        type: 'error',
+        title: 'File too large',
+        message: 'Please select an image smaller than 5MB.',
+        duration: 5000
+      });
       return;
     }
 
@@ -157,7 +169,12 @@ const Dashboard: React.FC = () => {
       }
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      alert('Failed to upload image. Please try again.');
+      showNotification({
+        type: 'error',
+        title: 'Upload failed',
+        message: 'Failed to upload image. Please try again.',
+        duration: 5000
+      });
     } finally {
       setUploading(false);
     }
@@ -174,7 +191,12 @@ const Dashboard: React.FC = () => {
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
+      showNotification({
+        type: 'error',
+        title: 'Update failed',
+        message: 'Failed to update profile. Please try again.',
+        duration: 5000
+      });
     }
   };
 

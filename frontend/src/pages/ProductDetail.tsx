@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMarketplace, MarketplaceListing } from '../hooks/useMarketplace';
+import { useNotification } from '../contexts/NotificationContext';
 import { Star, MapPin, Calendar, User, Package, ArrowLeft, Heart, Share2, ShoppingCart, MessageCircle } from 'lucide-react';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { listings, loading } = useMarketplace();
+  const { showNotification } = useNotification();
   const [product, setProduct] = useState<MarketplaceListing | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
@@ -29,31 +31,56 @@ const ProductDetail: React.FC = () => {
       `₹${(parseFloat(product.price.replace('₹', '').replace(',', '')) * quantity).toLocaleString('en-IN')}` : 
       product.price;
 
-    alert(`Initiating purchase for ${product.title}\n\nQuantity: ${quantity}\nTotal: ${totalPrice}\n\nRedirecting to payment gateway...\n\nSupported payments:\n• UPI (Google Pay, PhonePe, Paytm)\n• Credit/Debit Cards\n• Net Banking\n• Wallets`);
+    showNotification({
+      type: 'success',
+      title: 'Purchase Initiated',
+      message: `Redirecting to payment gateway for ${product.title} (Quantity: ${quantity}, Total: ${totalPrice})`,
+      duration: 6000
+    });
   };
 
   const handleAddToCart = () => {
     if (!product) return;
-    alert(`${product.title} added to cart!\n\nQuantity: ${quantity}\n\nYou can continue shopping or proceed to checkout from the cart.`);
+    showNotification({
+      type: 'success',
+      title: 'Added to Cart',
+      message: `${product.title} (Quantity: ${quantity}) has been added to your cart`,
+      duration: 4000
+    });
   };
 
   const handleContactSeller = () => {
     if (!product) return;
-    alert(`Contact details for ${product.provider}:\n\nEmail: ${product.provider.toLowerCase().replace(/\s+/g, '')}@example.com\nPhone: +91 98765 43210\n\nYou can also send a message through our platform.`);
+    showNotification({
+      type: 'info',
+      title: 'Contact Information',
+      message: `Email: ${product.provider.toLowerCase().replace(/\s+/g, '')}@example.com | Phone: +91 98765 43210`,
+      duration: 8000
+    });
   };
 
   const handleShare = () => {
     if (!product) return;
     const url = window.location.href;
     navigator.clipboard.writeText(url);
-    alert(`Product link copied to clipboard!\n\nShare this link: ${url}`);
+    showNotification({
+      type: 'success',
+      title: 'Link Copied',
+      message: 'Product link has been copied to clipboard',
+      duration: 3000
+    });
   };
 
   const handleProposeTrade = () => {
     if (!product) return;
     const userOffer = prompt(`Propose a trade for ${product.title}\n\nWhat would you like to offer in exchange?`, '');
     if (userOffer && userOffer.trim()) {
-      alert(`Trade proposal sent to ${product.provider}!\n\nYour offer: ${userOffer}\n\nThey will be notified and can respond through the platform.`);
+      showNotification({
+        type: 'success',
+        title: 'Trade Proposal Sent',
+        message: `Your trade offer has been sent to ${product.provider}`,
+        duration: 4000
+      });
     }
   };
 
@@ -61,7 +88,12 @@ const ProductDetail: React.FC = () => {
     if (!product) return;
     const confirmClaim = confirm(`Would you like to claim this free item?\n\n${product.title}\nLocation: ${product.location}\nProvider: ${product.provider}`);
     if (confirmClaim) {
-      alert(`Great! You've claimed ${product.title}\n\nContact details for ${product.provider} have been sent to your registered email/phone.\n\nPickup location: ${product.location}`);
+      showNotification({
+        type: 'success',
+        title: 'Item Claimed!',
+        message: `You've successfully claimed ${product.title}. Contact details sent to your email.`,
+        duration: 5000
+      });
     }
   };
 

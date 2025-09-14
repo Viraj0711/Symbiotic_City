@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera } from 'lucide-react';
+import { Camera, MapPin, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useNotification } from '../contexts/NotificationContext';
 
 // Stick Figure SVG Component
 const StickFigure = ({ className = "w-32 h-32" }: { className?: string }) => (
@@ -34,8 +35,10 @@ const Profile: React.FC = () => {
   const [avatarError, setAvatarError] = useState(false);
   const { user, updateProfile, uploadAvatar } = useAuth();
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [detectingLocation, setDetectingLocation] = useState(false);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -53,7 +56,7 @@ const Profile: React.FC = () => {
     name: user.name,
     email: user.email,
     bio: user.bio || 'Passionate about creating sustainable communities and environmental impact.',
-    location: user.location || 'Location not specified',
+    location: user.location || '',
     avatar: user.avatar || ''
   });
 
@@ -63,7 +66,7 @@ const Profile: React.FC = () => {
       name: user.name,
       email: user.email,
       bio: user.bio || 'Passionate about creating sustainable communities and environmental impact.',
-      location: user.location || 'Location not specified',
+      location: user.location || '',
       avatar: user.avatar || ''
     });
   }, [user]);
@@ -99,13 +102,23 @@ const Profile: React.FC = () => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file.');
+      showNotification({
+        type: 'error',
+        title: 'Invalid file type',
+        message: 'Please select an image file (JPG, PNG, GIF, etc.).',
+        duration: 5000
+      });
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('File size must be less than 5MB.');
+      showNotification({
+        type: 'error',
+        title: 'File too large',
+        message: 'Please select an image smaller than 5MB.',
+        duration: 5000
+      });
       return;
     }
 
@@ -125,7 +138,12 @@ const Profile: React.FC = () => {
       }
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      alert('Failed to upload image. Please try again.');
+      showNotification({
+        type: 'error',
+        title: 'Upload failed',
+        message: 'Failed to upload image. Please try again.',
+        duration: 5000
+      });
     } finally {
       setUploading(false);
     }
@@ -142,7 +160,12 @@ const Profile: React.FC = () => {
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
+      showNotification({
+        type: 'error',
+        title: 'Update failed',
+        message: 'Failed to update profile. Please try again.',
+        duration: 5000
+      });
     }
   };
 
@@ -151,10 +174,69 @@ const Profile: React.FC = () => {
       name: user.name,
       email: user.email,
       bio: user.bio || 'Passionate about creating sustainable communities and environmental impact.',
-      location: user.location || 'Location not specified',
+      location: user.location || '',
       avatar: user.avatar || ''
     });
     setIsEditing(false);
+  };
+
+  const handleDetectLocation = async () => {
+    if (!navigator.geolocation) {
+      showNotification({
+        type: 'error',
+        title: 'Location not supported',
+        message: 'Your browser does not support location detection.',
+        duration: 4000
+      });
+      return;
+    }
+
+    setDetectingLocation(true);
+    
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          timeout: 10000,
+          enableHighAccuracy: true
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+      
+      // Use reverse geocoding to get address (using a free service)
+      const response = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        const location = `${data.city || data.locality || 'Unknown City'}, ${data.countryName || 'Unknown Country'}`;
+        
+        setEditForm(prev => ({
+          ...prev,
+          location: location
+        }));
+
+        showNotification({
+          type: 'success',
+          title: 'Location detected',
+          message: `Location set to: ${location}`,
+          duration: 4000
+        });
+      } else {
+        throw new Error('Failed to get location data');
+      }
+    } catch (error) {
+      console.error('Location detection failed:', error);
+      showNotification({
+        type: 'error',
+        title: 'Location detection failed',
+        message: 'Unable to detect your location. Please enter it manually.',
+        duration: 4000
+      });
+    } finally {
+      setDetectingLocation(false);
+    }
   };
 
   const mockProjects = [
@@ -287,13 +369,29 @@ const Profile: React.FC = () => {
                     onChange={handleInputChange}
                     className="text-2xl font-bold border-b-2 border-gray-300 focus:border-green-500 outline-none bg-transparent w-full"
                   />
-                  <input
-                    type="text"
-                    name="location"
-                    value={editForm.location}
-                    onChange={handleInputChange}
-                    className="text-gray-600 border-b border-gray-300 focus:border-green-500 outline-none bg-transparent w-full"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="location"
+                      value={editForm.location}
+                      onChange={handleInputChange}
+                      placeholder="Enter your city, state/country"
+                      className="text-gray-600 border-b border-gray-300 focus:border-green-500 outline-none bg-transparent w-full pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleDetectLocation}
+                      disabled={detectingLocation}
+                      className="absolute right-0 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-green-500 transition-colors disabled:opacity-50"
+                      title="Detect current location"
+                    >
+                      {detectingLocation ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <MapPin className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
                   <textarea
                     name="bio"
                     value={editForm.bio}
@@ -319,7 +417,7 @@ const Profile: React.FC = () => {
               ) : (
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">{user.name}</h1>
-                  <p className="text-gray-600 mb-2">{user.location || 'Location not specified'}</p>
+                  <p className="text-gray-600 mb-2">{user.location || 'Add your location to connect with nearby community members'}</p>
                   <p className="text-gray-700 mb-4 max-w-lg">{user.bio || 'Passionate about creating sustainable communities and environmental impact.'}</p>
                   <div className="flex flex-wrap gap-2 mb-4">
                     {additionalData.interests.map((interest, index) => (
