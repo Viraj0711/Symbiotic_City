@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export interface Event {
   id: string;
@@ -16,17 +17,13 @@ export interface Event {
   type: string;
 }
 
-// Mock data for demonstration
-const mockEvents: Event[] = [
+// Base events data without translations
+const baseEvents = [
   {
     id: '1',
-    title: 'Community Clean-Up Day',
-    description: 'Join your neighbors for a city-wide clean-up event. We\'ll provide supplies and refreshments. Let\'s make our neighborhoods shine!',
-    date: 'March 15, 2026',
+    date: '2026-03-15T09:00:00Z',
     time: '9:00 AM - 1:00 PM',
-    location: 'Central Park Pavilion',
     attendees: 45,
-    category: 'Environment',
     image: 'https://images.pexels.com/photos/1181396/pexels-photo-1181396.jpeg?auto=compress&cs=tinysrgb&w=600',
     status: 'open',
     author_id: 'admin1',
@@ -35,13 +32,9 @@ const mockEvents: Event[] = [
   },
   {
     id: '2',
-    title: 'Digital Skills Workshop',
-    description: 'Learn essential digital skills including online safety, digital communication, and basic computer literacy. All ages welcome!',
-    date: 'March 20, 2026',
+    date: '2026-03-20T14:00:00Z',
     time: '2:00 PM - 5:00 PM',
-    location: 'Community Library',
     attendees: 28,
-    category: 'Education',
     image: 'https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=600',
     status: 'open',
     author_id: 'admin2',
@@ -50,13 +43,9 @@ const mockEvents: Event[] = [
   },
   {
     id: '3',
-    title: 'Urban Gardening Masterclass',
-    description: 'Learn how to grow your own food in small spaces. We\'ll cover container gardening, composting, and seasonal planting tips.',
-    date: 'March 25, 2026',
+    date: '2026-03-25T10:00:00Z',
     time: '10:00 AM - 3:00 PM',
-    location: 'Green Spaces Community Garden',
     attendees: 67,
-    category: 'Sustainability',
     image: 'https://images.pexels.com/photos/1301856/pexels-photo-1301856.jpeg?auto=compress&cs=tinysrgb&w=600',
     status: 'open',
     author_id: 'expert1',
@@ -69,13 +58,24 @@ export const useEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { currentLanguage, t } = useLanguage();
 
   const fetchEvents = async () => {
     try {
       setLoading(true);
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 600));
-      setEvents(mockEvents);
+      
+      // Map base data to full events with translations
+      const translatedEvents: Event[] = baseEvents.map((item, index) => ({
+        ...item,
+        title: t(`eventsData.${index}.title`),
+        description: t(`eventsData.${index}.description`),
+        location: t(`eventsData.${index}.location`),
+        category: t(`eventsData.${index}.category`)
+      }));
+      
+      setEvents(translatedEvents);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -85,7 +85,7 @@ export const useEvents = () => {
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [currentLanguage, t]);
 
   return { events, loading, error, refetch: fetchEvents };
 };

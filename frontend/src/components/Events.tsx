@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Calendar, MapPin, Users, Clock, X } from 'lucide-react';
 import { useEvents } from '../hooks/useEvents';
 import { useAuth } from '../contexts/AuthContext';
-import { useNotification } from '../contexts/NotificationContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface EventsProps {
   limit?: number;
@@ -11,10 +11,106 @@ interface EventsProps {
 const Events: React.FC<EventsProps> = ({ limit }) => {
   const { events, loading, error } = useEvents();
   const { user } = useAuth();
-  const { showNotification } = useNotification();
+  const { t, currentLanguage } = useLanguage();
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [showEventDetails, setShowEventDetails] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<{ [key: string]: 'registering' | 'registered' | 'error' }>({});
+
+  // Format date based on current language
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    
+    if (currentLanguage === 'gu') {
+      // Custom formatting for Gujarati
+      const day = date.getDate();
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const weekday = date.getDay();
+      
+      const gujaratiDays = [
+        t('dateTime.daysShort.sun'), 
+        t('dateTime.daysShort.mon'), 
+        t('dateTime.daysShort.tue'), 
+        t('dateTime.daysShort.wed'), 
+        t('dateTime.daysShort.thu'), 
+        t('dateTime.daysShort.fri'), 
+        t('dateTime.daysShort.sat')
+      ];
+      const gujaratiMonths = [
+        t('dateTime.monthsShort.jan'), 
+        t('dateTime.monthsShort.feb'), 
+        t('dateTime.monthsShort.mar'), 
+        t('dateTime.monthsShort.apr'), 
+        t('dateTime.monthsShort.may'), 
+        t('dateTime.monthsShort.jun'), 
+        t('dateTime.monthsShort.jul'), 
+        t('dateTime.monthsShort.aug'), 
+        t('dateTime.monthsShort.sep'), 
+        t('dateTime.monthsShort.oct'), 
+        t('dateTime.monthsShort.nov'), 
+        t('dateTime.monthsShort.dec')
+      ];
+      
+      const time = date.toLocaleTimeString('gu-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }).replace('AM', t('dateTime.timeUnits.am')).replace('PM', t('dateTime.timeUnits.pm'));
+      
+      return `${gujaratiDays[weekday]}, ${gujaratiMonths[month]} ${day}, ${year}, ${time}`;
+    }
+    
+    if (currentLanguage === 'hi') {
+      // Custom formatting for Hindi
+      const day = date.getDate();
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const weekday = date.getDay();
+      
+      const hindiDays = [
+        t('dateTime.daysShort.sun'), 
+        t('dateTime.daysShort.mon'), 
+        t('dateTime.daysShort.tue'), 
+        t('dateTime.daysShort.wed'), 
+        t('dateTime.daysShort.thu'), 
+        t('dateTime.daysShort.fri'), 
+        t('dateTime.daysShort.sat')
+      ];
+      const hindiMonths = [
+        t('dateTime.monthsShort.jan'), 
+        t('dateTime.monthsShort.feb'), 
+        t('dateTime.monthsShort.mar'), 
+        t('dateTime.monthsShort.apr'), 
+        t('dateTime.monthsShort.may'), 
+        t('dateTime.monthsShort.jun'), 
+        t('dateTime.monthsShort.jul'), 
+        t('dateTime.monthsShort.aug'), 
+        t('dateTime.monthsShort.sep'), 
+        t('dateTime.monthsShort.oct'), 
+        t('dateTime.monthsShort.nov'), 
+        t('dateTime.monthsShort.dec')
+      ];
+      
+      const time = date.toLocaleTimeString('hi-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }).replace(/AM|am/g, t('dateTime.timeUnits.am')).replace(/PM|pm/g, t('dateTime.timeUnits.pm'));
+      
+      return `${hindiDays[weekday]}, ${hindiMonths[month]} ${day}, ${year}, ${time}`;
+    }
+    
+    // English formatting
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
 
   // Handle event registration
   const handleRegisterNow = async (event: any) => {
@@ -90,13 +186,13 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'upcoming':
-        return 'Upcoming';
+        return t('events.statusUpcoming');
       case 'filling-fast':
-        return 'Filling Fast';
+        return t('events.statusFillingFast');
       case 'open':
-        return 'Open Registration';
+        return t('events.statusOpen');
       default:
-        return 'Available';
+        return t('events.statusAvailable');
     }
   };
 
@@ -106,7 +202,7 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
-            <p className="text-gray-400 mt-4">Loading events...</p>
+            <p className="text-gray-400 mt-4">{t('events.loading')}</p>
           </div>
         </div>
       </section>
@@ -118,7 +214,7 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
       <section id="events" className="py-16 lg:py-24 rounded-3xl shadow-2xl" style={{backgroundColor: '#B3C893'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-red-400">Error loading events: {error}</p>
+            <p className="text-red-400">{t('events.error')}: {error}</p>
           </div>
         </div>
       </section>
@@ -130,17 +226,17 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4" style={{color: '#1F2937'}}>
-            Upcoming Events
+            {t('events.title')}
           </h2>
           <p className="text-xl max-w-2xl mx-auto" style={{color: '#4B5563'}}>
-            Join local events that bring our community together around sustainability and innovation.
+            {t('events.description')}
           </p>
         </div>
 
         {events.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-400 text-lg">No events scheduled yet.</p>
-            <p className="text-gray-500 mt-2">Check back soon for upcoming community events!</p>
+            <p className="text-gray-400 text-lg">{t('events.noEvents')}</p>
+            <p className="text-gray-500 mt-2">{t('events.checkBack')}</p>
           </div>
         ) : (
           <div className="space-y-8 mb-12">
@@ -173,7 +269,7 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
                   <div className="grid sm:grid-cols-2 gap-4 mb-6 text-gray-300">
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-5 w-5 text-emerald-600" />
-                      <span>{event.date}</span>
+                      <span>{formatDate(event.date)}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Clock className="h-5 w-5 text-emerald-600" />
@@ -185,7 +281,7 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Users className="h-5 w-5 text-emerald-600" />
-                      <span>{event.attendees} attendees</span>
+                      <span>{event.attendees} {t('events.attendees')}</span>
                     </div>
                   </div>
                   
@@ -202,17 +298,17 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
                       }`}
                     >
                       {registrationStatus[event.id] === 'registered' 
-                        ? 'Registered ✓' 
+                        ? t('events.registered')
                         : registrationStatus[event.id] === 'registering'
-                        ? 'Registering...'
-                        : 'Register Now'
+                        ? t('events.registering')
+                        : t('events.registerNow')
                       }
                     </button>
                     <button 
                       onClick={() => handleLearnMore(event)}
                       className="border border-gray-600 text-gray-300 px-6 py-2 rounded-lg font-medium hover:bg-gray-600 transition-colors duration-200"
                     >
-                      Learn More
+                      {t('events.learnMore')}
                     </button>
                   </div>
                 </div>
@@ -227,7 +323,7 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
             onClick={handleViewAllEvents}
             className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors duration-200"
           >
-            View All Events
+            {t('events.viewAllEvents')}
           </button>
         </div>
       </div>
@@ -265,7 +361,7 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
               <div className="grid sm:grid-cols-2 gap-4 mb-6 text-gray-600">
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-5 w-5 text-emerald-600" />
-                  <span>{selectedEvent.date}</span>
+                  <span>{formatDate(selectedEvent.date)}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Clock className="h-5 w-5 text-emerald-600" />
@@ -277,19 +373,19 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Users className="h-5 w-5 text-emerald-600" />
-                  <span>{selectedEvent.attendees} attendees</span>
+                  <span>{selectedEvent.attendees} {t('events.attendees')}</span>
                 </div>
               </div>
               
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Event Description</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('events.eventDescription')}</h3>
                 <p className="text-gray-700 leading-relaxed">
                   {selectedEvent.description || 'Join us for this exciting community event focused on sustainability and environmental impact. This event brings together like-minded individuals passionate about creating positive change in our community.'}
                 </p>
               </div>
               
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">What to Expect</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('events.whatToExpect')}</h3>
                 <ul className="text-gray-700 space-y-1">
                   <li>• Interactive workshops and activities</li>
                   <li>• Networking opportunities with community members</li>
@@ -314,17 +410,17 @@ const Events: React.FC<EventsProps> = ({ limit }) => {
                   }`}
                 >
                   {registrationStatus[selectedEvent.id] === 'registered' 
-                    ? 'Registered ✓' 
+                    ? t('events.registered')
                     : registrationStatus[selectedEvent.id] === 'registering'
-                    ? 'Registering...'
-                    : 'Register Now'
+                    ? t('events.registering')
+                    : t('events.registerNow')
                   }
                 </button>
                 <button
                   onClick={handleEventDetailsClose}
                   className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200"
                 >
-                  Close
+                  {t('events.close')}
                 </button>
               </div>
             </div>

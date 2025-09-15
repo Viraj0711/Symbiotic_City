@@ -2,9 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Suspense, lazy } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { SearchProvider } from './contexts/SearchContext';
-import { NotificationProvider } from './contexts/NotificationContext';
-import ErrorBoundary from './components/ErrorBoundary';
-import { PageLoading } from './components/LoadingSpinner';
+import { LanguageProvider } from './contexts/LanguageContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -33,54 +31,44 @@ const SiteOwnerDashboard = lazy(() => import('./components/SiteOwnerDashboard'))
 
 function App() {
   return (
-    <ErrorBoundary>
+    <LanguageProvider>
       <AuthProvider>
         <SearchProvider>
-          <NotificationProvider>
-            <Router>
-              <ScrollToTop />
-              <div className="min-h-screen" style={{backgroundColor: '#E2EAD6'}}>
-                <ErrorBoundary>
-                  <Header />
-                </ErrorBoundary>
-                <main>
-                  <ErrorBoundary>
-                    <Suspense fallback={<PageLoading title="Loading page..." />}>
-                      <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/projects" element={<Projects />} />
-                        <Route path="/events" element={<Events />} />
-                        <Route path="/marketplace" element={<Marketplace />} />
-                        <Route path="/marketplace/product/:id" element={<ProductDetail />} />
-                        <Route path="/emergency" element={<EmergencyServices />} />
-                        <Route path="/site-owner-dashboard" element={<SiteOwnerDashboard />} />
-                        <Route path="/community" element={<Community />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="/contact" element={<Contact />} />
-                        <Route path="/profile" element={<Navigate to="/dashboard" replace />} />
-                        <Route path="/settings" element={<Settings />} />
-                        <Route path="/help" element={<HelpCenter />} />
-                        <Route path="/privacy" element={<PrivacyPolicy />} />
-                        <Route path="/terms" element={<TermsOfService />} />
-                        <Route path="/guidelines" element={<Guidelines />} />
-                        <Route path="/search" element={<SearchResults />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/signup" element={<Signup />} />
-                        <Route path="/forgot-password" element={<ForgotPassword />} />
-                      </Routes>
-                    </Suspense>
-                  </ErrorBoundary>
-                </main>
-                <ErrorBoundary>
-                  <Footer />
-                </ErrorBoundary>
-              </div>
-            </Router>
-          </NotificationProvider>
+          <Router>
+            <ScrollToTop />
+            <div className="min-h-screen" style={{backgroundColor: '#E2EAD6'}}>
+              <Header />
+              <main>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/projects" element={<Projects />} />
+                  <Route path="/events" element={<Events />} />
+                  <Route path="/marketplace" element={<Marketplace />} />
+                  <Route path="/marketplace/product/:id" element={<ProductDetail />} />
+                  <Route path="/emergency" element={<EmergencyServices />} />
+                  <Route path="/site-owner-dashboard" element={<SiteOwnerDashboard />} />
+                  <Route path="/community" element={<Community />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/profile" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/help" element={<HelpCenter />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsOfService />} />
+                  <Route path="/guidelines" element={<Guidelines />} />
+                  <Route path="/search" element={<SearchResults />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+          </Router>
         </SearchProvider>
       </AuthProvider>
-    </ErrorBoundary>
+    </LanguageProvider>
   );
 }
 

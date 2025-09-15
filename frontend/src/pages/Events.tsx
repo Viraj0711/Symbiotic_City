@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { useEvents } from '../hooks/useEvents';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Events: React.FC = () => {
   const { events, loading, error } = useEvents();
+  const { t, currentLanguage } = useLanguage();
   const [filter, setFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const categories = ['all', 'workshop', 'cleanup', 'meeting', 'conference', 'volunteer'];
+  const categories = [
+    { key: 'all', label: t('eventsPage.filters.allTypes') },
+    { key: 'workshop', label: t('eventsPage.filters.workshop') },
+    { key: 'cleanup', label: t('eventsPage.filters.cleanup') },
+    { key: 'meeting', label: t('eventsPage.filters.meeting') },
+    { key: 'conference', label: t('eventsPage.filters.conference') },
+    { key: 'volunteer', label: t('eventsPage.filters.volunteer') }
+  ];
 
   const filteredEvents = events.filter(event => {
     const matchesCategory = filter === 'all' || event.type === filter;
@@ -17,13 +26,96 @@ const Events: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
+    
+    if (currentLanguage === 'gu') {
+      // Custom formatting for Gujarati
+      const day = date.getDate();
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const weekday = date.getDay();
+      
+      const gujaratiDays = [
+        t('dateTime.daysShort.sun'), 
+        t('dateTime.daysShort.mon'), 
+        t('dateTime.daysShort.tue'), 
+        t('dateTime.daysShort.wed'), 
+        t('dateTime.daysShort.thu'), 
+        t('dateTime.daysShort.fri'), 
+        t('dateTime.daysShort.sat')
+      ];
+      const gujaratiMonths = [
+        t('dateTime.monthsShort.jan'), 
+        t('dateTime.monthsShort.feb'), 
+        t('dateTime.monthsShort.mar'), 
+        t('dateTime.monthsShort.apr'), 
+        t('dateTime.monthsShort.may'), 
+        t('dateTime.monthsShort.jun'), 
+        t('dateTime.monthsShort.jul'), 
+        t('dateTime.monthsShort.aug'), 
+        t('dateTime.monthsShort.sep'), 
+        t('dateTime.monthsShort.oct'), 
+        t('dateTime.monthsShort.nov'), 
+        t('dateTime.monthsShort.dec')
+      ];
+      
+      const time = date.toLocaleTimeString('gu-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }).replace('AM', t('dateTime.timeUnits.am')).replace('PM', t('dateTime.timeUnits.pm'));
+      
+      return `${gujaratiDays[weekday]}, ${gujaratiMonths[month]} ${day}, ${year}, ${time}`;
+    }
+    
+    if (currentLanguage === 'hi') {
+      // Custom formatting for Hindi
+      const day = date.getDate();
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const weekday = date.getDay();
+      
+      const hindiDays = [
+        t('dateTime.daysShort.sun'), 
+        t('dateTime.daysShort.mon'), 
+        t('dateTime.daysShort.tue'), 
+        t('dateTime.daysShort.wed'), 
+        t('dateTime.daysShort.thu'), 
+        t('dateTime.daysShort.fri'), 
+        t('dateTime.daysShort.sat')
+      ];
+      const hindiMonths = [
+        t('dateTime.monthsShort.jan'), 
+        t('dateTime.monthsShort.feb'), 
+        t('dateTime.monthsShort.mar'), 
+        t('dateTime.monthsShort.apr'), 
+        t('dateTime.monthsShort.may'), 
+        t('dateTime.monthsShort.jun'), 
+        t('dateTime.monthsShort.jul'), 
+        t('dateTime.monthsShort.aug'), 
+        t('dateTime.monthsShort.sep'), 
+        t('dateTime.monthsShort.oct'), 
+        t('dateTime.monthsShort.nov'), 
+        t('dateTime.monthsShort.dec')
+      ];
+      
+      const time = date.toLocaleTimeString('hi-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }).replace(/AM|am/g, t('dateTime.timeUnits.am')).replace(/PM|pm/g, t('dateTime.timeUnits.pm'));
+      
+      return `${hindiDays[weekday]}, ${hindiMonths[month]} ${day}, ${year}, ${time}`;
+    }
+    
+    // English formatting
     return date.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: true
     });
   };
 
@@ -58,10 +150,10 @@ const Events: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Community Events
+            {t('eventsPage.title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Join us for workshops, cleanups, meetings, and other sustainability events in our community
+            {t('eventsPage.description')}
           </p>
         </div>
 
@@ -72,7 +164,7 @@ const Events: React.FC = () => {
             <div className="flex-1">
               <input
                 type="text"
-                placeholder="Search events..."
+                placeholder={t('eventsPage.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -87,8 +179,8 @@ const Events: React.FC = () => {
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
                 {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category === 'all' ? 'All Types' : category.charAt(0).toUpperCase() + category.slice(1)}
+                  <option key={category.key} value={category.key}>
+                    {category.label}
                   </option>
                 ))}
               </select>
@@ -96,7 +188,7 @@ const Events: React.FC = () => {
 
             {/* Create Event Button */}
             <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
-              Create Event
+              {t('eventsPage.createEvent')}
             </button>
           </div>
         </div>
@@ -109,7 +201,7 @@ const Events: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Error loading events</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('eventsPage.error.title')}</h3>
             <p className="text-gray-600">{error}</p>
           </div>
         ) : filteredEvents.length === 0 ? (
@@ -119,8 +211,8 @@ const Events: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v6m6-6v6M6 15h12" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('eventsPage.empty.title')}</h3>
+            <p className="text-gray-600">{t('eventsPage.empty.description')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -139,7 +231,7 @@ const Events: React.FC = () => {
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       isUpcoming(event.date) ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {isUpcoming(event.date) ? 'Upcoming' : 'Past'}
+                      {isUpcoming(event.date) ? t('eventsPage.status.upcoming') : t('eventsPage.status.past')}
                     </span>
                     <span className="text-sm text-gray-500">{event.type}</span>
                   </div>
@@ -168,7 +260,7 @@ const Events: React.FC = () => {
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
-                      {event.attendees} attending
+                      {event.attendees} {t('eventsPage.eventDetails.attending')}
                     </div>
                   </div>
                   
@@ -176,15 +268,15 @@ const Events: React.FC = () => {
                   <div className="flex gap-2">
                     {isUpcoming(event.date) ? (
                       <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">
-                        Join
+                        {t('eventsPage.actions.join')}
                       </button>
                     ) : (
                       <button className="flex-1 bg-gray-400 text-white py-2 px-4 rounded-lg cursor-not-allowed text-sm" disabled>
-                        Event Ended
+                        {t('eventsPage.actions.eventEnded')}
                       </button>
                     )}
                     <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                      Details
+                      {t('eventsPage.actions.details')}
                     </button>
                   </div>
                 </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { signIn, user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   // Redirect if already logged in
@@ -49,7 +51,7 @@ const Login = () => {
             className="flex items-center text-gray-600 hover:text-emerald-600 transition-colors group"
           >
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Back to Home
+            {t('auth.login.backToHome')}
           </Link>
         </div>
 
@@ -62,8 +64,8 @@ const Login = () => {
               </div>
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h2>
-          <p className="text-gray-600">Sign in to your Symbiotic City account</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('auth.login.title')}</h2>
+          <p className="text-gray-600">{t('auth.login.subtitle')}</p>
         </div>
 
         {/* Form */}
@@ -71,7 +73,7 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                {t('auth.login.emailLabel')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -81,7 +83,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.login.emailPlaceholder')}
                   required
                 />
               </div>
@@ -89,7 +91,7 @@ const Login = () => {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                {t('auth.login.passwordLabel')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -99,7 +101,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                  placeholder="Enter your password"
+                  placeholder={t('auth.login.passwordPlaceholder')}
                   required
                   minLength={6}
                 />
@@ -122,7 +124,7 @@ const Login = () => {
                   className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                  Remember me
+                  {t('auth.login.rememberMe')}
                 </label>
               </div>
 
@@ -131,7 +133,7 @@ const Login = () => {
                   to="/forgot-password"
                   className="font-medium text-emerald-600 hover:text-emerald-500 transition-colors"
                 >
-                  Forgot your password?
+                  {t('auth.login.forgotPassword')}
                 </Link>
               </div>
             </div>
@@ -150,7 +152,7 @@ const Login = () => {
               {loading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                'Sign In'
+                t('auth.login.signInButton')
               )}
             </button>
           </form>
@@ -161,7 +163,7 @@ const Login = () => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">New to Symbiotic City?</span>
+                <span className="px-2 bg-white text-gray-500">{t('auth.login.newUser')}</span>
               </div>
             </div>
 
@@ -170,7 +172,7 @@ const Login = () => {
                 to="/signup"
                 className="w-full flex justify-center py-3 px-4 border border-emerald-600 rounded-lg text-emerald-600 font-semibold hover:bg-emerald-50 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
               >
-                Create an account
+                {t('auth.login.createAccount')}
               </Link>
             </div>
           </div>
@@ -180,7 +182,7 @@ const Login = () => {
         <div className="text-center">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-700">
-              <strong>Demo Mode:</strong> Use any email and password to sign in
+              <strong>{t('auth.login.demoNotice')}</strong>
             </p>
           </div>
         </div>

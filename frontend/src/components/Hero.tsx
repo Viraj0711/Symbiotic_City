@@ -3,57 +3,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedSection, StaggeredContainer } from './AnimatedSection';
 import { useAuth } from '../contexts/AuthContext';
-import { useNotification } from '../contexts/NotificationContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Hero = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const { showNotification } = useNotification();
-  const [isNavigating, setIsNavigating] = useState(false);
-
-  // Handle Join Community button click
-  const handleJoinCommunity = async () => {
-    setIsNavigating(true);
-    
-    if (user) {
-      // User is already logged in, navigate to community page
-      navigate('/community');
-      showNotification({
-        type: 'success',
-        title: 'Welcome to the Community!',
-        message: 'Explore discussions, connect with neighbors, and participate in community activities.',
-        duration: 5000
-      });
-    } else {
-      // User not logged in, navigate to signup
-      navigate('/signup');
-      showNotification({
-        type: 'info',
-        title: 'Join Our Community',
-        message: 'Create an account to connect with your neighbors and make a positive impact!',
-        duration: 5000
-      });
-    }
-    
-    // Reset loading state after navigation
-    setTimeout(() => setIsNavigating(false), 1000);
-  };
-
-  // Handle Explore Projects button click
-  const handleExploreProjects = async () => {
-    setIsNavigating(true);
-    
-    navigate('/projects');
-    showNotification({
-      type: 'info',
-      title: 'Discover Amazing Projects',
-      message: 'Browse sustainable community projects and find ways to contribute to your neighborhood.',
-      duration: 4000
-    });
-    
-    // Reset loading state after navigation
-    setTimeout(() => setIsNavigating(false), 1000);
-  };
+  const { t } = useLanguage();
   
   return (
     <section className="py-16 lg:py-24 relative overflow-hidden" style={{backgroundColor: '#E2EAD6'}}>
@@ -71,8 +25,10 @@ const Hero = () => {
                   />
                 )}
                 <div>
-                  <h2 className="text-2xl font-bold" style={{color: '#059669'}}>Welcome back, {user.name}!</h2>
-                  <p className="text-green-600">Ready to make a difference in your community today?</p>
+                  <h2 className="text-2xl font-bold" style={{color: '#059669'}}>
+                    {t('hero.welcome').replace('{{name}}', user.name)}
+                  </h2>
+                  <p className="text-green-600">{t('hero.welcomeSubtext')}</p>
                 </div>
               </div>
             </div>
@@ -84,16 +40,14 @@ const Hero = () => {
           <div className="space-y-8">
             <AnimatedSection animation="fadeUp" delay={0.2}>
               <h1 className="text-4xl lg:text-6xl font-bold leading-tight" style={{color: '#059669'}}>
-                Co-create a
-                <span className="text-emerald-600"> Sustainable</span> Future
+                {t('hero.title')}
+                <span className="text-emerald-600"> {t('hero.titleHighlight')}</span> {t('hero.titleEnd')}
               </h1>
             </AnimatedSection>
             
             <AnimatedSection animation="fadeUp" delay={0.4}>
               <p className="text-xl leading-relaxed" style={{color: 'black'}}>
-                Connect with residents, businesses, and local authorities to build stronger, 
-                smarter communities. Discover eco-friendly initiatives, share resources, 
-                and collaborate on projects that make a real impact.
+                {t('hero.description')}
               </p>
             </AnimatedSection>
             
@@ -101,43 +55,27 @@ const Hero = () => {
             <StaggeredContainer staggerDelay={0.1} className="flex flex-wrap gap-8">
               <div className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-emerald-600" />
-                <span className="text-sm font-medium" style={{color: 'black'}}>10k+ Members</span>
+                <span className="text-sm font-medium" style={{color: 'black'}}>{t('hero.stats.members')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Building2 className="h-5 w-5 text-emerald-600" />
-                <span className="text-sm font-medium" style={{color: 'black'}}>500+ Businesses</span>
+                <span className="text-sm font-medium" style={{color: 'black'}}>{t('hero.stats.businesses')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <TreePine className="h-5 w-5 text-emerald-600" />
-                <span className="text-sm font-medium" style={{color: 'black'}}>200+ Projects</span>
+                <span className="text-sm font-medium" style={{color: 'black'}}>{t('hero.stats.projects')}</span>
               </div>
             </StaggeredContainer>
 
             {/* CTA Buttons */}
             <AnimatedSection animation="fadeUp" delay={0.8}>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button 
-                  onClick={handleJoinCommunity}
-                  disabled={isNavigating}
-                  className={`px-8 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2 ${
-                    isNavigating 
-                      ? 'bg-emerald-400 text-white cursor-not-allowed' 
-                      : 'bg-emerald-600 text-white hover:bg-emerald-700'
-                  }`}
-                >
-                  <span>{user ? 'Visit Community' : 'Join Community'}</span>
+                <button className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2">
+                  <span>{t('hero.buttons.joinCommunity')}</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
-                <button 
-                  onClick={handleExploreProjects}
-                  disabled={isNavigating}
-                  className={`px-8 py-3 rounded-lg font-semibold transition-all duration-200 border border-emerald-600 ${
-                    isNavigating
-                      ? 'text-emerald-300 cursor-not-allowed'
-                      : 'text-emerald-400 hover:bg-emerald-900'
-                  }`}
-                >
-                  Explore Projects
+                <button className="border border-emerald-600 text-emerald-400 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-900 transition-all duration-200">
+                  {t('hero.buttons.exploreProjects')}
                 </button>
               </div>
             </AnimatedSection>
@@ -153,13 +91,13 @@ const Hero = () => {
                       <Leaf className="h-6 w-6 text-emerald-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-800">Green Initiative</h3>
-                      <p className="text-sm text-gray-600">Community garden project</p>
+                      <h3 className="font-semibold text-gray-800">{t('hero.projectCard.title')}</h3>
+                      <p className="text-sm text-gray-600">{t('hero.projectCard.subtitle')}</p>
                     </div>
                   </div>
                   <div className="bg-gray-200 rounded-lg p-4">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Progress</span>
+                      <span className="text-sm font-medium text-gray-700">{t('hero.projectCard.progress')}</span>
                       <span className="text-sm text-emerald-600">75%</span>
                     </div>
                     <div className="w-full bg-gray-300 rounded-full h-2">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Loader2, ArrowLeft, Eye, EyeOff, Check, X, Building, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface PasswordRequirement {
   label: string;
@@ -20,6 +21,7 @@ const Signup = () => {
   const [error, setError] = useState<string | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const { signUp, user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   // Redirect if already logged in
@@ -30,10 +32,10 @@ const Signup = () => {
   }, [user, navigate]);
 
   const passwordRequirements: PasswordRequirement[] = [
-    { label: 'At least 8 characters', test: (pwd) => pwd.length >= 8 },
-    { label: 'Contains uppercase letter', test: (pwd) => /[A-Z]/.test(pwd) },
-    { label: 'Contains lowercase letter', test: (pwd) => /[a-z]/.test(pwd) },
-    { label: 'Contains number', test: (pwd) => /\d/.test(pwd) },
+    { label: t('auth.signup.passwordRequirements.length'), test: (pwd) => pwd.length >= 8 },
+    { label: t('auth.signup.passwordRequirements.uppercase'), test: (pwd) => /[A-Z]/.test(pwd) },
+    { label: t('auth.signup.passwordRequirements.lowercase'), test: (pwd) => /[a-z]/.test(pwd) },
+    { label: t('auth.signup.passwordRequirements.number'), test: (pwd) => /\d/.test(pwd) },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,18 +44,18 @@ const Signup = () => {
 
     // Validation
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.signup.errors.passwordMismatch'));
       return;
     }
 
     if (!agreedToTerms) {
-      setError('Please agree to the Terms of Service and Privacy Policy');
+      setError(t('auth.signup.errors.termsRequired'));
       return;
     }
 
     const failedRequirements = passwordRequirements.filter(req => !req.test(password));
     if (failedRequirements.length > 0) {
-      setError('Password does not meet all requirements');
+      setError(t('auth.signup.errors.passwordRequirements'));
       return;
     }
 
@@ -84,7 +86,7 @@ const Signup = () => {
             className="flex items-center text-gray-600 hover:text-emerald-600 transition-colors group"
           >
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Back to Home
+            {t('auth.signup.backToHome')}
           </Link>
         </div>
 
@@ -97,8 +99,8 @@ const Signup = () => {
               </div>
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Join Symbiotic City</h2>
-          <p className="text-gray-600">Create your account and start building sustainable communities</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('auth.signup.title')}</h2>
+          <p className="text-gray-600">{t('auth.signup.subtitle')}</p>
         </div>
 
         {/* Form */}
@@ -106,7 +108,7 @@ const Signup = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
+                {t('auth.signup.nameLabel')}
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -116,7 +118,7 @@ const Signup = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                  placeholder="Enter your full name"
+                  placeholder={t('auth.signup.namePlaceholder')}
                   required
                 />
               </div>
@@ -124,7 +126,7 @@ const Signup = () => {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                {t('auth.signup.emailLabel')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -134,7 +136,7 @@ const Signup = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.signup.emailPlaceholder')}
                   required
                 />
               </div>
@@ -143,7 +145,7 @@ const Signup = () => {
             {/* Role Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Choose Your Role
+                {t('auth.signup.roleLabel')}
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <button
@@ -162,8 +164,8 @@ const Signup = () => {
                       <Users className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">Regular User</h3>
-                      <p className="text-sm text-gray-600">Browse and purchase sustainable products</p>
+                      <h3 className="font-medium text-gray-900">{t('auth.signup.regularUser')}</h3>
+                      <p className="text-sm text-gray-600">{t('auth.signup.regularUserDesc')}</p>
                     </div>
                   </div>
                 </button>
@@ -183,8 +185,8 @@ const Signup = () => {
                       <Building className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">Site Owner</h3>
-                      <p className="text-sm text-gray-600">Sell sustainable products and services</p>
+                      <h3 className="font-medium text-gray-900">{t('auth.signup.siteOwner')}</h3>
+                      <p className="text-sm text-gray-600">{t('auth.signup.siteOwnerDesc')}</p>
                     </div>
                   </div>
                 </button>
@@ -193,7 +195,7 @@ const Signup = () => {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                {t('auth.signup.passwordLabel')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -203,7 +205,7 @@ const Signup = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                  placeholder="Create a password"
+                  placeholder={t('auth.signup.passwordPlaceholder')}
                   required
                 />
                 <button
@@ -239,7 +241,7 @@ const Signup = () => {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password
+                {t('auth.signup.confirmPasswordLabel')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -253,7 +255,7 @@ const Signup = () => {
                       ? 'border-red-300 focus:border-red-500'
                       : 'border-gray-300 focus:border-emerald-500'
                   }`}
-                  placeholder="Confirm your password"
+                  placeholder={t('auth.signup.confirmPasswordPlaceholder')}
                   required
                 />
                 <button
@@ -265,7 +267,7 @@ const Signup = () => {
                 </button>
               </div>
               {confirmPassword && password !== confirmPassword && (
-                <p className="mt-2 text-sm text-red-600">Passwords do not match</p>
+                <p className="mt-2 text-sm text-red-600">{t('auth.signup.passwordMismatch')}</p>
               )}
             </div>
 
@@ -282,13 +284,13 @@ const Signup = () => {
               </div>
               <div className="ml-3 text-sm">
                 <label htmlFor="terms" className="text-gray-700">
-                  I agree to the{' '}
+                  {t('auth.signup.termsAgreement')}{' '}
                   <Link to="/terms" className="font-medium text-emerald-600 hover:text-emerald-500">
-                    Terms of Service
+                    {t('auth.signup.termsOfService')}
                   </Link>{' '}
-                  and{' '}
+                  {t('auth.signup.and')}{' '}
                   <Link to="/privacy" className="font-medium text-emerald-600 hover:text-emerald-500">
-                    Privacy Policy
+                    {t('auth.signup.privacyPolicy')}
                   </Link>
                 </label>
               </div>
@@ -308,7 +310,7 @@ const Signup = () => {
               {loading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                'Create Account'
+                t('auth.signup.createAccountButton')
               )}
             </button>
           </form>
@@ -319,7 +321,7 @@ const Signup = () => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Already have an account?</span>
+                <span className="px-2 bg-white text-gray-500">{t('auth.signup.alreadyHaveAccount')}</span>
               </div>
             </div>
 
@@ -328,7 +330,7 @@ const Signup = () => {
                 to="/login"
                 className="w-full flex justify-center py-3 px-4 border border-emerald-600 rounded-lg text-emerald-600 font-semibold hover:bg-emerald-50 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
               >
-                Sign in to your account
+                {t('auth.signup.signInToAccount')}
               </Link>
             </div>
           </div>
@@ -338,7 +340,7 @@ const Signup = () => {
         <div className="text-center">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-700">
-              <strong>Demo Mode:</strong> Account creation is simulated for demonstration
+              <strong>{t('auth.signup.demoNotice')}</strong>
             </p>
           </div>
         </div>
