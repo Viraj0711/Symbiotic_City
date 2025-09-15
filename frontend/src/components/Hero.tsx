@@ -1,6 +1,4 @@
 import { ArrowRight, Users, Building2, TreePine, Leaf } from 'lucide-react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { AnimatedSection, StaggeredContainer } from './AnimatedSection';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';

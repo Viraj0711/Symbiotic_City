@@ -39,29 +39,31 @@ function App() {
             <div className="min-h-screen" style={{backgroundColor: '#E2EAD6'}}>
               <Header />
               <main>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/projects" element={<Projects />} />
-                  <Route path="/events" element={<Events />} />
-                  <Route path="/marketplace" element={<Marketplace />} />
-                  <Route path="/marketplace/product/:id" element={<ProductDetail />} />
-                  <Route path="/emergency" element={<EmergencyServices />} />
-                  <Route path="/site-owner-dashboard" element={<SiteOwnerDashboard />} />
-                  <Route path="/community" element={<Community />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/profile" element={<Navigate to="/dashboard" replace />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/help" element={<HelpCenter />} />
-                  <Route path="/privacy" element={<PrivacyPolicy />} />
-                  <Route path="/terms" element={<TermsOfService />} />
-                  <Route path="/guidelines" element={<Guidelines />} />
-                  <Route path="/search" element={<SearchResults />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                </Routes>
+                <Suspense fallback={<div className="flex justify-center items-center h-64"><div className="text-lg">Loading...</div></div>}>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/events" element={<Events />} />
+                    <Route path="/marketplace" element={<Marketplace />} />
+                    <Route path="/marketplace/product/:id" element={<ProductDetail />} />
+                    <Route path="/emergency" element={<EmergencyServices />} />
+                    <Route path="/site-owner-dashboard" element={<SiteOwnerDashboard />} />
+                    <Route path="/community" element={<Community />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/profile" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/help" element={<HelpCenter />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<TermsOfService />} />
+                    <Route path="/guidelines" element={<Guidelines />} />
+                    <Route path="/search" element={<SearchResults />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                  </Routes>
+                </Suspense>
               </main>
               <Footer />
             </div>

@@ -10,6 +10,7 @@ const Footer = () => {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscriptionMessage, setSubscriptionMessage] = useState('');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const { showNotification } = useNotification();
   const { t } = useLanguage();
 
   const handleNewsletterSignup = async (e: React.FormEvent) => {
