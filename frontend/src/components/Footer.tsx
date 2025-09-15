@@ -156,27 +156,27 @@ const Footer = () => {
             <h3 className="text-lg font-semibold">Contact Us</h3>
             <div className="space-y-3">
               <a 
-                href="mailto:hello@symbioticCity.com"
+                href="mailto:symbioticCity@hotmail.com"
                 className="flex items-center space-x-2 text-gray-300 hover:text-emerald-400 transition-colors group"
               >
                 <Mail className="h-4 w-4 text-emerald-400 group-hover:text-emerald-300" />
-                <span>hello@symbioticCity.com</span>
+                <span>symbioticCity@hotmail.com</span>
               </a>
               <a 
-                href="tel:+15551234567"
+                href="tel:+918734951206"
                 className="flex items-center space-x-2 text-gray-300 hover:text-emerald-400 transition-colors group"
               >
                 <Phone className="h-4 w-4 text-emerald-400 group-hover:text-emerald-300" />
-                <span>+1 (555) 123-4567</span>
+                <span>+91 8734951206</span>
               </a>
               <a 
-                href="https://maps.google.com/?q=123+Green+Street+City"
+                href="https://maps.google.com/?q=A.+D.+Patel+Institute+of+Technology+New+Vallabh+Vidyanagar"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 text-gray-300 hover:text-emerald-400 transition-colors group"
               >
                 <MapPin className="h-4 w-4 text-emerald-400 group-hover:text-emerald-300" />
-                <span>123 Green Street, City</span>
+                <span>A. D. Patel Institute of Technology, New Vallabh Vidyanagar</span>
                 <ExternalLink className="h-3 w-3 ml-1" />
               </a>
               
