@@ -143,8 +143,8 @@ const Hero = () => {
             </AnimatedSection>
           </div>
 
-          {/* Visual */}
-          <AnimatedSection animation="slideRight" delay={0.6}>
+          {/* Visual Element */}
+          <AnimatedSection animation="fadeUp" delay={0.6}>
             <div className="relative">
               <div className="border border-gray-300 rounded-2xl shadow-xl p-8" style={{backgroundColor: '#B3C893'}}>
                 <div className="space-y-4">
