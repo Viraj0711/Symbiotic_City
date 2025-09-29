@@ -1,0 +1,577 @@
+{
+  "hero": {
+    "welcome": "Welcome back, {{name}}!",
+    "welcomeSubtext": "Ready to make a difference in your community today?",
+    "title": "Co-create a",
+    "titleHighlight": "Sustainable",
+    "titleEnd": "Future",
+    "description": "Connect with residents, businesses, and local authorities to build stronger, smarter communities. Discover eco-friendly initiatives, share resources, and collaborate on projects that make a real impact.",
+    "stats": {
+      "members": "10k+ Members",
+      "businesses": "500+ Businesses",
+      "projects": "200+ Projects"
+    },
+    "buttons": {
+      "joinCommunity": "Join Community",
+      "exploreProjects": "Explore Projects"
+    },
+    "projectCard": {
+      "title": "Green Initiative",
+      "subtitle": "Community garden project",
+      "progress": "Progress"
+    }
+  },
+  "features": {
+    "title": "Everything You Need for Sustainable Living",
+    "subtitle": "Our platform brings together all the tools and connections you need to create positive environmental and social impact in your community.",
+    "items": {
+      "marketplace": {
+        "title": "Interactive Marketplace",
+        "description": "Discover and trade sustainable products and services within your community."
+      },
+      "community": {
+        "title": "Community Resources",
+        "description": "Share tools, skills, and knowledge to build a stronger circular economy."
+      },
+      "events": {
+        "title": "Event Hubs",
+        "description": "Find and organize local events focused on sustainability and collaboration."
+      },
+      "projects": {
+        "title": "Project Collaboration",
+        "description": "Co-create innovative solutions for urban challenges with diverse stakeholders."
+      },
+      "security": {
+        "title": "Secure Platform",
+        "description": "Your data and interactions are protected with enterprise-grade security."
+      },
+      "mobile": {
+        "title": "Cross-Device Access",
+        "description": "Seamless experience across all devices with responsive design."
+      }
+    }
+  },
+  "home": {
+    "communityHighlights": "Community Highlights",
+    "communityHighlightsSubtext": "Discover ongoing projects, upcoming events, and sustainable marketplace items",
+    "featuredProjects": "Featured Projects",
+    "upcomingEvents": "Upcoming Events",
+    "marketplace": "Marketplace"
+  },
+  "header": {
+    "marketplace": "Marketplace",
+    "community": "Community",
+    "events": "Events",
+    "projects": "Projects",
+    "emergency": "Emergency",
+    "about": "About",
+    "home": "Home",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "dashboard": "Dashboard",
+    "language": "Language"
+  },
+  "projects": {
+    "title": "Active Community Projects",
+    "subtitle": "Join ongoing projects that are making a real difference in our community. Collaborate with neighbors, businesses, and local authorities.",
+    "loading": "Loading projects...",
+    "error": "Error loading projects:",
+    "noProjects": "No active projects yet.",
+    "noProjectsSubtext": "Start a new project to make a difference in your community!",
+    "progress": "Progress",
+    "participants": "Participants",
+    "remaining": "Remaining",
+    "impact": "Impact",
+    "joinProject": "Join Project",
+    "learnMore": "Learn More",
+    "joined": "Joined ✓",
+    "joining": "Joining...",
+    "viewAllProjects": "View All Projects",
+    "startNewProject": "Start New Project",
+    "projectGoals": "Project Goals",
+    "howYouCanHelp": "How You Can Help",
+    "close": "Close",
+    "submitProposal": "Submit Proposal",
+    "cancel": "Cancel",
+    "projectTitle": "Project Title",
+    "category": "Category",
+    "description": "Description",
+    "duration": "Duration",
+    "targetParticipants": "Target Participants"
+  },
+  "projectData": {
+    "1": {
+      "title": "Community Garden Initiative",
+      "description": "Transform vacant lots into thriving community gardens that provide fresh produce for local families and create green spaces for neighborhoods.",
+      "category": "Environment",
+      "timeLeft": "2 months",
+      "impact": "High"
+    },
+    "2": {
+      "title": "Smart Recycling Stations",
+      "description": "Install AI-powered recycling stations throughout the city that sort waste automatically and reward residents for proper recycling habits.",
+      "category": "Technology",
+      "timeLeft": "4 months",
+      "impact": "Medium"
+    },
+    "3": {
+      "title": "Youth Mentorship Program",
+      "description": "Connect local professionals with youth to provide mentorship, career guidance, and skill development opportunities for the next generation.",
+      "category": "Education",
+      "timeLeft": "1 month",
+      "impact": "High"
+    },
+    "4": {
+      "title": "Bike Share Network",
+      "description": "Establish a comprehensive bike-sharing system with electric bikes and smart docking stations to promote sustainable transportation.",
+      "category": "Transportation",
+      "timeLeft": "6 months",
+      "impact": "High"
+    },
+    "5": {
+      "title": "Community Wi-Fi Access",
+      "description": "Provide free, high-speed internet access in public spaces to bridge the digital divide and support remote work and education.",
+      "category": "Digital",
+      "timeLeft": "3 months",
+      "impact": "Medium"
+    },
+    "6": {
+      "title": "Local Food Market",
+      "description": "Create a weekly farmers market featuring local producers, artisans, and food vendors to support the local economy and healthy eating.",
+      "category": "Economy",
+      "timeLeft": "2 weeks",
+      "impact": "Medium"
+    }
+  },
+  "marketplace": {
+    "title": "Sustainable Community Marketplace",
+    "description": "Discover eco-friendly products, green energy solutions, and sustainable services from local businesses committed to building a better future for our community.",
+    "loading": "Loading marketplace...",
+    "error": "Error loading marketplace",
+    "noListings": "No marketplace listings available yet.",
+    "beFirst": "Be the first to add a sustainable product or service!",
+    "viewDetails": "View Details",
+    "viewAllListings": "View All Listings"
+  },
+  "marketplaceData": {
+    "0": {
+      "title": "Organic Vegetables Box",
+      "description": "Fresh, locally grown organic vegetables delivered weekly. Support local farmers while eating healthy!",
+      "category": "Food & Produce",
+      "provider": "Green Valley Farm",
+      "badge": "Organic"
+    },
+    "1": {
+      "title": "Solar Panel Installation Kit",
+      "description": "Complete residential solar panel system with inverter and mounting hardware. Reduce your energy bills by up to 80%!",
+      "category": "Green Energy",
+      "provider": "SolarTech Solutions",
+      "badge": "High Efficiency"
+    },
+    "2": {
+      "title": "Wind Turbine - Small Scale",
+      "description": "Perfect for residential use, this compact wind turbine generates clean energy for your home. Easy installation.",
+      "category": "Green Energy",
+      "provider": "WindPower Co.",
+      "badge": "Eco-Friendly"
+    },
+    "3": {
+      "title": "Handmade Pottery Set",
+      "description": "Beautiful ceramic bowls and mugs crafted by local artisans. Perfect for your kitchen or as gifts.",
+      "category": "Crafts & Art",
+      "provider": "Clay Works Studio",
+      "badge": "Handmade"
+    }
+  },
+  "events": {
+    "title": "Upcoming Events",
+    "description": "Join local events that bring our community together around sustainability and innovation.",
+    "loading": "Loading events...",
+    "error": "Error loading events",
+    "noEvents": "No events scheduled yet.",
+    "checkBack": "Check back soon for upcoming community events!",
+    "registerNow": "Register Now",
+    "learnMore": "Learn More",
+    "viewAllEvents": "View All Events",
+    "registered": "Registered ✓",
+    "registering": "Registering...",
+    "attendees": "attendees",
+    "eventDescription": "Event Description",
+    "whatToExpect": "What to Expect",
+    "close": "Close",
+    "statusUpcoming": "Upcoming",
+    "statusFillingFast": "Filling Fast",
+    "statusOpen": "Open Registration",
+    "statusAvailable": "Available"
+  },
+  "eventsData": {
+    "0": {
+      "title": "Community Clean-Up Day",
+      "description": "Join your neighbors for a city-wide clean-up event. We'll provide supplies and refreshments. Let's make our neighborhoods shine!",
+      "location": "Central Park Pavilion",
+      "category": "Environment"
+    },
+    "1": {
+      "title": "Digital Skills Workshop",
+      "description": "Learn essential digital skills including online safety, digital communication, and basic computer literacy. All ages welcome!",
+      "location": "Community Library",
+      "category": "Education"
+    },
+    "2": {
+      "title": "Urban Gardening Masterclass",
+      "description": "Learn how to grow your own food in small spaces. We'll cover container gardening, composting, and seasonal planting tips.",
+      "location": "Green Spaces Community Garden",
+      "category": "Sustainability"
+    }
+  },
+  "footer": {
+    "brand": {
+      "description": "Building stronger, smarter, and more connected communities for a sustainable future."
+    },
+    "newsletter": {
+      "title": "Stay Updated",
+      "placeholder": "Enter your email",
+      "success": "Thank you for subscribing!"
+    },
+    "platform": {
+      "title": "Platform",
+      "marketplace": "Marketplace",
+      "community": "Community",
+      "events": "Events",
+      "projects": "Projects"
+    },
+    "resources": {
+      "title": "Resources",
+      "helpCenter": "Help Center",
+      "guidelines": "Guidelines",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
+    "contact": {
+      "title": "Contact Us",
+      "quickContact": "Quick Contact",
+      "liveSupport": "Live Support",
+      "backToTop": "Back to top"
+    },
+    "copyright": "© 2025 Symbiotic City. All rights reserved.",
+    "language": "Language:"
+  },
+  "marketplacePage": {
+    "title": "Sustainable Community Marketplace",
+    "description": "Buy, sell, and trade sustainable goods with your community. From green energy solutions to organic produce, find everything you need for an eco-friendly lifestyle through our circular economy platform.",
+    "searchPlaceholder": "Search marketplace...",
+    "allCategories": "All Categories",
+    "listItem": "List Item",
+    "errorTitle": "Error loading marketplace",
+    "noItemsTitle": "No items found",
+    "noItemsDescription": "Try adjusting your search or filter criteria",
+    "viewDetails": "View Details",
+    "tradeFor": "Trade for:",
+    "openToOffers": "Open to offers",
+    "free": "FREE",
+    "sell": "SELL",
+    "trade": "TRADE",
+    "new": "NEW",
+    "likeNew": "LIKE NEW",
+    "good": "GOOD",
+    "fair": "FAIR",
+    "categories": {
+      "greenEnergy": "Green Energy",
+      "foodProduce": "Food & Produce",
+      "craftsArt": "Crafts & Art",
+      "services": "Services",
+      "gardenOutdoor": "Garden & Outdoor",
+      "furniture": "Furniture",
+      "electronics": "Electronics",
+      "clothing": "Clothing",
+      "books": "Books"
+    }
+  },
+  "communityPage": {
+    "title": "Community Hub",
+    "description": "Connect with like-minded individuals, share updates, and build our sustainable community together",
+    "tabs": {
+      "feed": "Community Feed",
+      "members": "Members",
+      "groups": "Groups",
+      "emergency": "Emergency Services"
+    },
+    "feed": {
+      "createPostPlaceholder": "Share an update with the community...",
+      "postButton": "Post",
+      "likes": "likes",
+      "comments": "comments",
+      "share": "Share"
+    },
+    "stats": {
+      "title": "Community Stats",
+      "totalMembers": "Total Members",
+      "activeProjects": "Active Projects",
+      "monthlyEvents": "This Month's Events",
+      "co2Saved": "CO₂ Saved (tons)"
+    },
+    "trending": {
+      "title": "Trending Topics",
+      "posts": "posts",
+      "solarEnergy": "Solar Energy",
+      "communityGarden": "Community Garden",
+      "zeroWaste": "Zero Waste",
+      "bikeSharing": "Bike Sharing",
+      "renewable": "Renewable Energy"
+    },
+    "members": {
+      "skills": "Skills",
+      "projects": "Projects",
+      "events": "Events",
+      "joined": "Joined",
+      "connect": "Connect"
+    },
+    "groups": {
+      "title": "Groups Coming Soon",
+      "description": "We're working on building special interest groups for the community"
+    }
+  },
+  "eventsPage": {
+    "title": "Community Events",
+    "description": "Join us for workshops, cleanups, meetings, and other sustainability events in our community",
+    "searchPlaceholder": "Search events...",
+    "filters": {
+      "allTypes": "All Types",
+      "workshop": "Workshop",
+      "cleanup": "Cleanup",
+      "meeting": "Meeting",
+      "conference": "Conference",
+      "volunteer": "Volunteer"
+    },
+    "createEvent": "Create Event",
+    "status": {
+      "upcoming": "Upcoming",
+      "past": "Past"
+    },
+    "eventDetails": {
+      "attending": "attending"
+    },
+    "actions": {
+      "join": "Join",
+      "eventEnded": "Event Ended",
+      "details": "Details"
+    },
+    "loading": {
+      "title": "Loading events..."
+    },
+    "error": {
+      "title": "Error loading events"
+    },
+    "empty": {
+      "title": "No events found",
+      "description": "Try adjusting your search or filter criteria"
+    }
+  },
+  "projectsPage": {
+    "title": "Community Projects",
+    "description": "Discover and participate in sustainability projects that are making a difference in our community",
+    "searchPlaceholder": "Search projects...",
+    "filters": {
+      "allCategories": "All Categories",
+      "renewableEnergy": "Renewable Energy",
+      "wasteManagement": "Waste Management",
+      "greenTransport": "Green Transport",
+      "communityGarden": "Community Garden",
+      "education": "Education"
+    },
+    "createProject": "Create Project",
+    "status": {
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "PLANNED": "Planned"
+    },
+    "projectInfo": {
+      "progress": "Progress",
+      "participants": "participants",
+      "moreTag": "more"
+    },
+    "actions": {
+      "join": "Join Project",
+      "learnMore": "Learn More"
+    },
+    "loading": {
+      "title": "Loading projects..."
+    },
+    "error": {
+      "title": "Error loading projects"
+    },
+    "empty": {
+      "title": "No projects found",
+      "description": "Try adjusting your search or filter criteria"
+    }
+  },
+  "emergencyPage": {
+    "title": "Emergency Services",
+    "description": "Find nearby emergency services including police stations, hospitals, and fire stations. Your safety is our priority.",
+    "loading": "Loading emergency services...",
+    "emergencyHeader": {
+      "title": "Emergency Services",
+      "description": "For immediate emergencies, dial 100 (Police), 101 (Fire), 108 (Ambulance)",
+      "call100": "Call 100",
+      "call101": "Call 101",
+      "call102": "Call 108"
+    },
+    "location": {
+      "detected": "Location detected - showing nearest emergency services within 25km",
+      "showMap": "Show Map",
+      "hideMap": "Hide Map"
+    },
+    "filters": {
+      "allServices": "All Services",
+      "police": "Police",
+      "hospitals": "Hospitals",
+      "fireStations": "Fire Stations"
+    },
+    "map": {
+      "title": "Emergency Services Map",
+      "loadingMap": "Loading map..."
+    },
+    "serviceCard": {
+      "emergency": "Emergency",
+      "open24": "Open 24/7",
+      "closed": "Closed",
+      "call": "Call",
+      "directions": "Directions",
+      "emergencyBtn": "Emergency"
+    },
+    "empty": {
+      "title": "No services found",
+      "description": "Try selecting a different service type"
+    },
+    "error": {
+      "loadingServices": "Unable to load emergency services."
+    }
+  },
+  "aboutPage": {
+    "hero": {
+      "title": "About Symbiotic City",
+      "subtitle": "Building sustainable communities through collaboration, innovation, and shared responsibility for our planet's future."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description1": "Symbiotic City empowers communities to take collective action toward sustainability. We believe that when neighbors work together, we can create meaningful environmental impact while building stronger, more resilient communities.",
+      "description2": "Our platform connects like-minded individuals, facilitates collaborative projects, and creates a marketplace for sustainable living. Together, we're not just changing how we live – we're changing the world."
+    },
+    "values": {
+      "title": "Our Values",
+      "communityFirst": {
+        "title": "Community First",
+        "description": "We believe that sustainable change happens when communities come together with shared purpose and mutual support."
+      },
+      "environmentalImpact": {
+        "title": "Environmental Impact",
+        "description": "Every action matters. We focus on measurable environmental impact and celebrate both small steps and big achievements."
+      },
+      "innovationAction": {
+        "title": "Innovation & Action",
+        "description": "We embrace creative solutions and empower individuals to turn ideas into action for a more sustainable future."
+      }
+    },
+    "impact": {
+      "title": "Our Impact So Far",
+      "members": "Community Members",
+      "projects": "Completed Projects",
+      "co2Saved": "Tons CO₂ Saved",
+      "satisfaction": "Member Satisfaction"
+    },
+    "howItWorks": {
+      "title": "How Symbiotic City Works",
+      "step1": {
+        "title": "Join the Community",
+        "description": "Create your profile, share your interests, and connect with neighbors who share your sustainability goals."
+      },
+      "step2": {
+        "title": "Participate & Collaborate",
+        "description": "Join existing projects, attend events, or start your own initiatives. Trade and share resources through our marketplace."
+      },
+      "step3": {
+        "title": "Make Impact",
+        "description": "Track your environmental impact, celebrate achievements, and inspire others to join the movement for change."
+      }
+    },
+    "team": {
+      "title": "Our Team",
+      "sarahChen": {
+        "name": "Sarah Chen",
+        "role": "Founder & CEO",
+        "description": "Environmental scientist passionate about community-driven sustainability solutions."
+      },
+      "marcusJohnson": {
+        "name": "Marcus Johnson",
+        "role": "CTO",
+        "description": "Full-stack developer with expertise in building scalable community platforms."
+      },
+      "lisaRodriguez": {
+        "name": "Lisa Rodriguez",
+        "role": "Community Manager",
+        "description": "Community organizer dedicated to fostering meaningful connections and collaboration."
+      }
+    },
+    "callToAction": {
+      "title": "Ready to Join the Movement?",
+      "description": "Be part of a community that's actively working toward a sustainable future. Together, we can create lasting change.",
+      "button": "Get Started Today"
+    }
+  },
+  "auth": {
+    "login": {
+      "backToHome": "Back to Home",
+      "title": "Welcome back",
+      "subtitle": "Sign in to your Symbiotic City account",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot your password?",
+      "signInButton": "Sign In",
+      "newUser": "New to Symbiotic City?",
+      "createAccount": "Create an account",
+      "demoNotice": "Demo Mode: Use any email and password to sign in"
+    },
+    "signup": {
+      "backToHome": "Back to Home",
+      "title": "Join Symbiotic City",
+      "subtitle": "Create your account and start building sustainable communities",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "roleLabel": "Choose Your Role",
+      "regularUser": "Regular User",
+      "regularUserDesc": "Browse and purchase sustainable products",
+      "siteOwner": "Site Owner",
+      "siteOwnerDesc": "Sell sustainable products and services",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Create a password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "passwordRequirements": {
+        "length": "At least 8 characters",
+        "uppercase": "Contains uppercase letter",
+        "lowercase": "Contains lowercase letter",
+        "number": "Contains number"
+      },
+      "passwordMismatch": "Passwords do not match",
+      "termsAgreement": "I agree to the",
+      "termsOfService": "Terms of Service",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy",
+      "createAccountButton": "Create Account",
+      "alreadyHaveAccount": "Already have an account?",
+      "signInToAccount": "Sign in to your account",
+      "demoNotice": "Demo Mode: Account creation is simulated for demonstration",
+      "errors": {
+        "passwordMismatch": "Passwords do not match",
+        "termsRequired": "Please agree to the Terms of Service and Privacy Policy",
+        "passwordRequirements": "Password does not meet all requirements"
+      }
+    }
+  }
+}
