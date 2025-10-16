@@ -7,9 +7,12 @@ const router = Router();
 
 // JWT token generation
 const generateToken = (userId: string): string => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not configured');
+  }
   return jwt.sign(
     { userId },
-    process.env.JWT_SECRET || 'fallback-secret-key',
+    process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 };
@@ -21,8 +24,9 @@ const validateRegistration = [
     .normalizeEmail()
     .withMessage('Please provide a valid email address'),
   body('password')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long'),
+    .isLength({ min: 8 })
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+    .withMessage('Password must be at least 8 characters and contain uppercase, lowercase, number, and special character'),
   body('name')
     .trim()
     .isLength({ min: 2, max: 50 })
@@ -58,7 +62,7 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
     const { email, password, name, role } = req.body;
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findByEmail(email);
     if (existingUser) {
       return res.status(409).json({
         error: 'User already exists with this email address'
@@ -66,22 +70,22 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
     }
 
     // Create new user
-    const user = new User({
+    const user = await User.create({
       email,
       password,
       name,
-      role: role || 'USER', // Default to USER role if not specified
+      role: role || 'USER',
       bio: `Hello! I'm ${name} and I'm excited to be part of the Symbiotic City community.`,
-      location: 'Community Member'
+      location: 'Community Member',
+      is_active: true,
+      email_verified: false
     });
 
-    await user.save();
-
     // Generate JWT token
-    const token = generateToken(user._id.toString());
+    const token = generateToken(user.id!);
 
     // Remove password from response
-    const userResponse = user.toJSON();
+    const { password: _, ...userResponse } = user;
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -92,7 +96,7 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
   } catch (error) {
     console.error('Registration error:', error);
     
-    if ((error as any).code === 11000) {
+    if ((error as any).code === '23505') {
       return res.status(409).json({
         error: 'User already exists with this email address'
       });
@@ -116,8 +120,8 @@ router.post('/login', validateLogin, async (req: Request, res: Response) => {
 
     const { email, password } = req.body;
 
-    // Find user by email (including password field)
-    const user = await User.findOne({ email }).select('+password');
+    // Find user by email
+    const user = await User.findByEmail(email);
     if (!user) {
       return res.status(401).json({
         error: 'Invalid email or password'
@@ -125,14 +129,14 @@ router.post('/login', validateLogin, async (req: Request, res: Response) => {
     }
 
     // Check if user is active
-    if (!user.isActive) {
+    if (!user.is_active) {
       return res.status(401).json({
         error: 'Account is deactivated. Please contact support.'
       });
     }
 
     // Verify password
-    const isPasswordValid = await user.comparePassword(password);
+    const isPasswordValid = await User.comparePassword(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
         error: 'Invalid email or password'
@@ -140,14 +144,13 @@ router.post('/login', validateLogin, async (req: Request, res: Response) => {
     }
 
     // Update last login
-    user.lastLogin = new Date();
-    await user.save();
+    await User.update(user.id!, { last_login: new Date() });
 
     // Generate JWT token
-    const token = generateToken(user._id.toString());
+    const token = generateToken(user.id!);
 
     // Remove password from response
-    const userResponse = user.toJSON();
+    const { password: _, ...userResponse } = user;
 
     res.json({
       message: 'Login successful',
@@ -172,17 +175,24 @@ router.get('/me', async (req: Request, res: Response) => {
 
     const token = authHeader.substring(7);
     
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
+    
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key') as any;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as any;
     
     // Find user
     const user = await User.findById(decoded.userId);
-    if (!user || !user.isActive) {
+    if (!user || !user.is_active) {
       return res.status(401).json({ error: 'Invalid token or user not found' });
     }
 
+    // Remove password from response
+    const { password: _, ...userResponse } = user;
+
     res.json({
-      user: user.toJSON()
+      user: userResponse
     });
   } catch (error) {
     console.error('Get profile error:', error);
@@ -206,28 +216,39 @@ router.put('/profile', async (req: Request, res: Response) => {
 
     const token = authHeader.substring(7);
     
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
+    
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key') as any;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as any;
     
     // Find user
     const user = await User.findById(decoded.userId);
-    if (!user || !user.isActive) {
+    if (!user || !user.is_active) {
       return res.status(401).json({ error: 'Invalid token or user not found' });
     }
 
     // Update allowed fields
     const { name, bio, location, avatar } = req.body;
     
-    if (name !== undefined) user.name = name;
-    if (bio !== undefined) user.bio = bio;
-    if (location !== undefined) user.location = location;
-    if (avatar !== undefined) user.avatar = avatar;
+    const updatedUser = await User.update(user.id!, {
+      name,
+      bio,
+      location,
+      avatar
+    });
 
-    await user.save();
+    if (!updatedUser) {
+      return res.status(500).json({ error: 'Failed to update profile' });
+    }
+
+    // Remove password from response
+    const { password: _, ...userResponse } = updatedUser;
 
     res.json({
       message: 'Profile updated successfully',
-      user: user.toJSON()
+      user: userResponse
     });
   } catch (error) {
     console.error('Update profile error:', error);
@@ -244,7 +265,7 @@ router.put('/profile', async (req: Request, res: Response) => {
 router.get('/health', (req: Request, res: Response) => {
   res.json({ 
     status: 'OK', 
-    message: 'Auth service is running with MongoDB',
+    message: 'Auth service is running with PostgreSQL (Supabase)',
     timestamp: new Date().toISOString()
   });
 });

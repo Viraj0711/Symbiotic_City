@@ -1,124 +1,143 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import { pool } from '../config/database';
 import { IProject } from '../config/database';
 
-interface IProjectDocument extends Omit<IProject, '_id'>, Document {}
-
-const LocationSchema = new Schema({
-  type: {
-    type: String,
-    enum: ['Point'],
-    default: 'Point'
-  },
-  coordinates: {
-    type: [Number],
-    required: true,
-    validate: {
-      validator: function(coords: number[]) {
-        return coords.length === 2 && 
-               coords[0] >= -180 && coords[0] <= 180 && // longitude
-               coords[1] >= -90 && coords[1] <= 90;     // latitude
-      },
-      message: 'Coordinates must be [longitude, latitude] with valid ranges'
-    }
-  },
-  address: {
-    type: String,
-    maxlength: [200, 'Address cannot exceed 200 characters']
+export class Project {
+  // Create a new project
+  static async create(projectData: Partial<IProject>): Promise<IProject> {
+    const query = `
+      INSERT INTO projects (title, description, status, category, tags, author_id, participants, location, start_date, end_date)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING *
+    `;
+    
+    const values = [
+      projectData.title,
+      projectData.description,
+      projectData.status || 'PLANNING',
+      projectData.category,
+      projectData.tags || [],
+      projectData.author_id,
+      projectData.participants || [],
+      projectData.location ? JSON.stringify(projectData.location) : null,
+      projectData.start_date || null,
+      projectData.end_date || null
+    ];
+    
+    const result = await pool.query(query, values);
+    return result.rows[0];
   }
-});
 
-const ProjectSchema = new Schema<IProjectDocument>({
-  title: {
-    type: String,
-    required: [true, 'Project title is required'],
-    trim: true,
-    minlength: [3, 'Title must be at least 3 characters long'],
-    maxlength: [100, 'Title cannot exceed 100 characters']
-  },
-  description: {
-    type: String,
-    required: [true, 'Project description is required'],
-    minlength: [10, 'Description must be at least 10 characters long'],
-    maxlength: [2000, 'Description cannot exceed 2000 characters']
-  },
-  status: {
-    type: String,
-    enum: ['PLANNING', 'ACTIVE', 'COMPLETED', 'PAUSED'],
-    default: 'PLANNING'
-  },
-  category: {
-    type: String,
-    required: [true, 'Category is required'],
-    enum: [
-      'Urban Gardening',
-      'Renewable Energy',
-      'Zero Waste',
-      'Community Building',
-      'Transportation',
-      'Water Conservation',
-      'Education',
-      'Technology',
-      'Other'
-    ]
-  },
-  tags: [{
-    type: String,
-    trim: true,
-    maxlength: [30, 'Each tag cannot exceed 30 characters']
-  }],
-  authorId: {
-    type: String,
-    ref: 'User',
-    required: [true, 'Author is required']
-  },
-  participants: [{
-    type: String,
-    ref: 'User'
-  }],
-  location: {
-    type: LocationSchema,
-    default: null
-  },
-  startDate: {
-    type: Date,
-    default: null
-  },
-  endDate: {
-    type: Date,
-    default: null,
-    validate: {
-      validator: function(this: IProjectDocument, endDate: Date) {
-        return !this.startDate || !endDate || endDate >= this.startDate;
-      },
-      message: 'End date must be after start date'
-    }
+  // Find project by ID
+  static async findById(id: string): Promise<IProject | null> {
+    const query = 'SELECT * FROM projects WHERE id = $1';
+    const result = await pool.query(query, [id]);
+    return result.rows[0] || null;
   }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
 
-// Indexes
-ProjectSchema.index({ authorId: 1 });
-ProjectSchema.index({ status: 1 });
-ProjectSchema.index({ category: 1 });
-ProjectSchema.index({ tags: 1 });
-ProjectSchema.index({ 'location.coordinates': '2dsphere' }); // For geospatial queries
-ProjectSchema.index({ createdAt: -1 });
+  // Find all projects with filters
+  static async findAll(filters?: { 
+    status?: string; 
+    category?: string; 
+    author_id?: string;
+  }): Promise<IProject[]> {
+    let query = 'SELECT * FROM projects WHERE 1=1';
+    const values: any[] = [];
+    let paramCount = 1;
 
-// Virtual for participant count
-ProjectSchema.virtual('participantCount').get(function() {
-  return this.participants?.length || 0;
-});
+    if (filters?.status) {
+      query += ` AND status = $${paramCount++}`;
+      values.push(filters.status);
+    }
+    if (filters?.category) {
+      query += ` AND category = $${paramCount++}`;
+      values.push(filters.category);
+    }
+    if (filters?.author_id) {
+      query += ` AND author_id = $${paramCount++}`;
+      values.push(filters.author_id);
+    }
 
-// Virtual for project duration
-ProjectSchema.virtual('duration').get(function() {
-  if (!this.startDate || !this.endDate) return null;
-  const diffTime = Math.abs(this.endDate.getTime() - this.startDate.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
-});
+    query += ' ORDER BY created_at DESC';
 
-export const Project = mongoose.model<IProjectDocument>('Project', ProjectSchema);
+    const result = await pool.query(query, values);
+    return result.rows;
+  }
+
+  // Update project
+  static async update(id: string, projectData: Partial<IProject>): Promise<IProject | null> {
+    const fields: string[] = [];
+    const values: any[] = [];
+    let paramCount = 1;
+
+    if (projectData.title !== undefined) {
+      fields.push(`title = $${paramCount++}`);
+      values.push(projectData.title);
+    }
+    if (projectData.description !== undefined) {
+      fields.push(`description = $${paramCount++}`);
+      values.push(projectData.description);
+    }
+    if (projectData.status !== undefined) {
+      fields.push(`status = $${paramCount++}`);
+      values.push(projectData.status);
+    }
+    if (projectData.category !== undefined) {
+      fields.push(`category = $${paramCount++}`);
+      values.push(projectData.category);
+    }
+    if (projectData.tags !== undefined) {
+      fields.push(`tags = $${paramCount++}`);
+      values.push(projectData.tags);
+    }
+    if (projectData.participants !== undefined) {
+      fields.push(`participants = $${paramCount++}`);
+      values.push(projectData.participants);
+    }
+
+    if (fields.length === 0) return null;
+
+    values.push(id);
+    const query = `
+      UPDATE projects 
+      SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $${paramCount}
+      RETURNING *
+    `;
+
+    const result = await pool.query(query, values);
+    return result.rows[0] || null;
+  }
+
+  // Delete project
+  static async delete(id: string): Promise<boolean> {
+    const query = 'DELETE FROM projects WHERE id = $1';
+    const result = await pool.query(query, [id]);
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Add participant to project
+  static async addParticipant(projectId: string, userId: string): Promise<IProject | null> {
+    const query = `
+      UPDATE projects 
+      SET participants = array_append(participants, $1::uuid)
+      WHERE id = $2 AND NOT ($1::uuid = ANY(participants))
+      RETURNING *
+    `;
+    const result = await pool.query(query, [userId, projectId]);
+    return result.rows[0] || null;
+  }
+
+  // Remove participant from project
+  static async removeParticipant(projectId: string, userId: string): Promise<IProject | null> {
+    const query = `
+      UPDATE projects 
+      SET participants = array_remove(participants, $1::uuid)
+      WHERE id = $2
+      RETURNING *
+    `;
+    const result = await pool.query(query, [userId, projectId]);
+    return result.rows[0] || null;
+  }
+}
+
 export default Project;

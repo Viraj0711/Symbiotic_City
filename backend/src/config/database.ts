@@ -1,49 +1,63 @@
-import mongoose from 'mongoose';
+import { Pool } from 'pg';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
+// PostgreSQL connection pool
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  max: 20, // Maximum number of clients in the pool
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000, // Increased timeout to 10 seconds
+});
+
 const connectDB = async (): Promise<void> => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/symbiotic_city';
+    console.log('🔄 Connecting to PostgreSQL (Supabase)...');
     
-    console.log('🔄 Connecting to MongoDB...');
+    const client = await pool.connect();
+    const result = await client.query('SELECT NOW()');
     
-    const conn = await mongoose.connect(mongoURI);
+    console.log(`✅ PostgreSQL Connected: ${result.rows[0].now}`);
+    console.log(`📊 Database: Supabase`);
+    
+    client.release();
 
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-    console.log(`📊 Database: ${conn.connection.name}`);
-    
-    // Handle connection events
-    mongoose.connection.on('connected', () => {
-      console.log('🟢 Mongoose connected to MongoDB');
+    // Handle pool events
+    pool.on('connect', () => {
+      console.log('🟢 New client connected to PostgreSQL');
     });
 
-    mongoose.connection.on('error', (err) => {
-      console.error('🔴 Mongoose connection error:', err);
-    });
-
-    mongoose.connection.on('disconnected', () => {
-      console.warn('🟡 Mongoose disconnected');
+    pool.on('error', (err) => {
+      console.error('🔴 PostgreSQL pool error:', err);
     });
 
     // Graceful shutdown
     process.on('SIGINT', async () => {
-      await mongoose.connection.close();
-      console.log('🔴 MongoDB connection closed through app termination');
+      await pool.end();
+      console.log('� PostgreSQL pool closed through app termination');
+      process.exit(0);
+    });
+
+    process.on('SIGTERM', async () => {
+      await pool.end();
+      console.log('🔴 PostgreSQL pool closed through app termination');
       process.exit(0);
     });
 
   } catch (error) {
-    console.error('❌ Error connecting to MongoDB:', error);
-    console.warn('⚠️  Continuing without database connection. Please install MongoDB or use MongoDB Atlas.');
+    console.error('❌ Error connecting to PostgreSQL:', error);
+    console.warn('⚠️  Continuing without database connection. Please check your Supabase credentials.');
     // Don't exit process - allow server to run without database for testing
   }
 };
 
 // Database interface types for TypeScript
 export interface IUser {
-  _id?: string;
+  id?: string;
   name: string;
   email: string;
   password: string;
@@ -51,104 +65,173 @@ export interface IUser {
   bio?: string;
   location?: string;
   role: 'USER' | 'SITE_OWNER' | 'ADMIN' | 'MODERATOR';
-  siteOwnerData?: {
-    companyName?: string;
+  site_owner_data?: {
+    company_name?: string;
     certifications?: string[];
     verified?: boolean;
     sites?: string[];
-    businessLicense?: string;
-    greenCertifications?: string[];
+    business_license?: string;
+    green_certifications?: string[];
   };
   preferences?: {
-    energyTypes?: string[];
-    priceRange?: {
+    energy_types?: string[];
+    price_range?: {
       min?: number;
       max?: number;
     };
-    deliveryRadius?: number;
-    sustainabilityGoals?: string[];
+    delivery_radius?: number;
+    sustainability_goals?: string[];
   };
   wallet?: {
     balance?: number;
-    greenCredits?: number;
-    carbonOffset?: number;
+    green_credits?: number;
+    carbon_offset?: number;
   };
-  purchases?: Array<{
-    orderId?: string;
-    productId?: string;
-    amount?: number;
-    date?: Date;
-    status?: 'completed' | 'pending' | 'cancelled';
-  }>;
-  isActive: boolean;
-  emailVerified: boolean;
-  lastLogin?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  is_active: boolean;
+  email_verified: boolean;
+  last_login?: Date;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface IProject {
-  _id?: string;
+  id?: string;
   title: string;
   description: string;
   status: 'PLANNING' | 'ACTIVE' | 'COMPLETED' | 'PAUSED';
   category: string;
   tags: string[];
-  authorId: string;
+  author_id: string;
   participants: string[];
   location?: {
-    type: 'Point';
-    coordinates: [number, number]; // [longitude, latitude]
+    latitude: number;
+    longitude: number;
     address?: string;
   };
-  startDate?: Date;
-  endDate?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  start_date?: Date;
+  end_date?: Date;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface IEvent {
-  _id?: string;
+  id?: string;
   title: string;
   description: string;
-  startDate: Date;
-  endDate?: Date;
+  start_date: Date;
+  end_date?: Date;
   location?: {
-    type: 'Point';
-    coordinates: [number, number];
+    latitude: number;
+    longitude: number;
     address?: string;
   };
   category: string;
   tags: string[];
-  organizerId: string;
+  organizer_id: string;
   attendees: string[];
-  maxAttendees?: number;
-  isVirtual: boolean;
-  virtualLink?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  max_attendees?: number;
+  is_virtual: boolean;
+  virtual_link?: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
-export interface IMarketplaceItem {
-  _id?: string;
+export interface IEnergyProduct {
+  id?: string;
   title: string;
   description: string;
-  type: 'SELL' | 'TRADE' | 'GIVE_AWAY';
-  category: string;
-  tags: string[];
-  price?: number;
-  currency?: string;
-  images: string[];
-  condition: 'NEW' | 'LIKE_NEW' | 'GOOD' | 'FAIR' | 'POOR';
-  sellerId: string;
-  location?: {
-    type: 'Point';
-    coordinates: [number, number];
-    address?: string;
+  category: 'hydrogen' | 'solar' | 'wind' | 'battery_storage' | 'green_certificate';
+  site_id?: string;
+  owner_id: string;
+  pricing: {
+    amount: number;
+    unit: string;
+    currency: string;
+    discounts?: {
+      bulk: number;
+      long_term: number;
+    };
   };
-  isAvailable: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  availability: {
+    quantity: number;
+    unit: string;
+    available_from: Date;
+    available_until: Date;
+  };
+  specifications: {
+    purity?: number;
+    capacity?: number;
+    efficiency?: number;
+    certification_level: string;
+    sustainability_score: number;
+  };
+  delivery: {
+    methods: string[];
+    radius: number;
+    cost: number;
+    estimated_time: string;
+  };
+  location: {
+    latitude: number;
+    longitude: number;
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+  };
+  images: string[];
+  certifications: string[];
+  analytics: {
+    views: number;
+    inquiries: number;
+    sales: number;
+    revenue: number;
+  };
+  status: 'active' | 'inactive' | 'sold_out' | 'pending_approval';
+  featured: boolean;
+  tags: string[];
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface IOrder {
+  id?: string;
+  order_id: string;
+  buyer_id: string;
+  seller_id: string;
+  product_id: string;
+  site_id?: string;
+  order_details: {
+    quantity: number;
+    unit: string;
+    unit_price: number;
+    total_price: number;
+    currency: string;
+    discount_applied?: number;
+  };
+  delivery: {
+    method: string;
+    address: string;
+    scheduled_date: Date;
+    delivery_window?: string;
+    cost: number;
+    tracking_number?: string;
+  };
+  payment: {
+    method: string;
+    status: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+    transaction_id?: string;
+    green_credits_used: number;
+    cash_amount: number;
+  };
+  status: 'pending' | 'confirmed' | 'in_production' | 'ready' | 'in_transit' | 'delivered' | 'cancelled';
+  sustainability: {
+    carbon_offset: number;
+    sustainability_score: number;
+    certifications: string[];
+  };
+  created_at: Date;
+  updated_at: Date;
 }
 
 export default connectDB;

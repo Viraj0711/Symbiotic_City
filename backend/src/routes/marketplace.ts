@@ -1,7 +1,8 @@
 import express from 'express';
-import EnergyProduct from '../models/EnergyProduct';
-import Order from '../models/Order';
+import { EnergyProduct } from '../models/EnergyProduct';
+import { Order } from '../models/Order';
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth';
+import { pool } from '../config/database';
 
 const router = express.Router();
 
@@ -12,63 +13,79 @@ router.get('/products', async (req, res) => {
       category,
       minPrice,
       maxPrice,
-      location,
+      status = 'active',
       sortBy = 'featured',
-      page = 1,
-      limit = 20,
+      page = '1',
+      limit = '20',
       search
     } = req.query;
 
-    // Build filter object
-    const filter: any = { status: 'active' };
+    // Build WHERE clause with parameterized queries (prevents SQL injection)
+    const conditions: string[] = ['status = $1'];
+    const values: any[] = [status];
+    let paramCount = 2;
 
     if (category && category !== 'all') {
-      filter.category = category;
+      conditions.push(`category = $${paramCount++}`);
+      values.push(category);
     }
 
-    if (minPrice || maxPrice) {
-      filter['pricing.amount'] = {};
-      if (minPrice) filter['pricing.amount'].$gte = Number(minPrice);
-      if (maxPrice) filter['pricing.amount'].$lte = Number(maxPrice);
+    if (minPrice) {
+      conditions.push(`(pricing->>'amount')::numeric >= $${paramCount++}`);
+      values.push(Number(minPrice));
+    }
+
+    if (maxPrice) {
+      conditions.push(`(pricing->>'amount')::numeric <= $${paramCount++}`);
+      values.push(Number(maxPrice));
     }
 
     if (search) {
-      filter.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { tags: { $in: [new RegExp(search as string, 'i')] } }
-      ];
+      conditions.push(`(
+        title ILIKE $${paramCount} OR 
+        description ILIKE $${paramCount} OR 
+        $${paramCount + 1} = ANY(tags)
+      )`);
+      values.push(`%${search}%`, search);
+      paramCount += 2;
     }
 
-    // Build sort object
-    let sort: any = {};
+    // Build ORDER BY clause (prevent SQL injection by whitelisting)
+    let orderBy = 'featured DESC, created_at DESC';
     switch (sortBy) {
       case 'price_low':
-        sort = { 'pricing.amount': 1 };
+        orderBy = "(pricing->>'amount')::numeric ASC";
         break;
       case 'price_high':
-        sort = { 'pricing.amount': -1 };
-        break;
-      case 'rating':
-        sort = { 'reviews.averageRating': -1 };
+        orderBy = "(pricing->>'amount')::numeric DESC";
         break;
       case 'newest':
-        sort = { createdAt: -1 };
+        orderBy = 'created_at DESC';
         break;
-      default: // featured
-        sort = { featured: -1, createdAt: -1 };
     }
 
-    const products = await EnergyProduct.find(filter)
-      .populate('ownerId', 'name email siteOwnerData.verified')
-      .sort(sort)
-      .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit));
+    const whereClause = conditions.join(' AND ');
+    const offset = (Number(page) - 1) * Number(limit);
 
-    const total = await EnergyProduct.countDocuments(filter);
+    // Get products with parameterized query
+    const productsQuery = `
+      SELECT * FROM energy_products 
+      WHERE ${whereClause}
+      ORDER BY ${orderBy}
+      LIMIT $${paramCount} OFFSET $${paramCount + 1}
+    `;
+    values.push(Number(limit), offset);
+
+    const productsResult = await pool.query(productsQuery, values);
+
+    // Get total count
+    const countQuery = `SELECT COUNT(*) FROM energy_products WHERE ${whereClause}`;
+    const countResult = await pool.query(countQuery, values.slice(0, -2));
+
+    const total = parseInt(countResult.rows[0].count);
 
     res.json({
-      products,
+      products: productsResult.rows,
       pagination: {
         current: Number(page),
         pages: Math.ceil(total / Number(limit)),
@@ -84,17 +101,14 @@ router.get('/products', async (req, res) => {
 // Get single product by ID
 router.get('/products/:id', async (req, res) => {
   try {
-    const product = await EnergyProduct.findById(req.params.id)
-      .populate('ownerId', 'name email siteOwnerData.verified siteOwnerData.companyName');
+    const product = await EnergyProduct.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
     // Increment view count
-    await EnergyProduct.findByIdAndUpdate(req.params.id, {
-      $inc: { 'analytics.views': 1 }
-    });
+    await EnergyProduct.incrementViews(req.params.id);
 
     res.json(product);
   } catch (error) {
@@ -113,19 +127,18 @@ router.post('/products', authenticateToken, async (req: AuthenticatedRequest, re
       return res.status(403).json({ message: 'Only site owners can create products' });
     }
 
-    const productData = {
+    const productId = await EnergyProduct.create({
       ...req.body,
-      ownerId: user.id,
+      owner_id: user.id,
       status: 'pending_approval'
-    };
+    });
 
-    const product = new EnergyProduct(productData);
-    await product.save();
+    const product = await EnergyProduct.findById(productId);
 
     res.status(201).json(product);
   } catch (error) {
     console.error('Error creating product:', error);
-    res.status(400).json({ message: 'Error creating product', error: error.message });
+    res.status(400).json({ message: 'Error creating product' });
   }
 });
 
@@ -140,20 +153,17 @@ router.put('/products/:id', authenticateToken, async (req: AuthenticatedRequest,
     }
 
     // Check ownership
-    if (product.ownerId.toString() !== user.id.toString()) {
+    if (product.owner_id !== user.id) {
       return res.status(403).json({ message: 'Not authorized to update this product' });
     }
 
-    const updatedProduct = await EnergyProduct.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    await EnergyProduct.update(req.params.id, req.body);
+    const updatedProduct = await EnergyProduct.findById(req.params.id);
 
     res.json(updatedProduct);
   } catch (error) {
     console.error('Error updating product:', error);
-    res.status(400).json({ message: 'Error updating product', error: error.message });
+    res.status(400).json({ message: 'Error updating product' });
   }
 });
 
@@ -168,11 +178,11 @@ router.delete('/products/:id', authenticateToken, async (req: AuthenticatedReque
     }
 
     // Check ownership
-    if (product.ownerId.toString() !== user.id.toString()) {
+    if (product.owner_id !== user.id) {
       return res.status(403).json({ message: 'Not authorized to delete this product' });
     }
 
-    await EnergyProduct.findByIdAndDelete(req.params.id);
+    await EnergyProduct.delete(req.params.id);
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     console.error('Error deleting product:', error);
@@ -189,28 +199,34 @@ router.get('/owner/dashboard', authenticateToken, async (req: AuthenticatedReque
       return res.status(403).json({ message: 'Only site owners can access this endpoint' });
     }
 
-    const products = await EnergyProduct.find({ ownerId: user.id });
+    // Get products with parameterized query
+    const productsQuery = 'SELECT * FROM energy_products WHERE owner_id = $1';
+    const productsResult = await pool.query(productsQuery, [user.id]);
+    const products = productsResult.rows;
     
     // Calculate dashboard statistics
     const stats = {
       totalProducts: products.length,
       activeProducts: products.filter(p => p.status === 'active').length,
-      totalRevenue: products.reduce((sum, p) => sum + p.analytics.revenue, 0),
-      totalViews: products.reduce((sum, p) => sum + p.analytics.views, 0),
-      totalInquiries: products.reduce((sum, p) => sum + p.analytics.inquiries, 0),
-      totalSales: products.reduce((sum, p) => sum + p.analytics.sales, 0)
+      totalRevenue: products.reduce((sum, p) => sum + ((p.analytics?.revenue as number) || 0), 0),
+      totalViews: products.reduce((sum, p) => sum + ((p.analytics?.views as number) || 0), 0),
+      totalInquiries: products.reduce((sum, p) => sum + ((p.analytics?.inquiries as number) || 0), 0),
+      totalSales: products.reduce((sum, p) => sum + ((p.analytics?.sales as number) || 0), 0)
     };
 
-    const orders = await Order.find({ sellerId: user.id })
-      .populate('buyerId', 'name email')
-      .populate('productId', 'title')
-      .sort({ createdAt: -1 })
-      .limit(10);
+    // Get recent orders with parameterized query
+    const ordersQuery = `
+      SELECT * FROM orders 
+      WHERE seller_id = $1 
+      ORDER BY created_at DESC 
+      LIMIT 10
+    `;
+    const ordersResult = await pool.query(ordersQuery, [user.id]);
 
     res.json({
       stats,
       products,
-      recentOrders: orders
+      recentOrders: ordersResult.rows
     });
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
@@ -230,29 +246,31 @@ router.post('/orders', authenticateToken, async (req: AuthenticatedRequest, res)
     }
 
     // Check availability
-    if (product.availability.quantity < quantity) {
+    const availableQty = (product.availability as any)?.quantity || 0;
+    if (availableQty < quantity) {
       return res.status(400).json({ message: 'Insufficient quantity available' });
     }
 
-    const totalPrice = product.pricing.amount * quantity;
+    const pricing = product.pricing as any;
+    const totalPrice = pricing.amount * quantity;
 
-    const order = new Order({
-      buyerId: user.id,
-      sellerId: product.ownerId,
-      productId: product._id,
-      siteId: product.siteId,
-      orderDetails: {
+    const orderId = await Order.create({
+      buyer_id: user.id,
+      seller_id: product.owner_id,
+      product_id: productId,
+      site_id: product.site_id,
+      order_details: {
         quantity,
-        unit: product.pricing.unit,
-        unitPrice: product.pricing.amount,
+        unit: pricing.unit,
+        unitPrice: pricing.amount,
         totalPrice,
-        currency: product.pricing.currency
+        currency: pricing.currency
       },
       delivery: {
         method: req.body.deliveryMethod || 'delivery',
         address: deliveryAddress,
-        scheduledDate: req.body.scheduledDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        cost: product.delivery.cost
+        scheduledDate: req.body.scheduledDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        cost: (product.delivery as any)?.cost || 0
       },
       payment: {
         method: paymentMethod,
@@ -262,20 +280,29 @@ router.post('/orders', authenticateToken, async (req: AuthenticatedRequest, res)
       }
     });
 
-    await order.save();
+    // Update product analytics and quantity
+    const updateQuery = `
+      UPDATE energy_products 
+      SET 
+        analytics = jsonb_set(
+          COALESCE(analytics, '{}'::jsonb), 
+          '{inquiries}', 
+          to_jsonb(COALESCE((analytics->>'inquiries')::int, 0) + 1)
+        ),
+        availability = jsonb_set(
+          availability, 
+          '{quantity}', 
+          to_jsonb(GREATEST(0, (availability->>'quantity')::int - $2))
+        )
+      WHERE id = $1
+    `;
+    await pool.query(updateQuery, [productId, quantity]);
 
-    // Update product analytics
-    await EnergyProduct.findByIdAndUpdate(productId, {
-      $inc: { 
-        'analytics.inquiries': 1,
-        'availability.quantity': -quantity
-      }
-    });
-
+    const order = await Order.findById(orderId);
     res.status(201).json(order);
   } catch (error) {
     console.error('Error creating order:', error);
-    res.status(400).json({ message: 'Error creating order', error: error.message });
+    res.status(400).json({ message: 'Error creating order' });
   }
 });
 
@@ -285,16 +312,15 @@ router.get('/orders', authenticateToken, async (req: AuthenticatedRequest, res) 
     const user = req.user;
     const { type = 'buyer' } = req.query;
 
-    const filter = type === 'buyer' 
-      ? { buyerId: user.id }
-      : { sellerId: user.id };
+    const filterField = type === 'buyer' ? 'buyer_id' : 'seller_id';
+    const ordersQuery = `
+      SELECT * FROM orders 
+      WHERE ${filterField} = $1 
+      ORDER BY created_at DESC
+    `;
+    const ordersResult = await pool.query(ordersQuery, [user.id]);
 
-    const orders = await Order.find(filter)
-      .populate('productId', 'title images category')
-      .populate(type === 'buyer' ? 'sellerId' : 'buyerId', 'name email')
-      .sort({ createdAt: -1 });
-
-    res.json(orders);
+    res.json(ordersResult.rows);
   } catch (error) {
     console.error('Error fetching orders:', error);
     res.status(500).json({ message: 'Error fetching orders' });
@@ -313,21 +339,50 @@ router.put('/orders/:id/status', authenticateToken, async (req: AuthenticatedReq
     }
 
     // Check if user is authorized to update status
-    if (order.sellerId.toString() !== user.id.toString() && user.role !== 'ADMIN') {
+    if (order.seller_id !== user.id && user.role !== 'ADMIN') {
       return res.status(403).json({ message: 'Not authorized to update this order' });
     }
 
     // Add to timeline
-    order.timeline.push({
+    const currentTimeline = (order.timeline as any[]) || [];
+    const newTimelineEntry = {
       status,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       note: `Status updated by ${user.email}`
-    });
+    };
+    currentTimeline.push(newTimelineEntry);
 
-    order.status = status;
-    await order.save();
+    // Update order with parameterized query
+    const updateQuery = `
+      UPDATE orders 
+      SET 
+        status = $1,
+        timeline = $2::jsonb,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = $3
+      RETURNING *
+    `;
+    const result = await pool.query(updateQuery, [
+      status,
+      JSON.stringify(currentTimeline),
+      req.params.id
+    ]);
 
-    res.json(order);
+    // If order is completed, update product analytics
+    if (status === 'completed') {
+      const analyticsQuery = `
+        UPDATE energy_products 
+        SET analytics = jsonb_set(
+          COALESCE(analytics, '{}'::jsonb), 
+          '{sales}', 
+          to_jsonb(COALESCE((analytics->>'sales')::int, 0) + 1)
+        )
+        WHERE id = $1
+      `;
+      await pool.query(analyticsQuery, [order.product_id]);
+    }
+
+    res.json(result.rows[0]);
   } catch (error) {
     console.error('Error updating order status:', error);
     res.status(400).json({ message: 'Error updating order status' });

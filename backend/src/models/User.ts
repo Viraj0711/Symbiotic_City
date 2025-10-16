@@ -1,140 +1,145 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import { pool } from '../config/database';
 import bcrypt from 'bcryptjs';
 import { IUser } from '../config/database';
 
-interface IUserDocument extends Omit<IUser, '_id'>, Document {
-  comparePassword(candidatePassword: string): Promise<boolean>;
+export class User {
+  // Create a new user
+  static async create(userData: Partial<IUser>): Promise<IUser> {
+    const hashedPassword = await bcrypt.hash(userData.password!, 12);
+    
+    const query = `
+      INSERT INTO users (name, email, password, avatar, bio, location, role, site_owner_data, preferences, wallet, is_active, email_verified)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      RETURNING *
+    `;
+    
+    const values = [
+      userData.name,
+      userData.email?.toLowerCase(),
+      hashedPassword,
+      userData.avatar || null,
+      userData.bio || null,
+      userData.location || null,
+      userData.role || 'USER',
+      JSON.stringify(userData.site_owner_data || null),
+      JSON.stringify(userData.preferences || {
+        energy_types: ['hydrogen', 'solar', 'wind'],
+        price_range: { min: 0, max: 1000 },
+        delivery_radius: 50
+      }),
+      JSON.stringify(userData.wallet || {
+        balance: 0,
+        green_credits: 100,
+        carbon_offset: 0
+      }),
+      userData.is_active !== undefined ? userData.is_active : true,
+      userData.email_verified !== undefined ? userData.email_verified : false
+    ];
+    
+    const result = await pool.query(query, values);
+    return result.rows[0];
+  }
+
+  // Find user by ID
+  static async findById(id: string): Promise<IUser | null> {
+    const query = 'SELECT * FROM users WHERE id = $1';
+    const result = await pool.query(query, [id]);
+    return result.rows[0] || null;
+  }
+
+  // Find user by email
+  static async findByEmail(email: string): Promise<IUser | null> {
+    const query = 'SELECT * FROM users WHERE email = $1';
+    const result = await pool.query(query, [email.toLowerCase()]);
+    return result.rows[0] || null;
+  }
+
+  // Update user
+  static async update(id: string, userData: Partial<IUser>): Promise<IUser | null> {
+    const fields: string[] = [];
+    const values: any[] = [];
+    let paramCount = 1;
+
+    if (userData.name !== undefined) {
+      fields.push(`name = $${paramCount++}`);
+      values.push(userData.name);
+    }
+    if (userData.email !== undefined) {
+      fields.push(`email = $${paramCount++}`);
+      values.push(userData.email.toLowerCase());
+    }
+    if (userData.password !== undefined) {
+      const hashedPassword = await bcrypt.hash(userData.password, 12);
+      fields.push(`password = $${paramCount++}`);
+      values.push(hashedPassword);
+    }
+    if (userData.avatar !== undefined) {
+      fields.push(`avatar = $${paramCount++}`);
+      values.push(userData.avatar);
+    }
+    if (userData.bio !== undefined) {
+      fields.push(`bio = $${paramCount++}`);
+      values.push(userData.bio);
+    }
+    if (userData.location !== undefined) {
+      fields.push(`location = $${paramCount++}`);
+      values.push(userData.location);
+    }
+    if (userData.role !== undefined) {
+      fields.push(`role = $${paramCount++}`);
+      values.push(userData.role);
+    }
+    if (userData.last_login !== undefined) {
+      fields.push(`last_login = $${paramCount++}`);
+      values.push(userData.last_login);
+    }
+
+    if (fields.length === 0) return null;
+
+    values.push(id);
+    const query = `
+      UPDATE users 
+      SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $${paramCount}
+      RETURNING *
+    `;
+
+    const result = await pool.query(query, values);
+    return result.rows[0] || null;
+  }
+
+  // Delete user
+  static async delete(id: string): Promise<boolean> {
+    const query = 'DELETE FROM users WHERE id = $1';
+    const result = await pool.query(query, [id]);
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Compare password
+  static async comparePassword(candidatePassword: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(candidatePassword, hashedPassword);
+  }
+
+  // Find all users with filters
+  static async findAll(filters?: { role?: string; is_active?: boolean }): Promise<IUser[]> {
+    let query = 'SELECT * FROM users WHERE 1=1';
+    const values: any[] = [];
+    let paramCount = 1;
+
+    if (filters?.role) {
+      query += ` AND role = $${paramCount++}`;
+      values.push(filters.role);
+    }
+    if (filters?.is_active !== undefined) {
+      query += ` AND is_active = $${paramCount++}`;
+      values.push(filters.is_active);
+    }
+
+    query += ' ORDER BY created_at DESC';
+
+    const result = await pool.query(query, values);
+    return result.rows;
+  }
 }
 
-const UserSchema = new Schema<IUserDocument>({
-  name: {
-    type: String,
-    required: [true, 'Name is required'],
-    trim: true,
-    minlength: [2, 'Name must be at least 2 characters long'],
-    maxlength: [50, 'Name cannot exceed 50 characters']
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    lowercase: true,
-    trim: true,
-    match: [
-      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-      'Please provide a valid email address'
-    ]
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-    minlength: [6, 'Password must be at least 6 characters long'],
-    select: false // Don't return password in queries by default
-  },
-  avatar: {
-    type: String,
-    default: null
-  },
-  bio: {
-    type: String,
-    maxlength: [500, 'Bio cannot exceed 500 characters'],
-    default: null
-  },
-  location: {
-    type: String,
-    maxlength: [100, 'Location cannot exceed 100 characters'],
-    default: null
-  },
-  role: {
-    type: String,
-    enum: ['USER', 'SITE_OWNER', 'ADMIN', 'MODERATOR'],
-    default: 'USER'
-  },
-  siteOwnerData: {
-    companyName: String,
-    certifications: [String],
-    verified: { type: Boolean, default: false },
-    sites: [{ type: Schema.Types.ObjectId, ref: 'HydrogenSite' }],
-    businessLicense: String,
-    greenCertifications: [String]
-  },
-  preferences: {
-    energyTypes: { type: [String], default: ['hydrogen', 'solar', 'wind'] },
-    priceRange: {
-      min: { type: Number, default: 0 },
-      max: { type: Number, default: 1000 }
-    },
-    deliveryRadius: { type: Number, default: 50 },
-    sustainabilityGoals: [String]
-  },
-  wallet: {
-    balance: { type: Number, default: 0 },
-    greenCredits: { type: Number, default: 100 },
-    carbonOffset: { type: Number, default: 0 }
-  },
-  purchases: [{
-    orderId: { type: Schema.Types.ObjectId, ref: 'Order' },
-    productId: { type: Schema.Types.ObjectId, ref: 'EnergyProduct' },
-    amount: Number,
-    date: { type: Date, default: Date.now },
-    status: { type: String, enum: ['completed', 'pending', 'cancelled'], default: 'pending' }
-  }],
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  emailVerified: {
-    type: Boolean,
-    default: false
-  },
-  lastLogin: {
-    type: Date,
-    default: null
-  }
-}, {
-  timestamps: true,
-  toJSON: { 
-    virtuals: true,
-    transform: function(doc, ret) {
-      delete (ret as any).password;
-      delete (ret as any).__v;
-      return ret;
-    }
-  },
-  toObject: { virtuals: true }
-});
-
-// Index for better query performance
-UserSchema.index({ email: 1 });
-UserSchema.index({ role: 1 });
-UserSchema.index({ isActive: 1 });
-
-// Hash password before saving
-UserSchema.pre('save', async function(next) {
-  const user = this as unknown as IUserDocument;
-  
-  // Only hash the password if it has been modified (or is new)
-  if (!user.isModified('password')) return next();
-  
-  try {
-    // Hash password with cost of 12
-    user.password = await bcrypt.hash(user.password, 12);
-    next();
-  } catch (error) {
-    next(error as Error);
-  }
-});
-
-// Instance method to check password
-UserSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  const user = this as IUserDocument;
-  return bcrypt.compare(candidatePassword, user.password);
-};
-
-// Static method to find user by email (including password for authentication)
-UserSchema.statics.findByEmail = function(email: string) {
-  return this.findOne({ email }).select('+password');
-};
-
-export const User = mongoose.model<IUserDocument>('User', UserSchema);
 export default User;

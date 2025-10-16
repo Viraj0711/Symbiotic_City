@@ -65,7 +65,7 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
-    database: 'MongoDB',
+    database: 'PostgreSQL (Supabase)',
     version: '1.0.0'
   });
 });
@@ -100,19 +100,27 @@ app.use((req, res) => {
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
   
-  // MongoDB validation errors
-  if (err.name === 'ValidationError') {
-    const errors = Object.values(err.errors).map((e: any) => e.message);
-    return res.status(400).json({
-      error: 'Validation Error',
-      details: errors
+  // PostgreSQL unique violation
+  if (err.code === '23505') {
+    return res.status(409).json({
+      error: 'Duplicate field value entered',
+      message: 'A record with this value already exists'
     });
   }
   
-  // MongoDB duplicate key errors
-  if (err.code === 11000) {
-    return res.status(409).json({
-      error: 'Duplicate field value entered'
+  // PostgreSQL foreign key violation
+  if (err.code === '23503') {
+    return res.status(400).json({
+      error: 'Foreign key constraint violation',
+      message: 'Referenced record does not exist'
+    });
+  }
+  
+  // PostgreSQL validation/check constraint violation
+  if (err.code === '23514') {
+    return res.status(400).json({
+      error: 'Validation Error',
+      message: 'Data does not meet validation requirements'
     });
   }
   
@@ -147,7 +155,7 @@ server.listen(PORT, () => {
   console.log(`🚀  Server running on port ${PORT}  🚀`);
   console.log(`📱  Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌍  CORS origin: ${process.env.CORS_ORIGIN || 'http://localhost:5173'}`);
-  console.log(`🗄️   Database: MongoDB`);
+  console.log(`🗄️   Database: PostgreSQL (Supabase)`);
   console.log('🚀=================================🚀');
 });
 
