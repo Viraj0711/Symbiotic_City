@@ -65,6 +65,7 @@ export interface IUser {
   bio?: string;
   location?: string;
   role: 'USER' | 'SITE_OWNER' | 'ADMIN' | 'MODERATOR';
+  gender?: 'male' | 'female' | 'other' | 'prefer-not-to-say';
   site_owner_data?: {
     company_name?: string;
     certifications?: string[];

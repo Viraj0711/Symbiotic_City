@@ -1,12 +1,29 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import Notification from '../components/Notification';
+
+interface NotificationState {
+  show: boolean;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
 
 const Projects: React.FC = () => {
   const { projects, loading, error } = useProjects();
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [notification, setNotification] = useState<NotificationState>({
+    show: false,
+    message: '',
+    type: 'info'
+  });
+  const [joiningProjectId, setJoiningProjectId] = useState<string | null>(null);
 
   const categories = [
     { key: 'all', label: t('projectsPage.filters.allCategories') },
@@ -33,6 +50,44 @@ const Projects: React.FC = () => {
     }
   };
 
+  const showNotification = (message: string, type: 'success' | 'error' | 'info') => {
+    setNotification({ show: true, message, type });
+  };
+
+  const handleJoinProject = async (projectId: string, projectTitle: string) => {
+    if (!user) {
+      navigate('/login', { state: { from: '/projects', projectId } });
+      return;
+    }
+
+    try {
+      setJoiningProjectId(projectId);
+      
+      // TODO: Make API call to join project
+      // await api.joinProject(projectId);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      showNotification(
+        t('projectsPage.notifications.joinSuccess')?.replace('{projectName}', projectTitle) || 
+        `Successfully joined ${projectTitle}!`,
+        'success'
+      );
+    } catch (error) {
+      showNotification(
+        t('projectsPage.notifications.joinError') || 'Failed to join project. Please try again.',
+        'error'
+      );
+    } finally {
+      setJoiningProjectId(null);
+    }
+  };
+
+  const handleLearnMore = (projectId: string) => {
+    navigate(`/projects/${projectId}`);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen py-12" style={{backgroundColor: '#E2EAD6'}}>
@@ -56,6 +111,14 @@ const Projects: React.FC = () => {
 
   return (
     <div className="min-h-screen py-12" style={{backgroundColor: '#E2EAD6'}}>
+      {notification.show && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification({ ...notification, show: false })}
+        />
+      )}
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -194,10 +257,31 @@ const Projects: React.FC = () => {
                   
                   {/* Action Buttons */}
                   <div className="flex gap-2">
-                    <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">
-                      {t('projectsPage.actions.join')}
+                    <button 
+                      onClick={() => handleJoinProject(project.id, project.title)}
+                      disabled={joiningProjectId === project.id}
+                      className={`flex-1 py-2 px-4 rounded-lg transition-colors text-sm font-medium ${
+                        joiningProjectId === project.id
+                          ? 'bg-green-400 text-white cursor-wait'
+                          : 'bg-green-600 text-white hover:bg-green-700'
+                      }`}
+                    >
+                      {joiningProjectId === project.id ? (
+                        <span className="flex items-center justify-center">
+                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          {t('projectsPage.actions.joining')}
+                        </span>
+                      ) : (
+                        t('projectsPage.actions.join')
+                      )}
                     </button>
-                    <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                    <button 
+                      onClick={() => handleLearnMore(project.id)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                    >
                       {t('projectsPage.actions.learnMore')}
                     </button>
                   </div>

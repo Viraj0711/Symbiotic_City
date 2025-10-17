@@ -354,8 +354,14 @@
     },
     "actions": {
       "join": "Join",
+      "joining": "Joining...",
       "eventEnded": "Event Ended",
       "details": "Details"
+    },
+    "notifications": {
+      "loginRequired": "Please login to join events",
+      "joinSuccess": "Successfully joined {eventName}!",
+      "joinError": "Failed to join event. Please try again."
     },
     "loading": {
       "title": "Loading events..."
@@ -393,7 +399,13 @@
     },
     "actions": {
       "join": "Join Project",
+      "joining": "Joining...",
       "learnMore": "Learn More"
+    },
+    "notifications": {
+      "loginRequired": "Please login to join projects",
+      "joinSuccess": "Successfully joined {projectName}!",
+      "joinError": "Failed to join project. Please try again."
     },
     "loading": {
       "title": "Loading projects..."

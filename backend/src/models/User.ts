@@ -8,8 +8,8 @@ export class User {
     const hashedPassword = await bcrypt.hash(userData.password!, 12);
     
     const query = `
-      INSERT INTO users (name, email, password, avatar, bio, location, role, site_owner_data, preferences, wallet, is_active, email_verified)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      INSERT INTO users (name, email, password, avatar, bio, location, role, gender, site_owner_data, preferences, wallet, is_active, email_verified)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       RETURNING *
     `;
     
@@ -21,6 +21,7 @@ export class User {
       userData.bio || null,
       userData.location || null,
       userData.role || 'USER',
+      userData.gender || 'prefer-not-to-say',
       JSON.stringify(userData.site_owner_data || null),
       JSON.stringify(userData.preferences || {
         energy_types: ['hydrogen', 'solar', 'wind'],

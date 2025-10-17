@@ -75,17 +75,19 @@ app.use('/api/auth', authRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/emergency-services', emergencyServicesRoutes);
 
-// Serve static files from frontend build
-app.use(express.static(path.join(__dirname, '../../frontend/dist')));
+// Serve static files from frontend build (only in production)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
-// Serve index.html for all routes except /api
-app.get('*', (req, res, next) => {
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
-  } else {
-    next();
-  }
-});
+  // Serve index.html for all routes except /api
+  app.get('*', (req, res, next) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
+    } else {
+      next();
+    }
+  });
+}
 
 // 404 handler - must come after all routes
 app.use((req, res) => {

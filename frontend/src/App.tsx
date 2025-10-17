@@ -29,6 +29,8 @@ import {
   ForgotPassword
 } from './pages';
 import ProductDetail from './pages/ProductDetail';
+import EventDetail from './pages/EventDetail';
+import ProjectDetail from './pages/ProjectDetail';
 
 function App() {
   return (
@@ -43,7 +45,9 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/projects" element={<Projects />} />
+                  <Route path="/projects/:id" element={<ProjectDetail />} />
                   <Route path="/events" element={<Events />} />
+                  <Route path="/events/:id" element={<EventDetail />} />
                   <Route path="/marketplace" element={<Marketplace />} />
                   <Route path="/marketplace/product/:id" element={<ProductDetail />} />
                   <Route path="/emergency" element={<EmergencyServices />} />

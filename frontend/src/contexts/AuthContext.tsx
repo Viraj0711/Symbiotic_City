@@ -67,10 +67,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (email: string, password: string, name: string, role?: 'USER' | 'SITE_OWNER') => {
+  const signUp = async (
+    email: string, 
+    password: string, 
+    name: string, 
+    role?: 'USER' | 'SITE_OWNER',
+    gender?: 'male' | 'female' | 'other' | 'prefer-not-to-say'
+  ) => {
     setLoading(true);
     try {
-      const response = await api.register(email, password, name, role);
+      const response = await api.register(email, password, name, role, gender);
       setUser(response.user);
     } catch (error) {
       console.error('Sign up failed:', error);

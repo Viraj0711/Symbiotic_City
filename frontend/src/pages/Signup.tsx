@@ -15,6 +15,7 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<'USER' | 'SITE_OWNER'>('USER');
+  const [gender, setGender] = useState<'male' | 'female' | 'other' | 'prefer-not-to-say'>('prefer-not-to-say');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -62,7 +63,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      await signUp(email, password, name, role);
+      await signUp(email, password, name, role, gender);
       // Role-based redirect
       if (role === 'SITE_OWNER') {
         navigate('/site-owner-dashboard');
@@ -188,6 +189,75 @@ const Signup = () => {
                       <h3 className="font-medium text-gray-900">{t('auth.signup.siteOwner')}</h3>
                       <p className="text-sm text-gray-600">{t('auth.signup.siteOwnerDesc')}</p>
                     </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Gender Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Gender (Optional)
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setGender('male')}
+                  className={`p-3 border-2 rounded-lg transition-all hover:border-emerald-300 ${
+                    gender === 'male'
+                      ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200'
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="text-center">
+                    <span className={`font-medium ${gender === 'male' ? 'text-emerald-700' : 'text-gray-700'}`}>
+                      Male
+                    </span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGender('female')}
+                  className={`p-3 border-2 rounded-lg transition-all hover:border-emerald-300 ${
+                    gender === 'female'
+                      ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200'
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="text-center">
+                    <span className={`font-medium ${gender === 'female' ? 'text-emerald-700' : 'text-gray-700'}`}>
+                      Female
+                    </span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGender('other')}
+                  className={`p-3 border-2 rounded-lg transition-all hover:border-emerald-300 ${
+                    gender === 'other'
+                      ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200'
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="text-center">
+                    <span className={`font-medium ${gender === 'other' ? 'text-emerald-700' : 'text-gray-700'}`}>
+                      Other
+                    </span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGender('prefer-not-to-say')}
+                  className={`p-3 border-2 rounded-lg transition-all hover:border-emerald-300 ${
+                    gender === 'prefer-not-to-say'
+                      ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200'
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="text-center">
+                    <span className={`font-medium text-sm ${gender === 'prefer-not-to-say' ? 'text-emerald-700' : 'text-gray-700'}`}>
+                      Prefer not to say
+                    </span>
                   </div>
                 </button>
               </div>

@@ -59,7 +59,7 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
       });
     }
 
-    const { email, password, name, role } = req.body;
+    const { email, password, name, role, gender } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findByEmail(email);
@@ -75,6 +75,7 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
       password,
       name,
       role: role || 'USER',
+      gender: gender || 'prefer-not-to-say',
       bio: `Hello! I'm ${name} and I'm excited to be part of the Symbiotic City community.`,
       location: 'Community Member',
       is_active: true,

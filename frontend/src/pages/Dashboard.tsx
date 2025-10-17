@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { GenderAvatar } from '../components/GenderAvatars';
 
-// StickFigure component for default avatar
+// StickFigure component for default avatar (kept for backwards compatibility)
 const StickFigure: React.FC<{ className?: string }> = ({ className = '' }) => (
   <svg className={className} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="20" r="8" stroke="currentColor" strokeWidth="2" fill="none" />
@@ -556,8 +557,8 @@ const Dashboard: React.FC = () => {
                       onError={() => setAvatarError(true)}
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-full bg-gray-100 border-4 border-green-500 flex items-center justify-center">
-                      <StickFigure className="w-16 h-16 text-gray-400" />
+                    <div className="w-32 h-32 rounded-full bg-gray-100 border-4 border-green-500 flex items-center justify-center overflow-hidden">
+                      <GenderAvatar gender={user.gender} className="w-28 h-28" />
                     </div>
                   )}
                   
