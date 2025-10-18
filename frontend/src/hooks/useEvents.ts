@@ -20,7 +20,7 @@ export interface Event {
 // Base events data without translations
 const baseEvents = [
   {
-    id: '1',
+    id: '550e8400-e29b-41d4-a716-446655440001',
     date: '2026-03-15T09:00:00Z',
     time: '9:00 AM - 1:00 PM',
     attendees: 45,
@@ -31,7 +31,7 @@ const baseEvents = [
     type: 'volunteer'
   },
   {
-    id: '2',
+    id: '550e8400-e29b-41d4-a716-446655440002',
     date: '2026-03-20T14:00:00Z',
     time: '2:00 PM - 5:00 PM',
     attendees: 28,
@@ -42,7 +42,7 @@ const baseEvents = [
     type: 'workshop'
   },
   {
-    id: '3',
+    id: '550e8400-e29b-41d4-a716-446655440003',
     date: '2026-03-25T10:00:00Z',
     time: '10:00 AM - 3:00 PM',
     attendees: 67,

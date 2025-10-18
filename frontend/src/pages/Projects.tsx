@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { api } from '../lib/supabase';
 import Notification from '../components/Notification';
 
 interface NotificationState {
@@ -63,22 +64,17 @@ const Projects: React.FC = () => {
     try {
       setJoiningProjectId(projectId);
       
-      // TODO: Make API call to join project
-      // await api.joinProject(projectId);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Make API call to join project
+      await api.joinProject(projectId);
       
       showNotification(
         t('projectsPage.notifications.joinSuccess')?.replace('{projectName}', projectTitle) || 
         `Successfully joined ${projectTitle}!`,
         'success'
       );
-    } catch (error) {
-      showNotification(
-        t('projectsPage.notifications.joinError') || 'Failed to join project. Please try again.',
-        'error'
-      );
+    } catch (error: any) {
+      const errorMessage = error?.message || t('projectsPage.notifications.joinError') || 'Failed to join project. Please try again.';
+      showNotification(errorMessage, 'error');
     } finally {
       setJoiningProjectId(null);
     }

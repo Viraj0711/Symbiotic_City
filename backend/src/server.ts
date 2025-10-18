@@ -14,6 +14,8 @@ import connectDB from './config/database';
 import authRoutes from './routes/auth';
 import marketplaceRoutes from './routes/marketplace';
 import emergencyServicesRoutes from './routes/emergencyServices';
+import eventsRoutes from './routes/events';
+import projectsRoutes from './routes/projects';
 
 // Load environment variables
 import dotenv from 'dotenv';
@@ -74,6 +76,8 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/emergency-services', emergencyServicesRoutes);
+app.use('/api/events', eventsRoutes);
+app.use('/api/projects', projectsRoutes);
 
 // Serve static files from frontend build (only in production)
 if (process.env.NODE_ENV === 'production') {

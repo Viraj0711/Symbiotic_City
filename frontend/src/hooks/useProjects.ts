@@ -21,7 +21,7 @@ export interface Project {
 // Base project data without translations
 const baseProjects = [
   {
-    id: '1',
+    id: '650e8400-e29b-41d4-a716-446655440001',
     progress: 75,
     participants: 127,
     image: 'https://images.pexels.com/photos/2886937/pexels-photo-2886937.jpeg?auto=compress&cs=tinysrgb&w=600',
@@ -32,7 +32,7 @@ const baseProjects = [
     tags: ['sustainability', 'food security', 'community']
   },
   {
-    id: '2',
+    id: '650e8400-e29b-41d4-a716-446655440002',
     progress: 45,
     participants: 89,
     image: 'https://images.pexels.com/photos/3735218/pexels-photo-3735218.jpeg?auto=compress&cs=tinysrgb&w=600',
@@ -43,7 +43,7 @@ const baseProjects = [
     tags: ['technology', 'recycling', 'innovation']
   },
   {
-    id: '3',
+    id: '650e8400-e29b-41d4-a716-446655440003',
     progress: 90,
     participants: 234,
     image: 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=600',
@@ -54,7 +54,7 @@ const baseProjects = [
     tags: ['education', 'youth', 'mentorship']
   },
   {
-    id: '4',
+    id: '650e8400-e29b-41d4-a716-446655440004',
     progress: 30,
     participants: 156,
     image: 'https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?auto=compress&cs=tinysrgb&w=600',
@@ -65,7 +65,7 @@ const baseProjects = [
     tags: ['transportation', 'sustainability', 'mobility']
   },
   {
-    id: '5',
+    id: '650e8400-e29b-41d4-a716-446655440005',
     progress: 60,
     participants: 178,
     image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=600',
@@ -76,7 +76,7 @@ const baseProjects = [
     tags: ['digital access', 'connectivity', 'inclusion']
   },
   {
-    id: '6',
+    id: '650e8400-e29b-41d4-a716-446655440006',
     progress: 85,
     participants: 98,
     image: 'https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=600',

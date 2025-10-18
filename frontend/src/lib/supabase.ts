@@ -140,6 +140,40 @@ class ApiClient {
     this.clearToken();
   }
 
+  // Events endpoints
+  async joinEvent(eventId: string): Promise<{ message: string; event: any }> {
+    return this.request<{ message: string; event: any }>(`/events/${eventId}/join`, {
+      method: 'POST',
+    });
+  }
+
+  async leaveEvent(eventId: string): Promise<{ message: string; event: any }> {
+    return this.request<{ message: string; event: any }>(`/events/${eventId}/leave`, {
+      method: 'POST',
+    });
+  }
+
+  async getMyEvents(): Promise<{ events: any[] }> {
+    return this.request<{ events: any[] }>('/events/my-events');
+  }
+
+  // Projects endpoints
+  async joinProject(projectId: string): Promise<{ message: string; project: any }> {
+    return this.request<{ message: string; project: any }>(`/projects/${projectId}/join`, {
+      method: 'POST',
+    });
+  }
+
+  async leaveProject(projectId: string): Promise<{ message: string; project: any }> {
+    return this.request<{ message: string; project: any }>(`/projects/${projectId}/leave`, {
+      method: 'POST',
+    });
+  }
+
+  async getMyProjects(): Promise<{ projects: any[] }> {
+    return this.request<{ projects: any[] }>('/projects/my-projects');
+  }
+
   // Health check
   async healthCheck(): Promise<{ status: string; timestamp: string }> {
     return this.request<{ status: string; timestamp: string }>('/health');

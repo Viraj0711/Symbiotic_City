@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEvents } from '../hooks/useEvents';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { api } from '../lib/supabase';
 import Notification from '../components/Notification';
 
 interface NotificationState {
@@ -153,22 +154,17 @@ const Events: React.FC = () => {
     try {
       setJoiningEventId(eventId);
       
-      // TODO: Make API call to join event
-      // await api.joinEvent(eventId);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Make API call to join event
+      await api.joinEvent(eventId);
       
       showNotification(
         t('eventsPage.notifications.joinSuccess')?.replace('{eventName}', eventTitle) || 
         `Successfully joined ${eventTitle}!`,
         'success'
       );
-    } catch (error) {
-      showNotification(
-        t('eventsPage.notifications.joinError') || 'Failed to join event. Please try again.',
-        'error'
-      );
+    } catch (error: any) {
+      const errorMessage = error?.message || t('eventsPage.notifications.joinError') || 'Failed to join event. Please try again.';
+      showNotification(errorMessage, 'error');
     } finally {
       setJoiningEventId(null);
     }
