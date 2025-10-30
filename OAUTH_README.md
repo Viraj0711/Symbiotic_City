@@ -3,6 +3,7 @@
 ## ✅ What's Been Implemented
 
 Your Symbiotic City app now has **fully functional OAuth social login** for:
+
 - 🔵 Facebook
 - 🔴 Google  
 - 🐦 Twitter
@@ -11,6 +12,7 @@ Your Symbiotic City app now has **fully functional OAuth social login** for:
 ## 🎯 Current Status
 
 ### Frontend ✅
+
 - OAuth redirect URLs configured for all 4 providers
 - Callback handler component created (`OAuthCallback.tsx`)
 - Routes configured for all OAuth callbacks
@@ -18,6 +20,7 @@ Your Symbiotic City app now has **fully functional OAuth social login** for:
 - Environment variables template updated
 
 ### Backend ✅
+
 - OAuth service created with provider-specific handlers
 - Token exchange endpoints for all 4 providers (`/api/auth/oauth/{provider}`)
 - User creation/login logic implemented
@@ -38,7 +41,8 @@ You need to create developer apps with each provider. Follow the detailed guide 
 
 ### Step 2: Configure Environment Variables
 
-#### Frontend `.env` file:
+#### Frontend `.env` file
+
 ```env
 VITE_API_URL=http://localhost:3001/api
 VITE_FACEBOOK_APP_ID=your_facebook_app_id_here
@@ -47,7 +51,8 @@ VITE_TWITTER_CLIENT_ID=your_twitter_client_id_here
 VITE_INSTAGRAM_APP_ID=your_instagram_app_id_here
 ```
 
-#### Backend `.env` file:
+#### Backend `.env` file
+
 ```env
 FRONTEND_URL=http://localhost:5173
 
@@ -67,6 +72,7 @@ INSTAGRAM_APP_SECRET=your_instagram_app_secret_here
 ### Step 3: Set Callback URLs in Provider Settings
 
 For each provider, add these callback URLs:
+
 - **Development**: `http://localhost:5173/auth/callback/{provider}`
 - **Production**: `https://yourdomain.com/auth/callback/{provider}`
 
@@ -83,18 +89,21 @@ Replace `{provider}` with: `facebook`, `google`, `twitter`, or `instagram`
 ## 🔧 Files Modified/Created
 
 ### Frontend
+
 - ✅ `frontend/src/pages/auth/OAuthCallback.tsx` - Handles OAuth returns
 - ✅ `frontend/src/App.tsx` - Added OAuth callback routes
 - ✅ `frontend/src/pages/Auth.tsx` - OAuth redirect logic
 - ✅ `frontend/.env.example` - OAuth credentials template
 
 ### Backend
+
 - ✅ `backend/src/utils/oauth.ts` - OAuth service for all providers
 - ✅ `backend/src/routes/auth.ts` - OAuth endpoints added
 - ✅ `backend/package.json` - Added axios dependency
 - ✅ `backend/.env.example` - OAuth credentials template
 
 ### Documentation
+
 - ✅ `OAUTH_SETUP.md` - Comprehensive setup guide
 - ✅ `OAUTH_README.md` - This quick start guide
 
