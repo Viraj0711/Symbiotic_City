@@ -16,4 +16,5 @@ export { default as SearchResults } from './SearchResults';
 export { default as EmergencyServices } from './EmergencyServices';
 export { default as Login } from './Login';
 export { default as Signup } from './Signup';
+export { default as Auth } from './Auth';
 export { default as ForgotPassword } from './ForgotPassword';

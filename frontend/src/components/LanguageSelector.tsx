@@ -40,7 +40,8 @@ const LanguageSelector: React.FC = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 p-2 text-gray-600 hover:text-green-600 transition-colors duration-200 rounded-lg hover:bg-gray-50"
+        className="flex items-center space-x-2 p-2 hover:text-green-600 transition-colors duration-200 rounded-lg hover:bg-gray-50"
+        style={{color: '#000000'}}
         aria-label={t('header.language')}
       >
         <Globe className="h-5 w-5" />
@@ -61,8 +62,9 @@ const LanguageSelector: React.FC = () => {
               className={`w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-3 ${
                 currentLanguage === language.code
                   ? 'bg-green-50 text-green-600 font-medium'
-                  : 'text-gray-700'
+                  : ''
               }`}
+              style={{color: currentLanguage === language.code ? undefined : '#000000'}}
             >
               <span className="text-lg">{language.flag}</span>
               <span>{language.name}</span>

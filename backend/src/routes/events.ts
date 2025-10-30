@@ -4,11 +4,26 @@ import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
+// Get all events
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM events 
+       ORDER BY start_date ASC`
+    );
+
+    res.json({ events: result.rows });
+  } catch (error) {
+    console.error('Get events error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Join an event
 router.post('/:id/join', authenticateToken, async (req: Request, res: Response) => {
   try {
     const eventId = req.params.id;
-    const userId = (req as any).user.userId;
+    const userId = (req as any).user.id;
 
     // Check if event exists
     const eventCheck = await pool.query('SELECT * FROM events WHERE id = $1', [eventId]);
@@ -52,7 +67,7 @@ router.post('/:id/join', authenticateToken, async (req: Request, res: Response) 
 router.post('/:id/leave', authenticateToken, async (req: Request, res: Response) => {
   try {
     const eventId = req.params.id;
-    const userId = (req as any).user.userId;
+    const userId = (req as any).user.id;
 
     // Remove user from attendees array
     const result = await pool.query(
@@ -81,14 +96,18 @@ router.post('/:id/leave', authenticateToken, async (req: Request, res: Response)
 // Get events for current user
 router.get('/my-events', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.userId;
+    const userId = (req as any).user.id;
+
+    console.log('🔍 Fetching events for user:', userId);
 
     const result = await pool.query(
       `SELECT * FROM events 
-       WHERE $1 = ANY(attendees) OR organizer_id = $1
+       WHERE $1::TEXT = ANY(SELECT unnest(attendees)::TEXT) OR organizer_id::TEXT = $1::TEXT
        ORDER BY start_date DESC`,
       [userId]
     );
+
+    console.log(`📊 Found ${result.rows.length} events for user ${userId}`);
 
     res.json({ events: result.rows });
   } catch (error) {

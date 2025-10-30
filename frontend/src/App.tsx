@@ -24,8 +24,7 @@ import {
   TermsOfService,
   Guidelines,
   EmergencyServices,
-  Login,
-  Signup,
+  Auth,
   ForgotPassword
 } from './pages';
 import ProductDetail from './pages/ProductDetail';
@@ -63,8 +62,8 @@ function App() {
                   <Route path="/terms" element={<TermsOfService />} />
                   <Route path="/guidelines" element={<Guidelines />} />
                   <Route path="/search" element={<SearchResults />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/login" element={<Auth />} />
+                  <Route path="/signup" element={<Auth />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                 </Routes>
               </main>

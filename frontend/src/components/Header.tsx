@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Leaf, Bell, User, LogOut } from 'lucide-react';
+import { Menu, X, Leaf, Bell, User, LogOut, Search } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import SearchBar from './SearchBar';
 import LanguageSelector from './LanguageSelector';
 
 const Header = () => {
@@ -45,7 +44,7 @@ const Header = () => {
 
   return (
     <>
-    <header className="bg-gray-50 shadow-sm border-b border-gray-200">
+    <header className="shadow-sm border-b border-gray-200" style={{backgroundColor: '#E2EAD6'}}>
       <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 lg:h-18">
           {/* Logo */}
@@ -53,44 +52,52 @@ const Header = () => {
             <div className="p-2 rounded-lg" style={{backgroundColor: '#059669'}}>
               <Leaf className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">Symbiotic City</span>
+            <span className="text-xl font-bold" style={{color: '#000000'}}>Symbiotic City</span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-4 lg:space-x-6 xl:space-x-8">
             <Link 
               to="/marketplace" 
-              className={`${isActivePath('/marketplace') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+              className={`${isActivePath('/marketplace') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+              style={{color: isActivePath('/marketplace') ? undefined : '#000000'}}
             >
               {t('header.marketplace')}
             </Link>
             <Link 
               to="/community" 
-              className={`${isActivePath('/community') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+              className={`${isActivePath('/community') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+              style={{color: isActivePath('/community') ? undefined : '#000000'}}
             >
               {t('header.community')}
             </Link>
             <Link 
               to="/events" 
-              className={`${isActivePath('/events') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+              className={`${isActivePath('/events') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+              style={{color: isActivePath('/events') ? undefined : '#000000'}}
             >
               {t('header.events')}
             </Link>
             <Link 
               to="/projects" 
-              className={`${isActivePath('/projects') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+              className={`${isActivePath('/projects') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+              style={{color: isActivePath('/projects') ? undefined : '#000000'}}
             >
               {t('header.projects')}
             </Link>
-            <Link 
-              to="/emergency" 
-              className={`${isActivePath('/emergency') ? 'text-red-600' : 'text-gray-600 hover:text-red-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
-            >
-              {t('header.emergency')}
-            </Link>
+            {user && (
+              <Link 
+                to="/emergency" 
+                className={`${isActivePath('/emergency') ? 'text-red-600' : 'hover:text-red-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+                style={{color: isActivePath('/emergency') ? undefined : '#000000'}}
+              >
+                {t('header.emergency')}
+              </Link>
+            )}
             <Link 
               to="/about" 
-              className={`${isActivePath('/about') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+              className={`${isActivePath('/about') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
+              style={{color: isActivePath('/about') ? undefined : '#000000'}}
             >
               {t('header.about')}
             </Link>
@@ -98,19 +105,19 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-2 lg:space-x-3 xl:space-x-4">
-            <SearchBar className="w-60 lg:w-72 xl:w-80" />
+            {user && (
+              <button className="p-2 hover:text-green-600 transition-colors duration-200" style={{color: '#000000'}}>
+                <Search className="h-5 w-5" />
+              </button>
+            )}
             <LanguageSelector />
-            <button className="p-2 text-gray-400 hover:text-green-600 transition-colors duration-200">
-              <Bell className="h-5 w-5" />
-            </button>
+            {user && (
+              <button className="p-2 hover:text-green-600 transition-colors duration-200" style={{color: '#000000'}}>
+                <Bell className="h-5 w-5" />
+              </button>
+            )}
             {user ? (
               <div className="flex items-center space-x-1 lg:space-x-2">
-                <Link 
-                  to="/"
-                  className={`${isActivePath('/') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base`}
-                >
-                  {t('header.home')}
-                </Link>
                 <Link 
                   to="/dashboard"
                   className={`flex items-center space-x-2 p-1 ${isActivePath('/dashboard') ? 'text-green-600' : 'text-gray-400 hover:text-green-600'} transition-colors duration-200`}
@@ -136,7 +143,8 @@ const Header = () => {
               <div className="flex items-center space-x-1 lg:space-x-2">
                 <button 
                   onClick={() => handleAuthNavigation('/login')}
-                  className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base"
+                  className="hover:text-green-600 transition-colors duration-200 font-medium whitespace-nowrap text-sm lg:text-base"
+                  style={{color: '#000000'}}
                 >
                   {t('header.signIn')}
                 </button>
@@ -165,37 +173,45 @@ const Header = () => {
             <div className="flex flex-col space-y-4">
               <Link 
                 to="/marketplace" 
-                className={`${isActivePath('/marketplace') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium py-1`}
+                className={`${isActivePath('/marketplace') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium py-1`}
+                style={{color: isActivePath('/marketplace') ? undefined : '#000000'}}
               >
                 {t('header.marketplace')}
               </Link>
               <Link 
                 to="/community" 
-                className={`${isActivePath('/community') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium py-1`}
+                className={`${isActivePath('/community') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium py-1`}
+                style={{color: isActivePath('/community') ? undefined : '#000000'}}
               >
                 {t('header.community')}
               </Link>
               <Link 
                 to="/events" 
-                className={`${isActivePath('/events') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium py-1`}
+                className={`${isActivePath('/events') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium py-1`}
+                style={{color: isActivePath('/events') ? undefined : '#000000'}}
               >
                 {t('header.events')}
               </Link>
               <Link 
                 to="/projects" 
-                className={`${isActivePath('/projects') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium py-1`}
+                className={`${isActivePath('/projects') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium py-1`}
+                style={{color: isActivePath('/projects') ? undefined : '#000000'}}
               >
                 {t('header.projects')}
               </Link>
-              <Link 
-                to="/emergency" 
-                className={`${isActivePath('/emergency') ? 'text-red-600' : 'text-gray-600 hover:text-red-600'} transition-colors duration-200 font-medium py-1`}
-              >
-                {t('header.emergency')}
-              </Link>
+              {user && (
+                <Link 
+                  to="/emergency" 
+                  className={`${isActivePath('/emergency') ? 'text-red-600' : 'hover:text-red-600'} transition-colors duration-200 font-medium py-1`}
+                  style={{color: isActivePath('/emergency') ? undefined : '#000000'}}
+                >
+                  {t('header.emergency')}
+                </Link>
+              )}
               <Link 
                 to="/about" 
-                className={`${isActivePath('/about') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium py-1`}
+                className={`${isActivePath('/about') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium py-1`}
+                style={{color: isActivePath('/about') ? undefined : '#000000'}}
               >
                 {t('header.about')}
               </Link>
@@ -224,19 +240,21 @@ const Header = () => {
                       </div>
                     )}
                     <div>
-                      <p className="font-medium text-gray-900">{user.name}</p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
+                      <p className="font-medium" style={{color: '#000000'}}>{user.name}</p>
+                      <p className="text-sm" style={{color: '#000000'}}>{user.email}</p>
                     </div>
                   </div>
                   <Link 
                     to="/dashboard" 
-                    className={`${isActivePath('/dashboard') ? 'text-green-600' : 'text-gray-600 hover:text-green-600'} transition-colors duration-200 font-medium`}
+                    className={`${isActivePath('/dashboard') ? 'text-green-600' : 'hover:text-green-600'} transition-colors duration-200 font-medium`}
+                    style={{color: isActivePath('/dashboard') ? undefined : '#000000'}}
                   >
                     {t('header.dashboard')}
                   </Link>
                   <button 
                     onClick={handleSignOut}
-                    className="text-left text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium"
+                    className="text-left hover:text-green-600 transition-colors duration-200 font-medium"
+                    style={{color: '#000000'}}
                   >
                     {t('header.signOut')}
                   </button>
@@ -245,7 +263,8 @@ const Header = () => {
                 <div className="pt-3 border-t border-gray-200 flex flex-col space-y-2">
                   <button 
                     onClick={() => handleAuthNavigation('/login')}
-                    className="text-gray-600 hover:text-green-600 transition-colors duration-200 font-medium text-left"
+                    className="hover:text-green-600 transition-colors duration-200 font-medium text-left"
+                    style={{color: '#000000'}}
                   >
                     {t('header.signIn')}
                   </button>

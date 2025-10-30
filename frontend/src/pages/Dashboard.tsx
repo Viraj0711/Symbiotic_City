@@ -49,6 +49,33 @@ const Dashboard: React.FC = () => {
     fetchUserData();
   }, [user]);
 
+  // Refetch data when switching to projects or events tabs
+  useEffect(() => {
+    const refetchData = async () => {
+      if (!user) return;
+      
+      try {
+        if (activeTab === 'projects') {
+          setLoading(true);
+          const projectsData = await api.getMyProjects();
+          setUserProjects(projectsData.projects || []);
+        } else if (activeTab === 'events') {
+          setLoading(true);
+          const eventsData = await api.getMyEvents();
+          setUserEvents(eventsData.events || []);
+        }
+      } catch (error) {
+        console.error('Error refetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (activeTab === 'projects' || activeTab === 'events') {
+      refetchData();
+    }
+  }, [activeTab, user]);
+
   // User stats based on actual data
   const userStats = {
     projectsJoined: userProjects.length,

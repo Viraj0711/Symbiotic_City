@@ -4,11 +4,26 @@ import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
+// Get all projects
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM projects 
+       ORDER BY created_at DESC`
+    );
+
+    res.json({ projects: result.rows });
+  } catch (error) {
+    console.error('Get projects error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Join a project
 router.post('/:id/join', authenticateToken, async (req: Request, res: Response) => {
   try {
     const projectId = req.params.id;
-    const userId = (req as any).user.userId;
+    const userId = (req as any).user.id;
 
     // Check if project exists
     const projectCheck = await pool.query('SELECT * FROM projects WHERE id = $1', [projectId]);
@@ -47,7 +62,7 @@ router.post('/:id/join', authenticateToken, async (req: Request, res: Response) 
 router.post('/:id/leave', authenticateToken, async (req: Request, res: Response) => {
   try {
     const projectId = req.params.id;
-    const userId = (req as any).user.userId;
+    const userId = (req as any).user.id;
 
     // Remove user from participants array
     const result = await pool.query(
@@ -76,14 +91,18 @@ router.post('/:id/leave', authenticateToken, async (req: Request, res: Response)
 // Get projects for current user
 router.get('/my-projects', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.userId;
+    const userId = (req as any).user.id;
+
+    console.log('🔍 Fetching projects for user:', userId);
 
     const result = await pool.query(
       `SELECT * FROM projects 
-       WHERE $1 = ANY(participants) OR author_id = $1
+       WHERE $1::TEXT = ANY(SELECT unnest(participants)::TEXT) OR author_id::TEXT = $1::TEXT
        ORDER BY created_at DESC`,
       [userId]
     );
+
+    console.log(`📊 Found ${result.rows.length} projects for user ${userId}`);
 
     res.json({ projects: result.rows });
   } catch (error) {

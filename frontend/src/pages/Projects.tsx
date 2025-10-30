@@ -13,7 +13,7 @@ interface NotificationState {
 }
 
 const Projects: React.FC = () => {
-  const { projects, loading, error } = useProjects();
+  const { projects, loading, error, refetch } = useProjects();
   const { t } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -66,6 +66,9 @@ const Projects: React.FC = () => {
       
       // Make API call to join project
       await api.joinProject(projectId);
+      
+      // Refetch projects to update the UI
+      await refetch();
       
       showNotification(
         t('projectsPage.notifications.joinSuccess')?.replace('{projectName}', projectTitle) || 

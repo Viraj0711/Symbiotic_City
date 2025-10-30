@@ -13,7 +13,7 @@ interface NotificationState {
 }
 
 const Events: React.FC = () => {
-  const { events, loading, error } = useEvents();
+  const { events, loading, error, refetch } = useEvents();
   const { t, currentLanguage } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -156,6 +156,9 @@ const Events: React.FC = () => {
       
       // Make API call to join event
       await api.joinEvent(eventId);
+      
+      // Refetch events to update the UI
+      await refetch();
       
       showNotification(
         t('eventsPage.notifications.joinSuccess')?.replace('{eventName}', eventTitle) || 

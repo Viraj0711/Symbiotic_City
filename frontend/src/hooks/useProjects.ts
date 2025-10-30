@@ -18,76 +18,6 @@ export interface Project {
   tags: string[];
 }
 
-// Base project data without translations
-const baseProjects = [
-  {
-    id: '650e8400-e29b-41d4-a716-446655440001',
-    progress: 75,
-    participants: 127,
-    image: 'https://images.pexels.com/photos/2886937/pexels-photo-2886937.jpeg?auto=compress&cs=tinysrgb&w=600',
-    author_id: 'user1',
-    created_at: '2024-01-15T10:00:00Z',
-    status: 'ACTIVE' as const,
-    location: 'Downtown District',
-    tags: ['sustainability', 'food security', 'community']
-  },
-  {
-    id: '650e8400-e29b-41d4-a716-446655440002',
-    progress: 45,
-    participants: 89,
-    image: 'https://images.pexels.com/photos/3735218/pexels-photo-3735218.jpeg?auto=compress&cs=tinysrgb&w=600',
-    author_id: 'user2',
-    created_at: '2024-02-01T14:30:00Z',
-    status: 'ACTIVE' as const,
-    location: 'City Center',
-    tags: ['technology', 'recycling', 'innovation']
-  },
-  {
-    id: '650e8400-e29b-41d4-a716-446655440003',
-    progress: 90,
-    participants: 234,
-    image: 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=600',
-    author_id: 'user3',
-    created_at: '2024-01-20T09:15:00Z',
-    status: 'ACTIVE' as const,
-    location: 'Educational District',
-    tags: ['education', 'youth', 'mentorship']
-  },
-  {
-    id: '650e8400-e29b-41d4-a716-446655440004',
-    progress: 30,
-    participants: 156,
-    image: 'https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?auto=compress&cs=tinysrgb&w=600',
-    author_id: 'user4',
-    created_at: '2024-02-10T16:45:00Z',
-    status: 'ACTIVE' as const,
-    location: 'Transportation Hub',
-    tags: ['transportation', 'sustainability', 'mobility']
-  },
-  {
-    id: '650e8400-e29b-41d4-a716-446655440005',
-    progress: 60,
-    participants: 178,
-    image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=600',
-    author_id: 'user5',
-    created_at: '2024-01-25T11:20:00Z',
-    status: 'ACTIVE' as const,
-    location: 'Public Parks',
-    tags: ['digital access', 'connectivity', 'inclusion']
-  },
-  {
-    id: '650e8400-e29b-41d4-a716-446655440006',
-    progress: 85,
-    participants: 98,
-    image: 'https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=600',
-    author_id: 'user6',
-    created_at: '2024-02-05T13:10:00Z',
-    status: 'ACTIVE' as const,
-    location: 'Market Square',
-    tags: ['local economy', 'food', 'community']
-  }
-];
-
 export const useProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,30 +27,67 @@ export const useProjects = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Create translated projects
-      const translatedProjects: Project[] = baseProjects.map(project => ({
-        ...project,
-        title: t(`projectData.${project.id}.title`),
-        description: t(`projectData.${project.id}.description`),
-        category: t(`projectData.${project.id}.category`),
-        timeLeft: t(`projectData.${project.id}.timeLeft`),
-        impact: t(`projectData.${project.id}.impact`)
+      // Fetch projects from the backend
+      const response = await fetch('http://localhost:3001/api/projects');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch projects');
+      }
+      
+      const data = await response.json();
+      
+      // Transform database projects to match the Project interface
+      const transformedProjects: Project[] = (data.projects || []).map((project: any) => ({
+        id: project.id,
+        title: project.title || 'Untitled Project',
+        description: project.description || 'No description available',
+        progress: project.progress || 0,
+        participants: project.participants ? project.participants.length : 0,
+        category: project.category || 'General',
+        timeLeft: project.end_date ? calculateTimeLeft(project.end_date) : 'Ongoing',
+        impact: project.impact || 'Community Impact',
+        image: project.image || 'https://images.pexels.com/photos/2886937/pexels-photo-2886937.jpeg?auto=compress&cs=tinysrgb&w=600',
+        author_id: project.author_id || 'unknown',
+        created_at: project.created_at,
+        status: (project.status?.toUpperCase() || 'ACTIVE') as 'ACTIVE' | 'COMPLETED' | 'PLANNED',
+        location: typeof project.location === 'string' 
+          ? project.location 
+          : project.location?.city || project.location?.address || 'Location TBD',
+        tags: project.tags || []
       }));
       
-      setProjects(translatedProjects);
+      setProjects(transformedProjects);
+      setError(null);
     } catch (err) {
+      console.error('Error fetching projects:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
+      // Set empty array on error so the page still renders
+      setProjects([]);
     } finally {
       setLoading(false);
     }
   };
 
+  const calculateTimeLeft = (endDate: string): string => {
+    const now = new Date();
+    const end = new Date(endDate);
+    const diffTime = end.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return 'Completed';
+    if (diffDays === 0) return 'Ending today';
+    if (diffDays === 1) return '1 day left';
+    if (diffDays < 30) return `${diffDays} days left`;
+    
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths === 1) return '1 month left';
+    return `${diffMonths} months left`;
+  };
+
   useEffect(() => {
     fetchProjects();
-  }, [t]); // Re-fetch when language changes
+  }, []); // Fetch once on mount
 
   return { projects, loading, error, refetch: fetchProjects };
 };

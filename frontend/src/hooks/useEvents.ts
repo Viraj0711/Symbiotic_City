@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { api } from '../lib/supabase';
 
 export interface Event {
   id: string;
@@ -15,44 +16,11 @@ export interface Event {
   author_id: string;
   created_at: string;
   type: string;
+  start_date?: string;
+  end_date?: string;
+  organizer_id?: string;
+  max_attendees?: number;
 }
-
-// Base events data without translations
-const baseEvents = [
-  {
-    id: '550e8400-e29b-41d4-a716-446655440001',
-    date: '2026-03-15T09:00:00Z',
-    time: '9:00 AM - 1:00 PM',
-    attendees: 45,
-    image: 'https://images.pexels.com/photos/1181396/pexels-photo-1181396.jpeg?auto=compress&cs=tinysrgb&w=600',
-    status: 'open',
-    author_id: 'admin1',
-    created_at: '2026-02-01T10:00:00Z',
-    type: 'volunteer'
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440002',
-    date: '2026-03-20T14:00:00Z',
-    time: '2:00 PM - 5:00 PM',
-    attendees: 28,
-    image: 'https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=600',
-    status: 'open',
-    author_id: 'admin2',
-    created_at: '2026-02-05T14:30:00Z',
-    type: 'workshop'
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440003',
-    date: '2026-03-25T10:00:00Z',
-    time: '10:00 AM - 3:00 PM',
-    attendees: 67,
-    image: 'https://images.pexels.com/photos/1301856/pexels-photo-1301856.jpeg?auto=compress&cs=tinysrgb&w=600',
-    status: 'open',
-    author_id: 'expert1',
-    created_at: '2026-02-08T09:15:00Z',
-    type: 'masterclass'
-  }
-];
 
 export const useEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -63,21 +31,49 @@ export const useEvents = () => {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 600));
       
-      // Map base data to full events with translations
-      const translatedEvents: Event[] = baseEvents.map((item, index) => ({
-        ...item,
-        title: t(`eventsData.${index}.title`),
-        description: t(`eventsData.${index}.description`),
-        location: t(`eventsData.${index}.location`),
-        category: t(`eventsData.${index}.category`)
+      // Fetch events from the backend
+      const response = await fetch('http://localhost:3001/api/events');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch events');
+      }
+      
+      const data = await response.json();
+      
+      // Transform database events to match the Event interface
+      const transformedEvents: Event[] = (data.events || []).map((event: any) => ({
+        id: event.id,
+        title: event.title || 'Untitled Event',
+        description: event.description || 'No description available',
+        date: event.start_date || event.created_at,
+        time: event.start_date ? new Date(event.start_date).toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }) : 'TBD',
+        location: typeof event.location === 'string' 
+          ? event.location 
+          : event.location?.city || event.location?.address || 'Location TBD',
+        attendees: event.attendees ? event.attendees.length : 0,
+        category: event.category || 'General',
+        image: event.image || 'https://images.pexels.com/photos/1181396/pexels-photo-1181396.jpeg?auto=compress&cs=tinysrgb&w=600',
+        status: event.status || 'open',
+        author_id: event.organizer_id || event.author_id || 'unknown',
+        created_at: event.created_at,
+        type: event.category?.toLowerCase() || 'general',
+        start_date: event.start_date,
+        end_date: event.end_date,
+        organizer_id: event.organizer_id,
+        max_attendees: event.max_attendees
       }));
       
-      setEvents(translatedEvents);
+      setEvents(transformedEvents);
+      setError(null);
     } catch (err) {
+      console.error('Error fetching events:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
+      // Set empty array on error so the page still renders
+      setEvents([]);
     } finally {
       setLoading(false);
     }
@@ -85,7 +81,7 @@ export const useEvents = () => {
 
   useEffect(() => {
     fetchEvents();
-  }, [currentLanguage, t]);
+  }, [currentLanguage]);
 
   return { events, loading, error, refetch: fetchEvents };
 };

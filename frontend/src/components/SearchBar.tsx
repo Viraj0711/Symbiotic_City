@@ -81,7 +81,7 @@ const SearchBar = ({
   return (
     <div ref={searchRef} className={`relative ${className}`}>
       <form onSubmit={handleSubmit} className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{color: '#000000'}} />
         <input
           type="text"
           value={localQuery}
