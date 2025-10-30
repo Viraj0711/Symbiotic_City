@@ -139,8 +139,34 @@ export default function Auth() {
   };
 
   // Handle social login
-  const handleSocialLogin = (provider: string) => {
-    setError(`${provider} login is coming soon!`);
+  const handleSocialLogin = async (provider: string) => {
+    setError('');
+    setLoading(true);
+    
+    try {
+      // In a production environment, you would redirect to OAuth providers
+      // For now, we'll implement the OAuth flow structure
+      
+      const redirectUrls: Record<string, string> = {
+        'Facebook': `https://www.facebook.com/v18.0/dialog/oauth?client_id=${import.meta.env.VITE_FACEBOOK_APP_ID || 'YOUR_FACEBOOK_APP_ID'}&redirect_uri=${window.location.origin}/auth/callback/facebook&state=${Math.random().toString(36)}`,
+        'Google': `https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID'}&redirect_uri=${window.location.origin}/auth/callback/google&response_type=code&scope=email%20profile`,
+        'Twitter': `https://twitter.com/i/oauth2/authorize?client_id=${import.meta.env.VITE_TWITTER_CLIENT_ID || 'YOUR_TWITTER_CLIENT_ID'}&redirect_uri=${window.location.origin}/auth/callback/twitter&response_type=code&scope=tweet.read%20users.read`,
+        'Instagram': `https://api.instagram.com/oauth/authorize?client_id=${import.meta.env.VITE_INSTAGRAM_APP_ID || 'YOUR_INSTAGRAM_APP_ID'}&redirect_uri=${window.location.origin}/auth/callback/instagram&scope=user_profile,user_media&response_type=code`
+      };
+
+      const url = redirectUrls[provider];
+      
+      if (url && !url.includes('YOUR_')) {
+        // Redirect to OAuth provider
+        window.location.href = url;
+      } else {
+        setError(`${provider} login is not configured yet. Please set up OAuth credentials in your environment variables.`);
+        setLoading(false);
+      }
+    } catch (err) {
+      setError(`Failed to initiate ${provider} login`);
+      setLoading(false);
+    }
   };
 
   // Handle Sign In

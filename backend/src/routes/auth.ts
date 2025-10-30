@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 import { body, validationResult } from 'express-validator';
+import { OAuthService } from '../utils/oauth';
 
 const router = Router();
 
@@ -269,6 +270,207 @@ router.get('/health', (req: Request, res: Response) => {
     message: 'Auth service is running with PostgreSQL (Supabase)',
     timestamp: new Date().toISOString()
   });
+});
+
+// OAuth Handlers
+router.post('/oauth/facebook', async (req: Request, res: Response) => {
+  try {
+    const { code } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({ error: 'Authorization code is required' });
+    }
+
+    // Get user info from Facebook
+    const oauthUser = await OAuthService.getFacebookUser(code);
+
+    // Check if user exists
+    let user = await User.findByEmail(oauthUser.email);
+
+    if (!user) {
+      // Create new user
+      user = await User.create({
+        email: oauthUser.email,
+        password: `oauth_${oauthUser.provider}_${Date.now()}`, // Random password for OAuth users
+        name: oauthUser.name,
+        role: 'USER',
+        avatar: oauthUser.avatar,
+        bio: `Connected via ${oauthUser.provider}`,
+        location: 'Community Member',
+        is_active: true,
+        email_verified: true, // OAuth emails are pre-verified
+      });
+    }
+
+    // Generate JWT token
+    const token = generateToken(user.id!);
+
+    // Update last login
+    await User.update(user.id!, { last_login: new Date() });
+
+    // Remove password from response
+    const { password: _, ...userResponse } = user;
+
+    res.json({
+      message: 'OAuth authentication successful',
+      user: userResponse,
+      token,
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    });
+  } catch (error) {
+    console.error('Facebook OAuth error:', error);
+    res.status(500).json({ error: error instanceof Error ? error.message : 'OAuth authentication failed' });
+  }
+});
+
+router.post('/oauth/google', async (req: Request, res: Response) => {
+  try {
+    const { code } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({ error: 'Authorization code is required' });
+    }
+
+    // Get user info from Google
+    const oauthUser = await OAuthService.getGoogleUser(code);
+
+    // Check if user exists
+    let user = await User.findByEmail(oauthUser.email);
+
+    if (!user) {
+      // Create new user
+      user = await User.create({
+        email: oauthUser.email,
+        password: `oauth_${oauthUser.provider}_${Date.now()}`,
+        name: oauthUser.name,
+        role: 'USER',
+        avatar: oauthUser.avatar,
+        bio: `Connected via ${oauthUser.provider}`,
+        location: 'Community Member',
+        is_active: true,
+        email_verified: true,
+      });
+    }
+
+    // Generate JWT token
+    const token = generateToken(user.id!);
+
+    // Update last login
+    await User.update(user.id!, { last_login: new Date() });
+
+    // Remove password from response
+    const { password: _, ...userResponse } = user;
+
+    res.json({
+      message: 'OAuth authentication successful',
+      user: userResponse,
+      token,
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    });
+  } catch (error) {
+    console.error('Google OAuth error:', error);
+    res.status(500).json({ error: error instanceof Error ? error.message : 'OAuth authentication failed' });
+  }
+});
+
+router.post('/oauth/twitter', async (req: Request, res: Response) => {
+  try {
+    const { code } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({ error: 'Authorization code is required' });
+    }
+
+    // Get user info from Twitter
+    const oauthUser = await OAuthService.getTwitterUser(code);
+
+    // Check if user exists
+    let user = await User.findByEmail(oauthUser.email);
+
+    if (!user) {
+      // Create new user
+      user = await User.create({
+        email: oauthUser.email,
+        password: `oauth_${oauthUser.provider}_${Date.now()}`,
+        name: oauthUser.name,
+        role: 'USER',
+        avatar: oauthUser.avatar,
+        bio: `Connected via ${oauthUser.provider}`,
+        location: 'Community Member',
+        is_active: true,
+        email_verified: true,
+      });
+    }
+
+    // Generate JWT token
+    const token = generateToken(user.id!);
+
+    // Update last login
+    await User.update(user.id!, { last_login: new Date() });
+
+    // Remove password from response
+    const { password: _, ...userResponse } = user;
+
+    res.json({
+      message: 'OAuth authentication successful',
+      user: userResponse,
+      token,
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    });
+  } catch (error) {
+    console.error('Twitter OAuth error:', error);
+    res.status(500).json({ error: error instanceof Error ? error.message : 'OAuth authentication failed' });
+  }
+});
+
+router.post('/oauth/instagram', async (req: Request, res: Response) => {
+  try {
+    const { code } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({ error: 'Authorization code is required' });
+    }
+
+    // Get user info from Instagram
+    const oauthUser = await OAuthService.getInstagramUser(code);
+
+    // Check if user exists
+    let user = await User.findByEmail(oauthUser.email);
+
+    if (!user) {
+      // Create new user
+      user = await User.create({
+        email: oauthUser.email,
+        password: `oauth_${oauthUser.provider}_${Date.now()}`,
+        name: oauthUser.name,
+        role: 'USER',
+        avatar: oauthUser.avatar,
+        bio: `Connected via ${oauthUser.provider}`,
+        location: 'Community Member',
+        is_active: true,
+        email_verified: true,
+      });
+    }
+
+    // Generate JWT token
+    const token = generateToken(user.id!);
+
+    // Update last login
+    await User.update(user.id!, { last_login: new Date() });
+
+    // Remove password from response
+    const { password: _, ...userResponse } = user;
+
+    res.json({
+      message: 'OAuth authentication successful',
+      user: userResponse,
+      token,
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    });
+  } catch (error) {
+    console.error('Instagram OAuth error:', error);
+    res.status(500).json({ error: error instanceof Error ? error.message : 'OAuth authentication failed' });
+  }
 });
 
 export default router;

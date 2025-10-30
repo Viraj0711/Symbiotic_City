@@ -25,6 +25,7 @@ import {
   Guidelines,
   EmergencyServices,
   Auth,
+  OAuthCallback,
   ForgotPassword
 } from './pages';
 import ProductDetail from './pages/ProductDetail';
@@ -64,6 +65,10 @@ function App() {
                   <Route path="/search" element={<SearchResults />} />
                   <Route path="/login" element={<Auth />} />
                   <Route path="/signup" element={<Auth />} />
+                  <Route path="/auth/callback/facebook" element={<OAuthCallback />} />
+                  <Route path="/auth/callback/google" element={<OAuthCallback />} />
+                  <Route path="/auth/callback/twitter" element={<OAuthCallback />} />
+                  <Route path="/auth/callback/instagram" element={<OAuthCallback />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                 </Routes>
               </main>
