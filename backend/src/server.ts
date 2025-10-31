@@ -16,6 +16,7 @@ import marketplaceRoutes from './routes/marketplace';
 import emergencyServicesRoutes from './routes/emergencyServices';
 import eventsRoutes from './routes/events';
 import projectsRoutes from './routes/projects';
+import testEmailRoutes from './routes/testEmail';
 
 // Load environment variables
 import dotenv from 'dotenv';
@@ -78,6 +79,11 @@ app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/emergency-services', emergencyServicesRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/projects', projectsRoutes);
+
+// Test email routes (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api/test-email', testEmailRoutes);
+}
 
 // Serve static files from frontend build (only in production)
 if (process.env.NODE_ENV === 'production') {

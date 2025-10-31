@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 import { body, validationResult } from 'express-validator';
 import { OAuthService } from '../utils/oauth';
+import { emailService } from '../utils/emailService';
+import crypto from 'crypto';
 
 const router = Router();
 
@@ -85,6 +87,14 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
 
     // Generate JWT token
     const token = generateToken(user.id!);
+
+    // Send welcome email
+    try {
+      await emailService.sendWelcomeEmail(user.email, user.name);
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError);
+      // Don't fail registration if email fails
+    }
 
     // Remove password from response
     const { password: _, ...userResponse } = user;
@@ -470,6 +480,144 @@ router.post('/oauth/instagram', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Instagram OAuth error:', error);
     res.status(500).json({ error: error instanceof Error ? error.message : 'OAuth authentication failed' });
+  }
+});
+
+// Request password reset
+router.post('/forgot-password', async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    console.log('[Forgot Password] Request received for email:', email);
+
+    // Find user by email
+    const user = await User.findByEmail(email);
+    
+    // Always return success to prevent email enumeration
+    if (!user) {
+      console.log('[Forgot Password] User not found for email:', email);
+      return res.json({ message: 'If an account exists with this email, a password reset link has been sent' });
+    }
+
+    console.log('[Forgot Password] User found:', user.name, user.email);
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+
+    console.log('[Forgot Password] Sending email to:', user.email);
+
+    // Send password reset email
+    const emailSent = await emailService.sendPasswordReset(user.email, user.name, resetToken);
+    
+    if (emailSent) {
+      console.log('[Forgot Password] Email sent successfully to:', user.email);
+    } else {
+      console.error('[Forgot Password] Failed to send email to:', user.email);
+    }
+
+    res.json({ message: 'If an account exists with this email, a password reset link has been sent' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: 'Failed to process password reset request' });
+  }
+});
+
+// Reset password with token
+router.post('/reset-password', async (req: Request, res: Response) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ error: 'Token and new password are required' });
+    }
+
+    // Validate password strength
+    if (newPassword.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(newPassword)) {
+      return res.status(400).json({ 
+        error: 'Password must be at least 8 characters and contain uppercase, lowercase, and number' 
+      });
+    }
+
+    // TODO: Verify token and find user
+    // For now, this is a placeholder
+    // You'll need to add token verification logic when you add reset token fields to User model
+
+    res.json({ message: 'Password reset functionality will be fully implemented with database token storage' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+// Change password (authenticated)
+router.post('/change-password', async (req: Request, res: Response) => {
+  try {
+    // Extract token from Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Access token required' });
+    }
+
+    const jwtToken = authHeader.substring(7);
+    
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
+    
+    // Verify token
+    const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET) as any;
+    
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current password and new password are required' });
+    }
+
+    // Find user
+    const user = await User.findById(decoded.userId);
+    if (!user || !user.is_active) {
+      return res.status(401).json({ error: 'Invalid token or user not found' });
+    }
+
+    // Verify current password
+    const isPasswordValid = await User.comparePassword(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Validate new password strength
+    if (newPassword.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(newPassword)) {
+      return res.status(400).json({ 
+        error: 'New password must be at least 8 characters and contain uppercase, lowercase, and number' 
+      });
+    }
+
+    // Update password
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await User.update(user.id!, { password: hashedPassword });
+
+    // Send confirmation email
+    try {
+      await emailService.sendPasswordChanged(user.email, user.name);
+    } catch (emailError) {
+      console.error('Failed to send password change email:', emailError);
+    }
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    
+    if ((error as any).name === 'JsonWebTokenError') {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+    
+    res.status(500).json({ error: 'Failed to change password' });
   }
 });
 

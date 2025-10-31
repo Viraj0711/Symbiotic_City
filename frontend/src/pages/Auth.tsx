@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { User, Mail, Lock, Loader2, Eye, EyeOff, Facebook, Chrome, Twitter, Instagram, Check, X, AlertCircle } from 'lucide-react';
+import { User, Mail, Lock, Loader2, Eye, EyeOff, Facebook, Chrome, Twitter, Instagram, Check, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/auth.css';
 
