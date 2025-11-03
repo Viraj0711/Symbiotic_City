@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { GenderAvatar } from '../components/GenderAvatars';
 import { api } from '../lib/supabase';
+import { fadeIn, fadeInUp, scaleIn, staggerContainer, staggerItem } from '../utils/animations';
 
 // StickFigure component for default avatar (kept for backwards compatibility)
 const StickFigure: React.FC<{ className?: string }> = ({ className = '' }) => (
@@ -225,14 +227,27 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <motion.div 
+      className="min-h-screen bg-gray-50"
+      variants={fadeIn}
+      initial="hidden"
+      animate="visible"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Enhanced Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+        <motion.div 
+          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8"
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               {/* User Avatar */}
-              <div className="relative">
+              <motion.div 
+                className="relative"
+                whileHover={{ scale: 1.05 }}
+              >
                 {user?.avatar ? (
                   <img
                     src={user.avatar}
@@ -246,9 +261,14 @@ const Dashboard: React.FC = () => {
                     </svg>
                   </div>
                 )}
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white" style={{backgroundColor: '#059669'}}></div>
-              </div>
-              
+                <motion.div 
+                  className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white" 
+                  style={{backgroundColor: '#059669'}}
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                />
+              </motion.div>
+            
               {/* Welcome Message */}
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
@@ -261,32 +281,42 @@ const Dashboard: React.FC = () => {
             </div>
             
             {/* Quick Stats */}
-            <div className="hidden md:flex items-center space-x-6">
-              <div className="text-center">
+            <motion.div 
+              className="hidden md:flex items-center space-x-6"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div className="text-center" variants={staggerItem}>
                 <div className="text-2xl font-bold text-green-600">{userStats.projectsJoined}</div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Projects</div>
-              </div>
-              <div className="text-center">
+              </motion.div>
+              <motion.div className="text-center" variants={staggerItem}>
                 <div className="text-2xl font-bold text-blue-600">{userStats.eventsAttended}</div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Events</div>
-              </div>
-              <div className="text-center">
+              </motion.div>
+              <motion.div className="text-center" variants={staggerItem}>
                 <div className="text-2xl font-bold text-purple-600">{userStats.itemsListed}</div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Listings</div>
-              </div>
-              <div className="text-center">
+              </motion.div>
+              <motion.div className="text-center" variants={staggerItem}>
                 <div className="text-2xl font-bold text-yellow-600">{userStats.co2Saved}</div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Impact</div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Enhanced Navigation Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
+        <motion.div 
+          className="bg-white rounded-xl shadow-sm border border-gray-100 mb-8"
+          variants={scaleIn}
+          initial="hidden"
+          animate="visible"
+        >
           <div className="border-b border-gray-100">
             <nav className="-mb-px flex space-x-6 px-6">
-              <button
+              <motion.button
                 onClick={() => setActiveTab('overview')}
                 className={`py-4 px-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
                   activeTab === 'overview'
@@ -298,69 +328,91 @@ const Dashboard: React.FC = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 <span>Overview</span>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={() => setActiveTab('projects')}
                 className={`py-4 px-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
                   activeTab === 'projects'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
                 <span>My Projects</span>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={() => setActiveTab('events')}
                 className={`py-4 px-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
                   activeTab === 'events'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v6m6-6v6M6 15h12" />
                 </svg>
                 <span>My Events</span>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={() => setActiveTab('marketplace')}
                 className={`py-4 px-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
                   activeTab === 'marketplace'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
                 <span>My Listings</span>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={() => setActiveTab('profile')}
                 className={`py-4 px-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
                   activeTab === 'profile'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 <span>Profile & Settings</span>
-              </button>
+              </motion.button>
             </nav>
           </div>
-        </div>
+        </motion.div>
 
         {/* Tab Content */}
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+          >
             {/* Stats Cards */}
-            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow-md p-6">
+            <motion.div 
+              className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div 
+                className="bg-white rounded-lg shadow-md p-6"
+                variants={staggerItem}
+                whileHover={{ y: -5, boxShadow: '0 10px 25px rgba(0,0,0,0.15)' }}
+              >
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-blue-100">
                     <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -372,9 +424,13 @@ const Dashboard: React.FC = () => {
                     <p className="text-3xl font-bold text-blue-600">{userStats.projectsJoined}</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <motion.div 
+                className="bg-white rounded-lg shadow-md p-6"
+                variants={staggerItem}
+                whileHover={{ y: -5, boxShadow: '0 10px 25px rgba(0,0,0,0.15)' }}
+              >
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-green-100">
                     <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,9 +442,13 @@ const Dashboard: React.FC = () => {
                     <p className="text-3xl font-bold text-green-600">{userStats.eventsAttended}</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <motion.div 
+                className="bg-white rounded-lg shadow-md p-6"
+                variants={staggerItem}
+                whileHover={{ y: -5, boxShadow: '0 10px 25px rgba(0,0,0,0.15)' }}
+              >
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-purple-100">
                     <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -400,9 +460,13 @@ const Dashboard: React.FC = () => {
                     <p className="text-3xl font-bold text-purple-600">{userStats.itemsListed}</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <motion.div 
+                className="bg-white rounded-lg shadow-md p-6"
+                variants={staggerItem}
+                whileHover={{ y: -5, boxShadow: '0 10px 25px rgba(0,0,0,0.15)' }}
+              >
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-yellow-100">
                     <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -414,11 +478,17 @@ const Dashboard: React.FC = () => {
                     <p className="text-3xl font-bold text-yellow-600">{userStats.co2Saved}</p>
                   </div>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* Impact Score */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <motion.div 
+              className="bg-white rounded-lg shadow-md p-6"
+              variants={scaleIn}
+              initial="hidden"
+              animate="visible"
+              whileHover={{ y: -5 }}
+            >
               <h3 className="text-lg font-medium text-gray-900 mb-4">Impact Score</h3>
               <div className="text-center">
                 <div className="relative w-24 h-24 mx-auto mb-4">
@@ -452,8 +522,8 @@ const Dashboard: React.FC = () => {
                   You're in the top 15% of community contributors!
                 </p>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
 
         {activeTab === 'projects' && (
@@ -783,7 +853,7 @@ const Dashboard: React.FC = () => {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useMarketplace, MarketplaceListing } from '../hooks/useMarketplace';
 import { useLanguage } from '../contexts/LanguageContext';
+import { fadeIn, fadeInUp, scaleIn, staggerContainer, staggerItem, slideInLeft, buttonHover, bounceIn } from '../utils/animations';
 
 const Marketplace: React.FC = () => {
   const { listings, loading, error } = useMarketplace();
@@ -82,23 +84,44 @@ const Marketplace: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-12" style={{backgroundColor: '#E2EAD6'}}>
+    <motion.div 
+      className="min-h-screen py-12" 
+      style={{backgroundColor: '#E2EAD6'}}
+      variants={fadeIn}
+      initial="hidden"
+      animate="visible"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+        >
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             {t('marketplacePage.title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             {t('marketplacePage.description')}
           </p>
-        </div>
+        </motion.div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <motion.div 
+          className="bg-white rounded-lg shadow-md p-6 mb-8"
+          variants={scaleIn}
+          initial="hidden"
+          animate="visible"
+        >
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
-            <div className="flex-1">
+            <motion.div 
+              className="flex-1"
+              variants={slideInLeft}
+              initial="hidden"
+              animate="visible"
+            >
               <input
                 type="text"
                 placeholder={t('marketplacePage.searchPlaceholder')}
@@ -106,10 +129,15 @@ const Marketplace: React.FC = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
-            </div>
+            </motion.div>
             
             {/* Category Filter */}
-            <div>
+            <motion.div
+              variants={slideInLeft}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.1 }}
+            >
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -121,14 +149,19 @@ const Marketplace: React.FC = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </motion.div>
 
             {/* List Item Button */}
-            <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+            <motion.button 
+              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              variants={buttonHover}
+              whileHover="hover"
+              whileTap="tap"
+            >
               {t('marketplacePage.listItem')}
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Marketplace Grid */}
         {error ? (
@@ -152,15 +185,32 @@ const Marketplace: React.FC = () => {
             <p className="text-gray-600">{t('marketplacePage.noItemsDescription')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
             {filteredItems.map((item) => (
-              <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
+              <motion.div 
+                key={item.id} 
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full"
+                variants={staggerItem}
+                whileHover={{ 
+                  y: -8, 
+                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" 
+                }}
+              >
                 {item.image && (
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-48 object-cover"
-                  />
+                  <div className="overflow-hidden">
+                    <motion.img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-48 object-cover"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
                 )}
                 
                 <div className="p-4 flex flex-col flex-grow">
@@ -181,13 +231,27 @@ const Marketplace: React.FC = () => {
                   {/* Price */}
                   <div className="mb-3">
                     {item.type === 'sell' && (
-                      <div className="text-xl font-bold text-green-600">{item.price}</div>
+                      <motion.div 
+                        className="text-xl font-bold text-green-600"
+                        variants={bounceIn}
+                        initial="hidden"
+                        animate="visible"
+                      >
+                        {item.price}
+                      </motion.div>
                     )}
                     {item.type === 'trade' && (
                       <div className="text-sm text-gray-600">{t('marketplacePage.tradeFor')} {item.tradeFor || t('marketplacePage.openToOffers')}</div>
                     )}
                     {item.type === 'free' && (
-                      <div className="text-lg font-bold text-green-600">{t('marketplacePage.free')}</div>
+                      <motion.div 
+                        className="text-lg font-bold text-green-600"
+                        variants={bounceIn}
+                        initial="hidden"
+                        animate="visible"
+                      >
+                        {t('marketplacePage.free')}
+                      </motion.div>
                     )}
                   </div>
                   
@@ -224,20 +288,22 @@ const Marketplace: React.FC = () => {
                   
                   {/* Action Button */}
                   <div className="mt-auto">
-                    <button 
+                    <motion.button 
                       onClick={() => handleItemAction(item)}
                       className="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg hover:bg-emerald-700 transition-colors duration-200 font-medium text-sm flex items-center justify-center space-x-2"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       <span>{t('marketplacePage.viewDetails')}</span>
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

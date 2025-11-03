@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
+import { fadeIn, fadeInUp, staggerContainer, staggerItem, scaleIn } from '../utils/animations';
 
 interface CommunityMember {
   id: string;
@@ -78,63 +80,99 @@ const Community: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen py-12" style={{backgroundColor: '#E2EAD6'}}>
+    <motion.div 
+      className="min-h-screen py-12" 
+      style={{backgroundColor: '#E2EAD6'}}
+      variants={fadeIn}
+      initial="hidden"
+      animate="visible"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+        >
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             {t('communityPage.title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             {t('communityPage.description')}
           </p>
-        </div>
+        </motion.div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-lg shadow-md mb-8">
+        <motion.div 
+          className="bg-white rounded-lg shadow-md mb-8"
+          variants={scaleIn}
+          initial="hidden"
+          animate="visible"
+        >
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8 px-6">
-              <button
+              <motion.button
                 onClick={() => setActiveTab('feed')}
                 className={`py-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'feed'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {t('communityPage.tabs.feed')}
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={() => setActiveTab('members')}
                 className={`py-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'members'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {t('communityPage.tabs.members')}
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={() => setActiveTab('groups')}
                 className={`py-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'groups'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {t('communityPage.tabs.groups')}
-              </button>
+              </motion.button>
             </nav>
           </div>
-        </div>
+        </motion.div>
 
         {/* Tab Content */}
         {activeTab === 'feed' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+          >
             {/* Main Feed */}
-            <div className="lg:col-span-2 space-y-6">
+            <motion.div 
+              className="lg:col-span-2 space-y-6"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
               {/* Create Post */}
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <motion.div 
+                className="bg-white rounded-lg shadow-md p-6"
+                variants={staggerItem}
+                whileHover={{ boxShadow: "0 10px 25px rgba(0,0,0,0.15)" }}
+              >
                 <div className="flex space-x-3">
                   <img
                     src="/api/placeholder/40/40"
@@ -160,17 +198,27 @@ const Community: React.FC = () => {
                           </svg>
                         </button>
                       </div>
-                      <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                      <motion.button 
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
                         {t('communityPage.feed.postButton')}
-                      </button>
+                      </motion.button>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Posts */}
               {posts.map((post) => (
-                <div key={post.id} className="bg-white rounded-lg shadow-md p-6">
+                <motion.div 
+                  key={post.id} 
+                  className="bg-white rounded-lg shadow-md p-6"
+                  variants={staggerItem}
+                  whileHover={{ y: -5, boxShadow: "0 15px 30px rgba(0,0,0,0.2)" }}
+                  transition={{ duration: 0.3 }}
+                >
                   <div className="flex space-x-3">
                     <img
                       src={post.avatar}
@@ -195,35 +243,56 @@ const Community: React.FC = () => {
                       
                       {/* Actions */}
                       <div className="mt-4 flex space-x-6">
-                        <button className="flex items-center space-x-2 text-gray-500 hover:text-green-600">
+                        <motion.button 
+                          className="flex items-center space-x-2 text-gray-500 hover:text-green-600"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                        >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                           </svg>
                           <span>{post.likes}</span>
-                        </button>
-                        <button className="flex items-center space-x-2 text-gray-500 hover:text-blue-600">
+                        </motion.button>
+                        <motion.button 
+                          className="flex items-center space-x-2 text-gray-500 hover:text-blue-600"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                        >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                           </svg>
                           <span>{post.comments}</span>
-                        </button>
-                        <button className="flex items-center space-x-2 text-gray-500 hover:text-purple-600">
+                        </motion.button>
+                        <motion.button 
+                          className="flex items-center space-x-2 text-gray-500 hover:text-purple-600"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                        >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
                           </svg>
                           <span>{t('communityPage.feed.share')}</span>
-                        </button>
+                        </motion.button>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
             {/* Sidebar */}
-            <div className="space-y-6">
+            <motion.div 
+              className="space-y-6"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
               {/* Quick Stats */}
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <motion.div 
+                className="bg-white rounded-lg shadow-md p-6"
+                variants={staggerItem}
+                whileHover={{ scale: 1.02 }}
+              >
                 <h3 className="text-lg font-medium text-gray-900 mb-4">{t('communityPage.stats.title')}</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
@@ -243,10 +312,14 @@ const Community: React.FC = () => {
                     <span className="font-medium text-green-600">156.2</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Trending Topics */}
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <motion.div 
+                className="bg-white rounded-lg shadow-md p-6"
+                variants={staggerItem}
+                whileHover={{ scale: 1.02 }}
+              >
                 <h3 className="text-lg font-medium text-gray-900 mb-4">{t('communityPage.trending.title')}</h3>
                 <div className="space-y-2">
                   {[
@@ -256,26 +329,41 @@ const Community: React.FC = () => {
                     { key: 'bikeSharing', posts: 23 },
                     { key: 'renewable', posts: 19 }
                   ].map((topic, index) => (
-                    <div key={index} className="flex items-center justify-between">
+                    <motion.div 
+                      key={index} 
+                      className="flex items-center justify-between"
+                      whileHover={{ x: 5 }}
+                    >
                       <span className="text-blue-600 hover:underline cursor-pointer">#{t(`communityPage.trending.${topic.key}`)}</span>
                       <span className="text-gray-500 text-sm">{topic.posts} {t('communityPage.trending.posts')}</span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         )}
 
         {activeTab === 'members' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
             {members.map((member) => (
-              <div key={member.id} className="bg-white rounded-lg shadow-md p-6">
+              <motion.div 
+                key={member.id} 
+                className="bg-white rounded-lg shadow-md p-6"
+                variants={staggerItem}
+                whileHover={{ y: -10, boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}
+              >
                 <div className="text-center mb-4">
-                  <img
+                  <motion.img
                     src={member.avatar}
                     alt={member.name}
                     className="w-16 h-16 rounded-full mx-auto mb-3"
+                    whileHover={{ scale: 1.2, rotate: 10 }}
                   />
                   <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
                   <p className="text-sm text-green-600">{member.role}</p>
@@ -309,27 +397,40 @@ const Community: React.FC = () => {
                   </div>
                 </div>
                 
-                <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                <motion.button 
+                  className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   {t('communityPage.members.connect')}
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
 
         {activeTab === 'groups' && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
+          <motion.div 
+            className="text-center py-12"
+            variants={scaleIn}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div 
+              className="text-gray-400 mb-4"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+            >
               <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-            </div>
+            </motion.div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">{t('communityPage.groups.title')}</h3>
             <p className="text-gray-600">{t('communityPage.groups.description')}</p>
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

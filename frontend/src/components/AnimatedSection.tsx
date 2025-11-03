@@ -8,6 +8,8 @@ interface AnimatedSectionProps {
   delay?: number;
   duration?: number;
   className?: string;
+  threshold?: number;
+  rootMargin?: string;
 }
 
 const animations = {
@@ -42,9 +44,11 @@ export const AnimatedSection: React.FC<AnimatedSectionProps> = ({
   animation = 'fadeUp',
   delay = 0,
   duration = 0.6,
-  className = ''
+  className = '',
+  threshold = 0.1,
+  rootMargin = '0px'
 }) => {
-  const { elementRef, isVisible } = useScrollAnimation();
+  const { elementRef, isVisible } = useScrollAnimation({ threshold, rootMargin });
 
   return (
     <motion.div

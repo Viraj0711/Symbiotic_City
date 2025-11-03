@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useProjects } from '../hooks/useProjects';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/supabase';
 import Notification from '../components/Notification';
+import { fadeIn, fadeInUp, scaleIn, staggerContainer, staggerItem, slideInLeft, cardHover, buttonHover } from '../utils/animations';
 
 interface NotificationState {
   show: boolean;
@@ -109,7 +111,13 @@ const Projects: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-12" style={{backgroundColor: '#E2EAD6'}}>
+    <motion.div 
+      className="min-h-screen py-12" 
+      style={{backgroundColor: '#E2EAD6'}}
+      variants={fadeIn}
+      initial="hidden"
+      animate="visible"
+    >
       {notification.show && (
         <Notification
           message={notification.message}
@@ -120,20 +128,35 @@ const Projects: React.FC = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+        >
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             {t('projectsPage.title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             {t('projectsPage.description')}
           </p>
-        </div>
+        </motion.div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <motion.div 
+          className="bg-white rounded-lg shadow-md p-6 mb-8"
+          variants={scaleIn}
+          initial="hidden"
+          animate="visible"
+        >
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
-            <div className="flex-1">
+            <motion.div 
+              className="flex-1"
+              variants={slideInLeft}
+              initial="hidden"
+              animate="visible"
+            >
               <input
                 type="text"
                 placeholder={t('projectsPage.searchPlaceholder')}
@@ -141,10 +164,15 @@ const Projects: React.FC = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
-            </div>
+            </motion.div>
             
             {/* Category Filter */}
-            <div>
+            <motion.div
+              variants={slideInLeft}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.1 }}
+            >
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -156,14 +184,19 @@ const Projects: React.FC = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </motion.div>
 
             {/* Create Project Button */}
-            <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+            <motion.button 
+              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              variants={buttonHover}
+              whileHover="hover"
+              whileTap="tap"
+            >
               {t('projectsPage.createProject')}
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Projects Grid */}
         {error ? (
@@ -187,14 +220,29 @@ const Projects: React.FC = () => {
             <p className="text-gray-600">{t('projectsPage.empty.description')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
             {filteredProjects.map((project) => (
-              <div key={project.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <motion.div 
+                key={project.id} 
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                variants={staggerItem}
+                whileHover={{ 
+                  y: -5, 
+                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" 
+                }}
+              >
                 {project.image && (
-                  <img
+                  <motion.img
                     src={project.image}
                     alt={project.title}
                     className="w-full h-48 object-cover"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
                   />
                 )}
                 
@@ -256,7 +304,7 @@ const Projects: React.FC = () => {
                   
                   {/* Action Buttons */}
                   <div className="flex gap-2">
-                    <button 
+                    <motion.button 
                       onClick={() => handleJoinProject(project.id, project.title)}
                       disabled={joiningProjectId === project.id}
                       className={`flex-1 py-2 px-4 rounded-lg transition-colors text-sm font-medium ${
@@ -264,6 +312,8 @@ const Projects: React.FC = () => {
                           ? 'bg-green-400 text-white cursor-wait'
                           : 'bg-green-600 text-white hover:bg-green-700'
                       }`}
+                      whileHover={{ scale: joiningProjectId === project.id ? 1 : 1.05 }}
+                      whileTap={{ scale: joiningProjectId === project.id ? 1 : 0.95 }}
                     >
                       {joiningProjectId === project.id ? (
                         <span className="flex items-center justify-center">
@@ -276,21 +326,23 @@ const Projects: React.FC = () => {
                       ) : (
                         t('projectsPage.actions.join')
                       )}
-                    </button>
-                    <button 
+                    </motion.button>
+                    <motion.button 
                       onClick={() => handleLearnMore(project.id)}
                       className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       {t('projectsPage.actions.learnMore')}
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

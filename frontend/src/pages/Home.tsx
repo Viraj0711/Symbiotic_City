@@ -1,10 +1,12 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import Hero from '../components/Hero';
 import Features from '../components/Features';
 import Projects from '../components/Projects';
 import Events from '../components/Events';
 import Marketplace from '../components/Marketplace';
+import { fadeInUp, staggerContainer, staggerItem } from '../utils/animations';
 
 const Home: React.FC = () => {
   const { t } = useLanguage();
@@ -39,7 +41,7 @@ const Home: React.FC = () => {
           {/* Marketplace Preview */}
           <div className="mb-16">
             <h3 className="text-2xl font-bold mb-8" style={{color: '#059669'}}>{t('home.marketplace')}</h3>
-            <Marketplace limit={4} />
+            <Marketplace limit={3} />
           </div>
         </div>
       </div>

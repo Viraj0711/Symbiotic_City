@@ -85,7 +85,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
-            <p className="text-gray-400 mt-4">{t('projects.loading')}</p>
+            <p className="text-gray-900 mt-4 font-semibold">{t('projects.loading')}</p>
           </div>
         </div>
       </section>
@@ -97,7 +97,9 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
       <section id="projects" className="py-16 lg:py-24 rounded-3xl shadow-2xl" style={{backgroundColor: '#B3C893'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-red-400">{t('projects.error')} {error}</p>
+            <p className="text-red-600 font-semibold text-lg mb-4">{t('projects.error')}</p>
+            <p className="text-gray-700">{error}</p>
+            <p className="text-gray-600 mt-2 text-sm">Make sure the backend server is running on http://localhost:3001</p>
           </div>
         </div>
       </section>
@@ -217,7 +219,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
           </StaggeredContainer>
         )}
 
-        <AnimatedSection animation="fadeUp" delay={0.4} className="text-center">
+        <div className="text-center mt-8">
           <button 
             onClick={handleViewAllProjects}
             className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors duration-200 mr-4"
@@ -230,7 +232,7 @@ const Projects: React.FC<ProjectsProps> = ({ limit }) => {
           >
             {t('projects.startNewProject')}
           </button>
-        </AnimatedSection>
+        </div>
 
         {/* Project Details Modal */}
         {showProjectDetails && selectedProject && (
