@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { api } from '../lib/supabase';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 export interface Event {
   id: string;
   title: string;
@@ -33,7 +35,7 @@ export const useEvents = () => {
       setLoading(true);
       
       // Fetch events from the backend
-      const response = await fetch('http://localhost:3001/api/events');
+      const response = await fetch(`${API_BASE_URL}/events`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch events');

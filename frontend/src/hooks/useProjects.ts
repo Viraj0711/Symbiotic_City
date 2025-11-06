@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 export interface Project {
   id: string;
   title: string;
@@ -29,7 +31,7 @@ export const useProjects = () => {
       setLoading(true);
       
       // Fetch projects from the backend
-      const response = await fetch('http://localhost:3001/api/projects');
+      const response = await fetch(`${API_BASE_URL}/projects`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch projects');

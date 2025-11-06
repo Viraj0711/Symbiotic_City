@@ -1,4 +1,5 @@
 import { ArrowRight, Users, Building2, TreePine, Leaf } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { AnimatedSection, StaggeredContainer, ParallaxSection } from './AnimatedSection';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -6,6 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 const Hero = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const navigate = useNavigate();
   
   return (
     <section className="py-16 lg:py-24 relative overflow-hidden" style={{backgroundColor: '#E2EAD6'}}>
@@ -74,11 +76,17 @@ const Hero = () => {
             {/* CTA Buttons */}
             <AnimatedSection animation="fadeUp" delay={0.8}>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2">
+                <button 
+                  onClick={() => navigate('/community')}
+                  className="bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2"
+                >
                   <span>{t('hero.buttons.joinCommunity')}</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
-                <button className="border border-emerald-600 text-emerald-400 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-900 transition-all duration-200">
+                <button 
+                  onClick={() => navigate('/projects')}
+                  className="border border-emerald-600 text-emerald-400 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-900 transition-all duration-200"
+                >
                   {t('hero.buttons.exploreProjects')}
                 </button>
               </div>
