@@ -127,13 +127,11 @@ router.post('/products', authenticateToken, async (req: AuthenticatedRequest, re
       return res.status(403).json({ message: 'Only site owners can create products' });
     }
 
-    const productId = await EnergyProduct.create({
+    const product = await EnergyProduct.create({
       ...req.body,
       owner_id: user.id,
       status: 'pending_approval'
     });
-
-    const product = await EnergyProduct.findById(productId);
 
     res.status(201).json(product);
   } catch (error) {
@@ -254,7 +252,7 @@ router.post('/orders', authenticateToken, async (req: AuthenticatedRequest, res)
     const pricing = product.pricing as any;
     const totalPrice = pricing.amount * quantity;
 
-    const orderId = await Order.create({
+    const order = await Order.create({
       buyer_id: user.id,
       seller_id: product.owner_id,
       product_id: productId,
@@ -262,21 +260,21 @@ router.post('/orders', authenticateToken, async (req: AuthenticatedRequest, res)
       order_details: {
         quantity,
         unit: pricing.unit,
-        unitPrice: pricing.amount,
-        totalPrice,
+        unit_price: pricing.amount,
+        total_price: totalPrice,
         currency: pricing.currency
       },
       delivery: {
         method: req.body.deliveryMethod || 'delivery',
         address: deliveryAddress,
-        scheduledDate: req.body.scheduledDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_date: req.body.scheduledDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         cost: (product.delivery as any)?.cost || 0
       },
       payment: {
         method: paymentMethod,
         status: 'pending',
-        greenCreditsUsed: req.body.greenCreditsUsed || 0,
-        cashAmount: totalPrice - (req.body.greenCreditsUsed || 0)
+        green_credits_used: req.body.greenCreditsUsed || 0,
+        cash_amount: totalPrice - (req.body.greenCreditsUsed || 0)
       }
     });
 
@@ -298,7 +296,6 @@ router.post('/orders', authenticateToken, async (req: AuthenticatedRequest, res)
     `;
     await pool.query(updateQuery, [productId, quantity]);
 
-    const order = await Order.findById(orderId);
     res.status(201).json(order);
   } catch (error) {
     console.error('Error creating order:', error);
@@ -344,7 +341,7 @@ router.put('/orders/:id/status', authenticateToken, async (req: AuthenticatedReq
     }
 
     // Add to timeline
-    const currentTimeline = (order.timeline as any[]) || [];
+    const currentTimeline = ((order as any).timeline as any[]) || [];
     const newTimelineEntry = {
       status,
       timestamp: new Date().toISOString(),
