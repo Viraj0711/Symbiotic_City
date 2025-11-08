@@ -64,7 +64,9 @@ export interface IUser {
   avatar?: string;
   bio?: string;
   location?: string;
-  role: 'USER' | 'SITE_OWNER' | 'ADMIN' | 'MODERATOR';
+  role: 'USER' | 'SITE_OWNER' | 'ADMIN' | 'MODERATOR' | 'SELLER';
+  is_seller?: boolean;
+  seller_profile_id?: string;
   gender?: 'male' | 'female' | 'other' | 'prefer-not-to-say';
   site_owner_data?: {
     company_name?: string;

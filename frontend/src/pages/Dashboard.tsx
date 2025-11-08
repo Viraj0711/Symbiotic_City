@@ -228,7 +228,8 @@ const Dashboard: React.FC = () => {
 
   return (
     <motion.div 
-      className="min-h-screen bg-gray-50"
+      className="min-h-screen"
+      style={{backgroundColor: '#E2EAD6'}}
       variants={fadeIn}
       initial="hidden"
       animate="visible"

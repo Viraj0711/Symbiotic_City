@@ -17,6 +17,8 @@ import emergencyServicesRoutes from './routes/emergencyServices';
 import eventsRoutes from './routes/events';
 import projectsRoutes from './routes/projects';
 import testEmailRoutes from './routes/testEmail';
+import sellerRoutes from './routes/seller';
+import paymentsRoutes from './routes/payments';
 
 // Load environment variables
 import dotenv from 'dotenv';
@@ -79,6 +81,8 @@ app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/emergency-services', emergencyServicesRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/projects', projectsRoutes);
+app.use('/api/seller', sellerRoutes);
+app.use('/api/payments', paymentsRoutes);
 
 // Test email routes (only in development)
 if (process.env.NODE_ENV !== 'production') {

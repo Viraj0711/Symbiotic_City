@@ -73,3 +73,5 @@ export const requireAdmin = requireRole(['ADMIN']);
 export const requireModerator = requireRole(['ADMIN', 'MODERATOR']);
 export const requireSiteOwner = requireRole(['ADMIN', 'SITE_OWNER']);
 export const requireSiteOwnerOrAdmin = requireRole(['ADMIN', 'SITE_OWNER']);
+export const requireSeller = requireRole(['ADMIN', 'SELLER']);
+export const requireSellerOrAdmin = requireRole(['ADMIN', 'SELLER']);

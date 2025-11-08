@@ -31,6 +31,7 @@ export default function Auth() {
   const [signUpEmail, setSignUpEmail] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
   const [signUpConfirmPassword, setSignUpConfirmPassword] = useState('');
+  const [signUpRole, setSignUpRole] = useState<'USER' | 'SITE_OWNER'>('USER');
   const [showSignUpPassword, setShowSignUpPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -233,7 +234,7 @@ export default function Auth() {
 
     setLoading(true);
     try {
-      await signUp(signUpEmail, signUpPassword, signUpUsername);
+      await signUp(signUpEmail, signUpPassword, signUpUsername, signUpRole);
       setSuccess('Account created successfully!');
       // Navigation handled by useEffect
     } catch (err) {
@@ -303,6 +304,23 @@ export default function Auth() {
                 {emailError && mode === 'signup' && (
                   <span className="auth-input-error">{emailError}</span>
                 )}
+              </div>
+              
+              <div className={`auth-input-group ${focusedField === 'signUpRole' ? 'focused' : ''}`}>
+                <User />
+                <select
+                  value={signUpRole}
+                  onChange={(e) => setSignUpRole(e.target.value as 'USER' | 'SITE_OWNER')}
+                  onFocus={() => setFocusedField('signUpRole')}
+                  onBlur={() => setFocusedField('')}
+                  disabled={loading}
+                  required
+                  aria-label="Account Type"
+                  className="role-select"
+                >
+                  <option value="USER">Regular User</option>
+                  <option value="SITE_OWNER">Site Owner</option>
+                </select>
               </div>
               
               <div className={`auth-input-group ${focusedField === 'signUpPassword' ? 'focused' : ''}`}>

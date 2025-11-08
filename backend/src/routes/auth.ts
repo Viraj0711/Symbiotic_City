@@ -9,12 +9,12 @@ import crypto from 'crypto';
 const router = Router();
 
 // JWT token generation
-const generateToken = (userId: string): string => {
+const generateToken = (userId: string, role: string, email: string): string => {
   if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET is not configured');
   }
   return jwt.sign(
-    { userId },
+    { userId, role, email },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
@@ -86,7 +86,7 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
     });
 
     // Generate JWT token
-    const token = generateToken(user.id!);
+    const token = generateToken(user.id!, user.role, user.email);
 
     // Send welcome email
     try {
@@ -159,7 +159,7 @@ router.post('/login', validateLogin, async (req: Request, res: Response) => {
     await User.update(user.id!, { last_login: new Date() });
 
     // Generate JWT token
-    const token = generateToken(user.id!);
+    const token = generateToken(user.id!, user.role, user.email);
 
     // Remove password from response
     const { password: _, ...userResponse } = user;
@@ -313,7 +313,7 @@ router.post('/oauth/facebook', async (req: Request, res: Response) => {
     }
 
     // Generate JWT token
-    const token = generateToken(user.id!);
+    const token = generateToken(user.id!, user.role, user.email);
 
     // Update last login
     await User.update(user.id!, { last_login: new Date() });
@@ -363,7 +363,7 @@ router.post('/oauth/google', async (req: Request, res: Response) => {
     }
 
     // Generate JWT token
-    const token = generateToken(user.id!);
+    const token = generateToken(user.id!, user.role, user.email);
 
     // Update last login
     await User.update(user.id!, { last_login: new Date() });
@@ -413,7 +413,7 @@ router.post('/oauth/twitter', async (req: Request, res: Response) => {
     }
 
     // Generate JWT token
-    const token = generateToken(user.id!);
+    const token = generateToken(user.id!, user.role, user.email);
 
     // Update last login
     await User.update(user.id!, { last_login: new Date() });
@@ -463,7 +463,7 @@ router.post('/oauth/instagram', async (req: Request, res: Response) => {
     }
 
     // Generate JWT token
-    const token = generateToken(user.id!);
+    const token = generateToken(user.id!, user.role, user.email);
 
     // Update last login
     await User.update(user.id!, { last_login: new Date() });
