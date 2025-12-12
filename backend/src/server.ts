@@ -43,6 +43,25 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+// Strict rate limiting for authentication endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 failed attempts
+  skipSuccessfulRequests: true,
+  message: {
+    error: 'Too many login attempts. Please try again in 15 minutes.'
+  }
+});
+
+// Rate limiter for registration to prevent spam
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // 3 registrations per hour per IP
+  message: {
+    error: 'Too many accounts created. Please try again in an hour.'
+  }
+});
+
 // CORS configuration
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
@@ -77,6 +96,9 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
+// Apply rate limiters (auth routes will use them internally)
+app.set('authLimiter', authLimiter);
+app.set('registerLimiter', registerLimiter);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/emergency-services', emergencyServicesRoutes);
 app.use('/api/events', eventsRoutes);

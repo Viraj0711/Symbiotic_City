@@ -32,16 +32,53 @@ router.post(
         return res.status(401).json({ error: 'Unauthorized' });
       }
 
-      const { amount_cents, currency = 'usd', cart_items, shipping_address } = req.body;
+      const { cart_items, shipping_address, currency = 'usd' } = req.body;
 
-      // TODO: Validate cart items and calculate actual amount from database
-      // For now, trust the client-provided amount (DO NOT DO THIS IN PRODUCTION!)
-      
-      // In production, you should:
-      // 1. Fetch products from database
-      // 2. Calculate total from server-side prices
-      // 3. Validate stock availability
-      // 4. Apply any discounts server-side
+      // SECURITY: Calculate amount server-side from database prices
+      let total_cents = 0;
+      const validatedItems = [];
+
+      for (const item of cart_items) {
+        if (!item.product_id || !item.quantity) {
+          return res.status(400).json({ error: 'Invalid cart item format' });
+        }
+
+        // Fetch actual product from database
+        const productQuery = await pool.query(
+          'SELECT price_cents, stock, status FROM products WHERE id = $1',
+          [item.product_id]
+        );
+
+        if (productQuery.rows.length === 0) {
+          return res.status(404).json({ error: `Product ${item.product_id} not found` });
+        }
+
+        const product = productQuery.rows[0];
+
+        // Validate product availability
+        if (product.status !== 'active') {
+          return res.status(400).json({ error: `Product ${item.product_id} is not available` });
+        }
+
+        if (product.stock < item.quantity) {
+          return res.status(400).json({ error: `Insufficient stock for product ${item.product_id}` });
+        }
+
+        // Calculate total using server-side prices (NEVER trust client)
+        const itemTotal = product.price_cents * item.quantity;
+        total_cents += itemTotal;
+
+        validatedItems.push({
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price_cents: product.price_cents,
+          total_cents: itemTotal
+        });
+      }
+
+      // Add shipping cost if applicable (should also be validated server-side)
+      const shipping_cents = 0; // TODO: Calculate based on shipping method
+      total_cents += shipping_cents;
 
       // Check if Stripe is configured
       if (!process.env.STRIPE_SECRET_KEY) {
@@ -55,11 +92,11 @@ router.post(
 
       // Create PaymentIntent
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: amount_cents,
+        amount: total_cents,
         currency,
         metadata: {
           buyer_id: req.user.id,
-          cart_items: JSON.stringify(cart_items)
+          cart_items: JSON.stringify(validatedItems)
         },
         automatic_payment_methods: {
           enabled: true,
@@ -70,7 +107,8 @@ router.post(
         client_secret: paymentIntent.client_secret,
         payment_intent_id: paymentIntent.id,
         amount_cents: paymentIntent.amount,
-        currency: paymentIntent.currency
+        currency: paymentIntent.currency,
+        validated_items: validatedItems
       });
     } catch (error: any) {
       console.error('Create payment intent error:', error);
@@ -119,7 +157,6 @@ router.post('/webhook', async (req: Request, res: Response) => {
     switch (event.type) {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object;
-        console.log('PaymentIntent succeeded:', paymentIntent.id);
 
         // TODO: Create order in database
         // 1. Extract cart_items from metadata
@@ -134,20 +171,19 @@ router.post('/webhook', async (req: Request, res: Response) => {
 
       case 'payment_intent.payment_failed':
         const failedPayment = event.data.object;
-        console.log('PaymentIntent failed:', failedPayment.id);
         
         await handlePaymentFailure(failedPayment);
         break;
 
       case 'charge.refunded':
         const refund = event.data.object;
-        console.log('Charge refunded:', refund.id);
         
         await handleRefund(refund);
         break;
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        // Unhandled event type
+        break;
     }
 
     res.json({ received: true });
@@ -265,9 +301,6 @@ async function handlePaymentSuccess(paymentIntent: any) {
 async function handlePaymentFailure(paymentIntent: any) {
   try {
     const { id: payment_intent_id, last_payment_error } = paymentIntent;
-    
-    console.log('Payment failed:', payment_intent_id);
-    console.log('Failure reason:', last_payment_error?.message);
 
     // TODO: Send notification to buyer about payment failure
     // TODO: Log failure for analytics
@@ -305,8 +338,6 @@ async function handleRefund(charge: any) {
       'UPDATE orders SET status = $1, payment_status = $2, refund_reason = $3 WHERE id = $4',
       ['refunded', 'refunded', 'Customer requested refund', payment.order_id]
     );
-
-    console.log(`Refund processed for payment ${payment_intent_id}`);
   } catch (error) {
     console.error('Error handling refund:', error);
   }

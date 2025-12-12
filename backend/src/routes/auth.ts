@@ -36,7 +36,7 @@ const validateRegistration = [
     .withMessage('Name must be between 2 and 50 characters'),
   body('role')
     .optional()
-    .isIn(['USER', 'SITE_OWNER', 'ADMIN', 'MODERATOR'])
+    .isIn(['USER', 'SITE_OWNER'])
     .withMessage('Invalid role specified')
 ];
 
@@ -301,7 +301,7 @@ router.post('/oauth/facebook', async (req: Request, res: Response) => {
       // Create new user
       user = await User.create({
         email: oauthUser.email,
-        password: `oauth_${oauthUser.provider}_${Date.now()}`, // Random password for OAuth users
+        password: crypto.randomBytes(32).toString('hex'), // Cryptographically secure random password
         name: oauthUser.name,
         role: 'USER',
         avatar: oauthUser.avatar,
@@ -401,7 +401,7 @@ router.post('/oauth/twitter', async (req: Request, res: Response) => {
       // Create new user
       user = await User.create({
         email: oauthUser.email,
-        password: `oauth_${oauthUser.provider}_${Date.now()}`,
+        password: crypto.randomBytes(32).toString('hex'),
         name: oauthUser.name,
         role: 'USER',
         avatar: oauthUser.avatar,
@@ -451,7 +451,7 @@ router.post('/oauth/instagram', async (req: Request, res: Response) => {
       // Create new user
       user = await User.create({
         email: oauthUser.email,
-        password: `oauth_${oauthUser.provider}_${Date.now()}`,
+        password: crypto.randomBytes(32).toString('hex'),
         name: oauthUser.name,
         role: 'USER',
         avatar: oauthUser.avatar,
@@ -492,33 +492,20 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Email is required' });
     }
 
-    console.log('[Forgot Password] Request received for email:', email);
-
     // Find user by email
     const user = await User.findByEmail(email);
     
     // Always return success to prevent email enumeration
     if (!user) {
-      console.log('[Forgot Password] User not found for email:', email);
       return res.json({ message: 'If an account exists with this email, a password reset link has been sent' });
     }
-
-    console.log('[Forgot Password] User found:', user.name, user.email);
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
-    console.log('[Forgot Password] Sending email to:', user.email);
-
     // Send password reset email
-    const emailSent = await emailService.sendPasswordReset(user.email, user.name, resetToken);
-    
-    if (emailSent) {
-      console.log('[Forgot Password] Email sent successfully to:', user.email);
-    } else {
-      console.error('[Forgot Password] Failed to send email to:', user.email);
-    }
+    await emailService.sendPasswordReset(user.email, user.name, resetToken);
 
     res.json({ message: 'If an account exists with this email, a password reset link has been sent' });
   } catch (error) {
@@ -599,7 +586,7 @@ router.post('/change-password', async (req: Request, res: Response) => {
 
     // Update password
     const bcrypt = require('bcryptjs');
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
     await User.update(user.id!, { password: hashedPassword });
 
     // Send confirmation email

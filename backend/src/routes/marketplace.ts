@@ -127,10 +127,37 @@ router.post('/products', authenticateToken, async (req: AuthenticatedRequest, re
       return res.status(403).json({ message: 'Only site owners can create products' });
     }
 
+    // Whitelist allowed fields to prevent mass assignment
+    const {
+      title,
+      description,
+      category,
+      site_id,
+      pricing,
+      availability,
+      specifications,
+      delivery,
+      location,
+      images,
+      certifications,
+      tags
+    } = req.body;
+
     const product = await EnergyProduct.create({
-      ...req.body,
+      title,
+      description,
+      category,
+      site_id,
       owner_id: user.id,
-      status: 'pending_approval'
+      pricing,
+      availability,
+      specifications,
+      delivery,
+      location,
+      images,
+      certifications,
+      tags,
+      status: 'pending_approval' // Always set status server-side
     });
 
     res.status(201).json(product);
@@ -155,7 +182,32 @@ router.put('/products/:id', authenticateToken, async (req: AuthenticatedRequest,
       return res.status(403).json({ message: 'Not authorized to update this product' });
     }
 
-    await EnergyProduct.update(req.params.id, req.body);
+    // Whitelist allowed fields
+    const {
+      title,
+      description,
+      pricing,
+      availability,
+      specifications,
+      delivery,
+      location,
+      images,
+      certifications,
+      tags
+    } = req.body;
+
+    await EnergyProduct.update(req.params.id, {
+      title,
+      description,
+      pricing,
+      availability,
+      specifications,
+      delivery,
+      location,
+      images,
+      certifications,
+      tags
+    });
     const updatedProduct = await EnergyProduct.findById(req.params.id);
 
     res.json(updatedProduct);
@@ -237,6 +289,22 @@ router.post('/orders', authenticateToken, async (req: AuthenticatedRequest, res)
   try {
     const user = req.user;
     const { productId, quantity, deliveryAddress, paymentMethod } = req.body;
+
+    // Validate required fields
+    if (!productId || !quantity || !deliveryAddress || !paymentMethod) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Validate quantity is a positive number
+    if (typeof quantity !== 'number' || quantity <= 0 || !Number.isInteger(quantity)) {
+      return res.status(400).json({ message: 'Quantity must be a positive integer' });
+    }
+
+    // Validate UUID format for productId
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(productId)) {
+      return res.status(400).json({ message: 'Invalid product ID format' });
+    }
 
     const product = await EnergyProduct.findById(productId);
     if (!product) {

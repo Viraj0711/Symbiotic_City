@@ -25,6 +25,12 @@ router.post('/:id/join', authenticateToken, async (req: Request, res: Response) 
     const projectId = req.params.id;
     const userId = (req as any).user.id;
 
+    // Validate UUID format to prevent SQL injection
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(projectId)) {
+      return res.status(400).json({ error: 'Invalid project ID format' });
+    }
+
     // Check if project exists
     const projectCheck = await pool.query('SELECT * FROM projects WHERE id = $1', [projectId]);
     if (projectCheck.rows.length === 0) {
@@ -64,6 +70,12 @@ router.post('/:id/leave', authenticateToken, async (req: Request, res: Response)
     const projectId = req.params.id;
     const userId = (req as any).user.id;
 
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(projectId)) {
+      return res.status(400).json({ error: 'Invalid project ID format' });
+    }
+
     // Remove user from participants array
     const result = await pool.query(
       `UPDATE projects 
@@ -93,16 +105,12 @@ router.get('/my-projects', authenticateToken, async (req: Request, res: Response
   try {
     const userId = (req as any).user.id;
 
-    console.log('🔍 Fetching projects for user:', userId);
-
     const result = await pool.query(
       `SELECT * FROM projects 
        WHERE $1::TEXT = ANY(SELECT unnest(participants)::TEXT) OR author_id::TEXT = $1::TEXT
        ORDER BY created_at DESC`,
       [userId]
     );
-
-    console.log(`📊 Found ${result.rows.length} projects for user ${userId}`);
 
     res.json({ projects: result.rows });
   } catch (error) {

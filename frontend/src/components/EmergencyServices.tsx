@@ -37,7 +37,11 @@ const createCustomIcon = (type: string, color: string) => {
 };
 
 const getServiceIconSVG = (type: string) => {
-  switch (type) {
+  // Whitelist allowed types to prevent XSS
+  const allowedTypes = ['police', 'hospital', 'fire'];
+  const safeType = allowedTypes.includes(type) ? type : 'default';
+  
+  switch (safeType) {
     case 'police':
       return '<svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>';
     case 'hospital':

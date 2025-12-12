@@ -215,9 +215,27 @@ router.post(
         return res.status(404).json({ error: 'Seller profile not found' });
       }
 
+      // Whitelist allowed fields
+      const {
+        title,
+        description,
+        category,
+        price_cents,
+        stock,
+        images,
+        tags
+      } = req.body;
+
       const product = await Product.create({
         seller_id: sellerProfile.id!,
-        ...req.body
+        title,
+        description,
+        category,
+        price_cents,
+        stock: stock || 0,
+        images,
+        tags,
+        status: 'active' // Set default status
       });
 
       res.status(201).json({
@@ -253,7 +271,26 @@ router.put('/products/:id', async (req: AuthenticatedRequest, res: Response) => 
       return res.status(403).json({ error: 'You do not have permission to edit this product' });
     }
 
-    const updatedProduct = await Product.update(req.params.id, req.body);
+    // Whitelist allowed fields
+    const {
+      title,
+      description,
+      price_cents,
+      stock,
+      images,
+      tags,
+      status
+    } = req.body;
+
+    const updatedProduct = await Product.update(req.params.id, {
+      title,
+      description,
+      price_cents,
+      stock,
+      images,
+      tags,
+      ...(status && ['active', 'inactive', 'draft'].includes(status) ? { status } : {})
+    });
 
     res.json({
       message: 'Product updated successfully',

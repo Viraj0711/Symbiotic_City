@@ -130,3 +130,41 @@ This project migrated from MongoDB to PostgreSQL in Dec 2024. When working with 
 - `mongoose.Schema` → PostgreSQL tables
 - Embedded docs → JSONB columns
 - See [DATABASE_MIGRATION.md](../backend/DATABASE_MIGRATION.md) for full mapping
+
+## Security Guidelines (CRITICAL - ALWAYS FOLLOW)
+
+### Input Validation
+- **ALWAYS** validate UUIDs with regex before DB queries: `/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i`
+- **NEVER** trust client input - validate types, ranges, and formats
+- Use `express-validator` for request validation
+
+### Mass Assignment Protection
+- **NEVER** use `...req.body` spread operator
+- **ALWAYS** whitelist fields explicitly:
+  ```typescript
+  const { title, description, price } = req.body;
+  await Model.update(id, { title, description, price });
+  ```
+
+### Authentication & Authorization
+- **NEVER** allow ADMIN/MODERATOR in registration roles
+- **ALWAYS** check ownership before updates: `if (resource.owner_id !== req.user.id) return 403`
+- **NEVER** log sensitive data (emails, passwords, tokens, payment IDs)
+
+### Payment Security
+- **ALWAYS** calculate prices server-side from database
+- **NEVER** trust client-provided amounts
+- **ALWAYS** validate stock availability before orders
+
+### Password Security
+- **ALWAYS** use `bcrypt.hash(password, 12)` - never less than 12 rounds
+- **NEVER** use predictable passwords for OAuth users - use `crypto.randomBytes(32).toString('hex')`
+
+### Rate Limiting
+- Authentication endpoints have strict limits (5 attempts/15min)
+- Use specific rate limiters from server.ts: `authLimiter`, `registerLimiter`
+
+### Logging
+- **NEVER** use `console.log` for sensitive data in production code
+- Use structured logging (Winston recommended)
+- OK for dev-only utilities (test-connection.ts, etc.)
