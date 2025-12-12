@@ -2,6 +2,8 @@ import { Router, Response, Request } from 'express';
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth';
 import { body, validationResult } from 'express-validator';
 import { pool } from '../config/database';
+import { emailService } from '../utils/emailService';
+import { User } from '../models/User';
 
 const router = Router();
 
@@ -286,6 +288,40 @@ async function handlePaymentSuccess(paymentIntent: any) {
           'UPDATE products SET stock = stock - $1, sales_count = sales_count + $1 WHERE id = $2',
           [item.quantity, item.product_id]
         );
+      }
+
+      // Notify seller and buyer about successful order
+      try {
+        const seller = await User.findById(seller_id as string);
+        const buyer = await User.findById(buyer_id);
+        
+        if (seller && buyer) {
+          const itemDescriptions = (items as any[]).map((item: any) => 
+            `${item.quantity}x ${item.product_name || 'Product'}`
+          );
+          
+          // Notify seller about new order
+          await emailService.sendSellerNewOrderNotification(
+            seller.email,
+            seller.name,
+            order_number,
+            buyer.name,
+            itemDescriptions,
+            `${currency.toUpperCase()} ${(subtotal / 100).toFixed(2)}`
+          );
+          
+          // Notify buyer about order confirmation
+          await emailService.sendMarketplaceOrderConfirmation(
+            buyer.email,
+            buyer.name,
+            order_number,
+            itemDescriptions,
+            `${currency.toUpperCase()} ${(subtotal / 100).toFixed(2)}`
+          );
+        }
+      } catch (emailError) {
+        // Log email error but don't fail the order
+        console.error('Failed to send order notification emails:', emailError);
       }
 
       console.log(`Order ${order_number} created successfully for seller ${seller_id}`);

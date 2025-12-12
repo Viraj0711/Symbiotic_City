@@ -1,8 +1,10 @@
 import express from 'express';
 import { EnergyProduct } from '../models/EnergyProduct';
 import { Order } from '../models/Order';
+import { User } from '../models/User';
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth';
 import { pool } from '../config/database';
+import { emailService } from '../utils/emailService';
 
 const router = express.Router();
 
@@ -363,6 +365,26 @@ router.post('/orders', authenticateToken, async (req: AuthenticatedRequest, res)
       WHERE id = $1
     `;
     await pool.query(updateQuery, [productId, quantity]);
+
+    // Notify seller about new order
+    try {
+      const seller = await User.findById(product.owner_id);
+      const buyer = await User.findById(user.id);
+      
+      if (seller && buyer) {
+        await emailService.sendSellerNewOrderNotification(
+          seller.email,
+          seller.name,
+          order.id,
+          buyer.name,
+          [`${quantity}x ${product.title}`],
+          `${pricing.currency} ${totalPrice.toFixed(2)}`
+        );
+      }
+    } catch (emailError) {
+      // Log email error but don't fail the order
+      console.error('Failed to send seller notification email:', emailError);
+    }
 
     res.status(201).json(order);
   } catch (error) {

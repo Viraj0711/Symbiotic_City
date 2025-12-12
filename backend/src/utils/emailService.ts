@@ -438,6 +438,56 @@ class EmailService {
       text: `Hi ${name}, your order #${orderId} has been confirmed. Total: ${total}`,
     });
   }
+
+  async sendSellerNewOrderNotification(to: string, sellerName: string, orderId: string, buyerName: string, items: string[], total: string): Promise<boolean> {
+    const itemsList = items.map(item => `<li>${item}</li>`).join('');
+    
+    const content = `
+      <h1>New Order Received! 🎉</h1>
+      <p>Hi ${sellerName},</p>
+      
+      <p>Great news! You have received a new order on Symbiotic City marketplace.</p>
+      
+      <div class="highlight">
+        <p style="margin: 0;">
+          <strong>Order ID:</strong> #${orderId}<br>
+          <strong>Customer:</strong> ${buyerName}<br>
+          <strong>Total:</strong> ${total}<br>
+          <strong>Status:</strong> Pending
+        </p>
+        <p style="margin-top: 15px;"><strong>Items Ordered:</strong></p>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+          ${itemsList}
+        </ul>
+      </div>
+      
+      <p style="text-align: center;">
+        <a href="http://localhost:5173/owner/dashboard" class="button">View Order & Update Status</a>
+      </p>
+      
+      <p><strong>Next Steps:</strong></p>
+      <ul style="padding-left: 20px;">
+        <li>Review the order details</li>
+        <li>Prepare the items for delivery</li>
+        <li>Update the order status to 'Processing'</li>
+        <li>Arrange delivery according to customer preferences</li>
+      </ul>
+      
+      <p>Thank you for contributing to our sustainable marketplace!</p>
+      
+      <p style="margin-top: 30px;">
+        Best regards,<br>
+        <strong>The Symbiotic City Team</strong>
+      </p>
+    `;
+
+    return this.sendEmail({
+      to,
+      subject: `🎉 New Order #${orderId} - Symbiotic City`,
+      html: this.getEmailTemplate(content, `You received a new order from ${buyerName}`),
+      text: `Hi ${sellerName}, you have a new order #${orderId} from ${buyerName}. Total: ${total}`,
+    });
+  }
 }
 
 export const emailService = new EmailService();
